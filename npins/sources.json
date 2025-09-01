@@ -12,6 +12,31 @@
       "revision": "b4c2c57c31e68544982226d07e4719a2d86302a8",
       "url": "https://github.com/NixOS/nixpkgs/archive/b4c2c57c31e68544982226d07e4719a2d86302a8.tar.gz",
       "hash": "016k5b7zwh2i5jvaq0z9vq51irjzx5rr0h185282aq6807hdssb8"
+    },
+    "secrets": {
+      "type": "Git",
+      "repository": {
+        "type": "Git",
+        "url": "git+ssh://git@github.com/ilyx-me/aviarySecrets.git"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "d2e773ce1aff5a7e4914b1267dbf0109fe389126",
+      "url": null,
+      "hash": "0gqms9awx36j5vdr0drk4v3kdykid0a0j9djf9fnybbw9d8pbqp6"
+    },
+    "sops-nix": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "Mic92",
+        "repo": "sops-nix"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "3223c7a92724b5d804e9988c6b447a0d09017d48",
+      "url": "https://github.com/Mic92/sops-nix/archive/3223c7a92724b5d804e9988c6b447a0d09017d48.tar.gz",
+      "hash": "0ic7gp54yb2d2zrqc5l7ajcf8kvbc6fbbi9kmyhg1mksdxxyisxp"
     }
   },
   "version": 5
