@@ -1,0 +1,15 @@
+name: test-default
+on:
+  push:
+    branches: []
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  default:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v12
+      - name: run test default
+        run: nix run -L .#checks.x86_64-linux.default.driver
