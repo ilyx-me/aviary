@@ -1,1 +1,1 @@
-machine.wait_for_unit("default.target")
+machine.wait_for_unit("multi-user.target")

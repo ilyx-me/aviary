@@ -7,6 +7,8 @@ Where `<test>` is the name of the test to run and `<arch>` is one of the followi
 - `x86_64-darwin`
 - `x86_64-linux`
 
+> For tests using diskoLib, `--impure` will need to be passed.
+
 ### Automatic
 
 ```bash

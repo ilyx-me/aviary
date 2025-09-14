@@ -2,6 +2,11 @@
   description = "Aviary by ilyx";
 
   inputs = {
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
     };
@@ -36,9 +41,22 @@
         {
           formatter = pkgs.nixfmt-tree;
 
-          checks = {
-            default = pkgs.testers.runNixOSTest (import ./test/default.nix { });
-          };
+          checks =
+            let
+              lib = pkgs.lib;
+              eval-config = import (pkgs.path + "/nixos/lib/eval-config.nix");
+              makeTest = import (pkgs.path + "/nixos/tests/make-test-python.nix");
+              diskoLib = import (inputs.disko + "/lib") { inherit lib eval-config makeTest; };
+            in
+            {
+              default = pkgs.testers.runNixOSTest (import ./test/default.nix { });
+
+              part-recovery = diskoLib.testLib.makeDiskoTest (
+                import ./test/part-recovery.nix {
+                  inherit lib self';
+                }
+              );
+            };
         };
 
       flake = { };
