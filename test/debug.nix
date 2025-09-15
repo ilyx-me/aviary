@@ -21,5 +21,5 @@ in
     users.users."1000".name = "user";
   };
 
-  testScript = readFile ./debug.py;
+  testScript = readFile ./check/debug.py;
 }

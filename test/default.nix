@@ -9,5 +9,5 @@ in
 
   nodes.machine = { ... }: { };
 
-  testScript = readFile ./default.py;
+  testScript = readFile ./check/default.py;
 }

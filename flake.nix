@@ -51,16 +51,16 @@
             {
               debug = pkgs.testers.runNixOSTest (import ./test/debug.nix { });
 
-              debuginitrd = diskoLib.testLib.makeDiskoTest (
-                import ./test/debuginitrd.nix {
+              debugInitrd = diskoLib.testLib.makeDiskoTest (
+                import ./test/debugInitrd.nix {
                   inherit lib self';
                 }
               );
 
               default = pkgs.testers.runNixOSTest (import ./test/default.nix { });
 
-              part-recovery = diskoLib.testLib.makeDiskoTest (
-                import ./test/part-recovery.nix {
+              partRecovery = diskoLib.testLib.makeDiskoTest (
+                import ./test/partRecovery.nix {
                   inherit lib self';
                 }
               );
