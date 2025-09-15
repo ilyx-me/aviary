@@ -1,0 +1,5 @@
+machine.wait_for_unit("default.target")
+machine.succeed("lsblk -f | grep vda1 | grep vfat | grep /boot")
+machine.succeed("lsblk -f | grep vda2 | grep crypto_LUKS")
+machine.succeed("lsblk -f | grep disk-primary-luks-btrfs- | grep btrfs")
+machine.succeed("df -T / | grep tmpfs")

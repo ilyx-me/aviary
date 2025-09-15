@@ -31,5 +31,5 @@ in
   extraSystemConfig = { };
 
   bootCommands = readFile ./check/defaultInitrd.py;
-  extraTestScript = readFile ./check/default.py;
+  extraTestScript = readFile ./check/partRecovery.py;
 }
