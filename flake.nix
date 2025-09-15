@@ -49,6 +49,14 @@
               diskoLib = import (inputs.disko + "/lib") { inherit lib eval-config makeTest; };
             in
             {
+              debug = pkgs.testers.runNixOSTest (import ./test/debug.nix { });
+
+              debuginitrd = diskoLib.testLib.makeDiskoTest (
+                import ./test/debuginitrd.nix {
+                  inherit lib self';
+                }
+              );
+
               default = pkgs.testers.runNixOSTest (import ./test/default.nix { });
 
               part-recovery = diskoLib.testLib.makeDiskoTest (
