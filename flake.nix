@@ -11,13 +11,18 @@
       url = "github:hercules-ci/flake-parts";
     };
 
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixpkgs = {
       url = "github:nixos/nixpkgs/nixos-25.05";
     };
   };
 
   outputs =
-    inputs@{ flake-parts, ... }:
+    inputs@{ flake-parts, self, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       # flake-parts modules go here
       imports = [ ];
@@ -49,6 +54,12 @@
               diskoLib = import (inputs.disko + "/lib") { inherit lib eval-config makeTest; };
             in
             {
+              bootstrap = diskoLib.testLib.makeDiskoTest (
+                import ./test/bootstrap.nix {
+                  inherit lib pkgs self self';
+                }
+              );
+
               debug = pkgs.testers.runNixOSTest (import ./test/debug.nix { });
 
               debugInitrd = diskoLib.testLib.makeDiskoTest (
@@ -67,6 +78,15 @@
             };
         };
 
-      flake = { };
+      flake = {
+        nixosModules = {
+          default = { ... }: {
+            imports = [
+              inputs.lanzaboote.nixosModules.lanzaboote
+              ./environment/module/bootstrap.nix
+            ];
+          };
+        };
+      };
     };
 }
