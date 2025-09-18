@@ -19,7 +19,7 @@ let
   diskoConfig = recursiveUpdate default recovery;
 in
 {
-  name = "login";
+  name = "partRecovery";
   enableOCR = true;
 
   disko-config = diskoConfig;

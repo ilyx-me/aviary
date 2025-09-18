@@ -19,7 +19,7 @@ let
   diskoConfig = recursiveUpdate default recovery;
 in
 {
-  name = "login";
+  name = "debugInitrd";
   enableOCR = true;
 
   disko-config = diskoConfig;
