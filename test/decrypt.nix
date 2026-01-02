@@ -1,4 +1,5 @@
 {
+  inputs,
   lib,
   pkgs,
   ...
@@ -20,7 +21,7 @@ let
 in
 {
   pkgs = pkgs;
-  name = "partRecovery";
+  name = "decrypt";
   enableOCR = true;
 
   disko-config = diskoConfig;
@@ -29,8 +30,21 @@ in
     systemd.tmpfiles.settings."10-luks-pwd"."/luks-password-recovery".f.argument = "password";
   };
 
-  extraSystemConfig = { };
+  extraSystemConfig = {
+    _module.args = { inherit inputs; };
+    imports = [
+      inputs.home-manager.nixosModules.default
+      inputs.impermanence.nixosModules.impermanence
+      inputs.sops-nix.nixosModules.sops
+      ../environment/module/default.nix
+      ../service/default.nix
+      ../environment/module/debug.nix
 
-  bootCommands = readFile ./check/defaultInitrd.py;
-  extraTestScript = readFile ./check/partRecovery.py;
+      (import ./user/testA.nix { inherit inputs; })
+    ];
+
+    boot.initrd.availableKernelModules = [ "e1000" ];
+  };
+
+  bootCommands = readFile ./check/decrypt.py;
 }

@@ -2,9 +2,6 @@
   ...
 }:
 {
-  import = [
-    ./default.nix
-  ];
 
   config = {
 

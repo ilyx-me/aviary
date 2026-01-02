@@ -1,5 +1,6 @@
 {
   inputs,
+  pkgs,
   self,
   ...
 }:
@@ -19,7 +20,15 @@ in
 
       (import ./user/testA.nix {inherit inputs;})
     ];
+
+    virtualisation.useEFIBoot = true;
+    virtualisation.useBootLoader = true;
+    virtualisation.useSecureBoot = true;
+
+    system.activationScripts."genSBKeys".text = ''
+      ${pkgs.sbctl}/bin/sbctl create-keys
+    '';
   };
 
-  testScript = readFile ./check/default.py;
+  testScript = readFile ./check/secureboot.py;
 }

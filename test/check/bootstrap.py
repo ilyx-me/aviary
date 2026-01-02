@@ -1,2 +1,2 @@
 machine.wait_for_unit("default.target")
-machine.succeed("bootctl | grep lanza")
+assert "Product: lanzastub" in machine.succeed("bootctl -q --no-pager")

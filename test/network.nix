@@ -1,4 +1,4 @@
-{ 
+{
   inputs,
   ...
 }:
@@ -9,8 +9,7 @@ let
     ;
 in
 {
-  name = "debug";
-  enableOCR = true;
+  name = "network";
 
   nodes.machine = { ... }: {
     _module.args = { inherit inputs; };
@@ -20,11 +19,10 @@ in
       inputs.sops-nix.nixosModules.sops
       ../environment/module/default.nix
       ../service/default.nix
-      ../environment/module/debug.nix
 
       (import ./user/testA.nix { inherit inputs; })
     ];
   };
 
-  testScript = readFile ./check/debug.py;
+  testScript = readFile ./check/network.py;
 }

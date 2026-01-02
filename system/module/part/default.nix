@@ -45,7 +45,7 @@ in
           esp = {
             size = "2048M";
             type = "EF00";
-            name = "esp-" + host;
+            name = if pathExists /tmp/egg-drive-name then "esp-${readFile /tmp/egg-drive-name}" else "esp-${host}";
             content = {
               type = "filesystem";
               format = "vfat";
@@ -59,10 +59,10 @@ in
 
           root = {
             size = "100%";
-            name = "luks-" + host;
+            name = if pathExists /tmp/egg-drive-name then "luks-${readFile /tmp/egg-drive-name}" else "luks-${host}";
             content = {
               type = "luks";
-              name = "disk-primary-luks-btrfs-" + host;
+              name = if pathExists /tmp/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
               settings.allowDiscards = true;
               passwordFile = "/luks-password-recovery";
               content = {

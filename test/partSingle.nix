@@ -15,12 +15,12 @@ let
 
   config = { networking.hostName = "test-a"; };
   default = (import ../system/module/part/default.nix { inherit config lib; }).config;
-  recovery = (import ../system/module/part/recovery.nix { }).config;
-  diskoConfig = recursiveUpdate default recovery;
+  single = (import ../system/module/part/single.nix { }).config;
+  diskoConfig = recursiveUpdate default single;
 in
 {
   pkgs = pkgs;
-  name = "partRecovery";
+  name = "partSingle";
   enableOCR = true;
 
   disko-config = diskoConfig;
@@ -32,5 +32,5 @@ in
   extraSystemConfig = { };
 
   bootCommands = readFile ./check/defaultInitrd.py;
-  extraTestScript = readFile ./check/partRecovery.py;
+  extraTestScript = readFile ./check/partSingle.py;
 }

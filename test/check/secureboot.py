@@ -1,0 +1,6 @@
+machine.wait_for_unit("multi-user.target")
+machine.succeed("sbctl enroll-keys --yes-this-might-brick-my-machine")
+machine.shutdown()
+machine.start()
+machine.wait_for_unit("multi-user.target")
+machine.succeed("(bootctl -q --no-pager || true) | grep 'Secure Boot: enabled (user)'")

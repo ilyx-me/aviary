@@ -1,0 +1,8 @@
+machine.wait_for_unit("multi-user.target")
+machine.succeed("echo -n password | cryptsetup luksFormat -q --iter-time=1 /dev/vdb -")
+machine.succeed("PASSWORD=password SYSTEMD_LOG_LEVEL=debug systemd-cryptenroll --tpm2-pcrs=0+2+4+7 --tpm2-device=auto /dev/vdb |& systemd-cat")
+machine.succeed("bootctl set-default nixos-generation-1-specialisation-boot-luks.conf")
+machine.succeed("sync")
+machine.crash()
+machine.wait_for_unit("multi-user.target")
+assert "/dev/mapper/cryptroot on / type ext4" in machine.succeed("mount")

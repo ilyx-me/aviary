@@ -34,6 +34,13 @@
       ];
     };
 
+    # getty login is disabled for recovery so make sure it's enabled
+    services.getty = {
+      loginProgram = lib.mkForce "${pkgs.shadow}/bin/login";
+      loginOptions = lib.mkForce null;
+      extraArgs = lib.mkForce [];
+    };
+
     users.users.root.hashedPassword = lib.mkForce "";
     users.users.admin.hashedPassword = lib.mkForce "";
     users.users."1000".hashedPassword = lib.mkForce "";

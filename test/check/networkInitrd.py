@@ -1,0 +1,21 @@
+machine.wait_for_unit("multi-user.target")
+machine.succeed("echo -n password | cryptsetup luksFormat -q --iter-time=1 /dev/vdb -")
+machine.succeed("bootctl set-default nixos-generation-1-specialisation-boot-luks.conf")
+machine.succeed("sync")
+machine.crash()
+machine.start()
+machine.wait_for_text("[Pp]assphrase for")
+machine.send_key("ctrl-alt-f9")
+machine.wait_for_text("sh-")
+
+machine.send_chars("ip route show default\n")
+machine.wait_for_text("default via")
+
+machine.send_chars("systemctl is-active sshd\n")
+machine.wait_for_text("active")
+
+machine.send_chars("printf '\\033c'")
+machine.wait_for_text("sh-")
+
+machine.send_chars("systemctl is-active tailscaled\n")
+machine.wait_for_text("active")

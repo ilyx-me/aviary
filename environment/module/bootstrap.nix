@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -33,10 +34,15 @@ in {
       loader = {
         timeout = 5;
         systemd-boot = {
-          enable = mkForce false; # Using Lanzaboote
+          enable = mkForce false;
           consoleMode = "max";
           editor = false;
         };
+
+        #limine = {
+        #  enable = true;
+        #  secureBoot.enable = true;
+        #};
 
         efi.canTouchEfiVariables = true;
       };
@@ -45,10 +51,10 @@ in {
         enable = true;
         pkiBundle = "/var/lib/sbctl";
       };
-
-      initrd.systemd.enable = true;
     };
 
-    systemd.enableEmergencyMode = false;
+    #system.activationScripts."enrollSecureboot".text = ''
+    #  ${pkgs.sbctl}/bin/sbctl create-keys
+    #'';
   };
 }
