@@ -2,15 +2,15 @@
 
 ### Secureboot Enrollment
 
-Note: For this to work, the device needs to be in secureboot setup mode.
-For most devices, this is enabled on the first boot after enabling
-secureboot in the UEFI settings but this may also be firmware specific.
+For this to work, the system needs to be in secureboot setup mode. Check secureboot status by running `bootctl` and ensuring `disabled (setup)` is present. This is usually enabled on the first boot after enabling secureboot in the UEFI settings but this may also be firmware specific.
 
 ```bash
 sbctl enroll-keys --microsoft
 ```
 
 ### TPM2 Enrollment
+
+Make sure to change `hostname` to match your system.
 
 ```bash
 systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-hostname --tpm2-device=auto --tpm2-pcrs=0+2+4+7
@@ -40,11 +40,9 @@ nix run -L .#checks.<arch>.<test>.driverInteractive # Debug
 
 ### Test Debugging
 
-Run a test in the above interactive mode then use the following
-commands to interact with the machines.
+Run a test with the interactive driver then use the following commands to interact with the machines.
 
-Hint: use `machines[1]` for `<machine>` to get the `booted_machine`
-when running diskoLib tests.
+You can use `machines[1]` for `<machine>` to get the `booted_machine` when running diskoLib tests.
 
 ```python
 run_tests()                # Begins test execution, akin to running the automatic driver above
@@ -57,7 +55,7 @@ exit()                     # Stop the interactive driver
 
 For more see the [complete list of commands](https://nixos.org/manual/nixos/stable/index.html#ssec-machine-objects).
 
-# TESTING TODO
+# IMPLEMENTED TESTS
 
 ### General
 
@@ -69,12 +67,13 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 [ ] secrets
 [x] reach multi-user.target
 [x] network (ssh + tailscale)
+[ ] wifi (via services.vwifi)
 [ ] automatic updates (comin)
 
 ### Initrd
 
-[ ] wifi (services.vwifi?)
 [x] network (ssh + tailscale)
+[ ] wifi (services.vwifi?)
 [x] LUKS decryption (over ssh)
 
 ### Debug
@@ -92,6 +91,8 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 # TODO
 
-- /home/admin perms to admin:admin
-- move impermance script to separate unit to stop mount /sysroot race condition
-- automatic secureboot enrollment
+- /home/admin is set by default to root:root perms, change to admin:admin
+- move impermance script to separate unit and stop mount /sysroot fail race condition
+- automatic secureboot enrollment via lanzaboote
+- separate private from secrets in environment/default
+- rename scripts folder to script

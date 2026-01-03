@@ -1,14 +1,14 @@
 {
   ...
 }:
-let
 
+let
   inherit (builtins)
     readFile
-    ;
+  ;
 
-in
-{
+in {
+
   name = "debugInitrd";
   enableOCR = true;
 

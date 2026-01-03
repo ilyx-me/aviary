@@ -7,7 +7,6 @@
 }:
 
 let
-
   inherit ( builtins )
     readFile
     toString
@@ -17,23 +16,19 @@ let
     mkIf
   ;
 
+  secrets = toString inputs.secrets;
+
+  defaultPermissions = {
+    mode = "0440";
+    owner = config.users.users."1000".name;
+    group = "admin";
+  };
+
+  u00-chicken = readFile "${secrets}/00/chicken-ssh-user-pub";
+
 in {
 
-  config = 
-
-  let
-
-    secrets = toString inputs.secrets;
-
-    defaultPermissions = {
-      mode = "0440";
-      owner = config.users.users."1000".name;
-      group = "admin";
-    };
-
-    u00-chicken = readFile "${secrets}/00/chicken-ssh-user-pub";
-
-  in {
+  config = {
 
     sops = {
       defaultSopsFile = "${secrets}/00.yaml";

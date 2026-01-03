@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -18,9 +17,9 @@ let
 
 in {
 
-  options.bootstrap = {
+  options.aviary = {
 
-    enable = mkOption {
+    bootstrap = mkOption {
       type = bool;
       default = true;
       example = false;
@@ -28,21 +27,16 @@ in {
     };
   };
 
-  config = mkIf config.bootstrap.enable {
+  config = mkIf config.aviary.bootstrap {
 
     boot = {
       loader = {
         timeout = 5;
         systemd-boot = {
-          enable = mkForce false;
+          enable = mkForce false; # Using Lanzaboote for secureboot
           consoleMode = "max";
-          editor = false;
+          editor = false; # Prevent passing Kernel parameters at boot
         };
-
-        #limine = {
-        #  enable = true;
-        #  secureBoot.enable = true;
-        #};
 
         efi.canTouchEfiVariables = true;
       };
@@ -52,9 +46,5 @@ in {
         pkiBundle = "/var/lib/sbctl";
       };
     };
-
-    #system.activationScripts."enrollSecureboot".text = ''
-    #  ${pkgs.sbctl}/bin/sbctl create-keys
-    #'';
   };
 }

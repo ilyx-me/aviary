@@ -1,4 +1,9 @@
-{ inputs, ... }: {
+{
+  inputs,
+  ...
+}:
+
+{
 
   imports = [
     inputs.hardware.nixosModules.common-cpu-intel
@@ -25,28 +30,5 @@
     ];
 
     boot.kernelModules = [ "kvm-intel" ];
-
-    # TODO REMOVE EVERYTHING BELOW ME
-
-    systemd = {
-
-      targets.multi-user.wants = [ "wpa_supplicant-recovery.service" ];
-
-      services = {
-
-        "wpa_supplicant-recovery" = {
-          description = "WPA supplicant daemon (for interface wifi0)";
-          requires = [ "sys-subsystem-net-devices-wifi0.device" ];
-          after = [ "sys-subsystem-net-devices-wifi0.device" ];
-          before = [ "network.target" ];
-          wants = [ "network.target" ]; # TODO Does this make sense given before = [ "network.target" ] also?
-          wantedBy = [ "multi-user.target" ];
-          serviceConfig.Type = "simple";
-          script = "/run/current-system/sw/bin/wpa_supplicant -c /persist/wpa_supplicant-wifi0.conf -i wifi0";
-        };
-
-        tailscaled.preStop = "/run/current-system/sw/bin/tailscale logout";
-      };
-    };
   };
 }

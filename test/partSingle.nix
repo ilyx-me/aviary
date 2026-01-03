@@ -3,22 +3,23 @@
   pkgs,
   ...
 }:
-let
 
+let
   inherit (builtins)
     readFile
-    ;
+  ;
 
   inherit (lib)
     recursiveUpdate
-    ;
+  ;
 
   config = { networking.hostName = "test-a"; };
   default = (import ../system/module/part/default.nix { inherit config lib; }).config;
   single = (import ../system/module/part/single.nix { }).config;
   diskoConfig = recursiveUpdate default single;
-in
-{
+
+in {
+
   pkgs = pkgs;
   name = "partSingle";
   enableOCR = true;

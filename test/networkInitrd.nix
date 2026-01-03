@@ -4,14 +4,14 @@
   pkgs,
   ...
 }:
-let
 
+let
   inherit (builtins)
     readFile
-    ;
+  ;
 
-in
-{
+in {
+
   name = "networkInitrd";
   enableOCR = true;
 

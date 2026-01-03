@@ -6,7 +6,6 @@
 }:
 
 let
-
   inherit ( lib )
     mkDefault
     mkForce
@@ -14,11 +13,11 @@ let
 
   host = config.networking.hostName;
 
-in { 
+in {
 
   config = {
 
-    boot.loader.initrd.availableKernelModules = [
+    boot.initrd.availableKernelModules = [
       "usb_storage"
 
       # Best effort at supporting as many ethernet chipsets
@@ -83,13 +82,11 @@ in {
           requires = [ "sys-subsystem-net-devices-wifi0.device" ];
           after = [ "sys-subsystem-net-devices-wifi0.device" ];
           before = [ "network.target" ];
-          wants = [ "network.target" ]; # TODO Does this make sense given before = [ "network.target" ] also?
+          wants = [ "network.target" ];
           wantedBy = [ "multi-user.target" ];
           serviceConfig.Type = "simple";
           script = "/run/current-system/sw/bin/wpa_supplicant -c /persist/wpa_supplicant-wifi0.conf -i wifi0";
         };
-
-        tailscaled.preStop = "/run/current-system/sw/bin/tailscale logout";
       };
     };
 
@@ -110,15 +107,10 @@ in {
           https://github.com/ilyx-me/aviary
           IPv4 Address: \4
           Hostname: ${host}
-          
-          Wired connections take priority over wireless.
-          DHCP addresses take priority over APIPA.
-          A loopback address indicates no connection.
-          
           Press <CTRL+C> to refresh...
         '';
       };
-    };  
+    };
 
     # Some seemingly usefull config pulled from NixOS live media
 

@@ -49,6 +49,26 @@ let
 
   pcr15 = config.aviary.pcr15;
 
+  secrets = config.sops.secrets;
+  secretsName = config.aviary.secrets;
+
+  deviceDiskPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-${host}";
+  deviceMapperPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
+
+  cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early" (
+    readFile ../../scripts/systemd/cryptsetupEarly.sh
+  );
+
+  cryptsetupExecStartPost = writeShellScript "impermanence" (
+    readFile ../../scripts/systemd/impermanence.sh
+  );
+
+  pcrExecStart = writeShellScript "pcr15Check" (
+    readFile ../../scripts/systemd/pcr15Check.sh
+  );
+
+  systemdPath = config.boot.initrd.systemd.package;
+
 in {
 
   options.aviary = {
@@ -147,17 +167,7 @@ in {
     };
   };
 
-  config =
-
-  let
-
-    deviceMapperPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
-    deviceMapperSecondary = "disk-secondary-luks-btrfs-" + host;
-
-    secrets = config.sops.secrets;
-    secretsName = config.aviary.secrets;
-
-  in {
+  config = {
 
     documentation.doc.enable = false;
     hardware.enableAllFirmware = true;
@@ -228,28 +238,7 @@ in {
       ];
     };
 
-    boot.initrd.systemd =
-
-    let
-
-      cryptsetupExecStartPost = writeShellScript "impermanence" (
-        readFile ../../scripts/systemd/impermanence.sh
-      );
-
-      cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early" (
-        readFile ../../scripts/systemd/cryptsetupEarly.sh
-      );
-
-      pcrExecStart = writeShellScript "pcr15Check" (
-        readFile ../../scripts/systemd/pcr15Check.sh
-      );
-
-      deviceDiskPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-${host}";
-      deviceDiskSecondary = "disk-secondary-luks-${host}";
-
-      systemdPath = config.boot.initrd.systemd.package;
-
-    in {
+    boot.initrd.systemd = {
 
       enable = true;
 
@@ -406,8 +395,8 @@ in {
     systemd = {
       enableEmergencyMode = false;
       tmpfiles.rules = [
-      "d /home/1000/.ssh 0700 ${config.users.users."1000".name} users -"
-      "d /home/admin/.ssh 0700 admin admin -"
+        "d /home/1000/.ssh 0700 ${config.users.users."1000".name} users -"
+        "d /home/admin/.ssh 0700 admin admin -"
       ];
     };
 

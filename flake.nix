@@ -116,7 +116,7 @@
               );
 
               decrypt = pkgs.testers.runNixOSTest (
-                import ./test/decryptNoDisko.nix {
+                import ./test/decrypt.nix {
                   inherit inputs lib pkgs;
                 }
               );
@@ -127,6 +127,7 @@
                 }
               );
 
+              /*
               deploy = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/deploy.nix {
                   inherit inputs lib self';
@@ -138,6 +139,7 @@
                   inherit inputs lib pkgs self';
                 }
               );
+              */
 
               network = pkgs.testers.runNixOSTest (
                 import ./test/network.nix {
@@ -175,17 +177,19 @@
                 }
               );
 
+              /*
               update = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/update.nix {
                   inherit inputs lib self';
                 }
               );
 
-              wifi = pkgs.testers.runNixOSTest (
+              wifi = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/wifi.nix {
                   inherit inputs lib;
                 }
               );
+              */
 
             };
         };

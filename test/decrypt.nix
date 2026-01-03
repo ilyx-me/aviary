@@ -4,37 +4,23 @@
   pkgs,
   ...
 }:
-let
 
+let
   inherit (builtins)
     readFile
-    ;
+  ;
 
-  inherit (lib)
-    recursiveUpdate
-    ;
+in {
 
-  config = { networking.hostName = "test-a"; };
-  default = (import ../system/module/part/default.nix { inherit config lib; }).config;
-  recovery = (import ../system/module/part/recovery.nix { }).config;
-  diskoConfig = recursiveUpdate default recovery;
-in
-{
-  pkgs = pkgs;
   name = "decrypt";
   enableOCR = true;
 
-  disko-config = diskoConfig;
-
-  extraInstallerConfig = {
-    systemd.tmpfiles.settings."10-luks-pwd"."/luks-password-recovery".f.argument = "password";
-  };
-
-  extraSystemConfig = {
+  nodes.machine = { ... }: {
     _module.args = { inherit inputs; };
     imports = [
       inputs.home-manager.nixosModules.default
       inputs.impermanence.nixosModules.impermanence
+      inputs.lanzaboote.nixosModules.lanzaboote
       inputs.sops-nix.nixosModules.sops
       ../environment/module/default.nix
       ../service/default.nix
@@ -43,8 +29,44 @@ in
       (import ./user/testA.nix { inherit inputs; })
     ];
 
-    boot.initrd.availableKernelModules = [ "e1000" ];
+    system.activationScripts."genSBKeys".text = ''
+      ${pkgs.sbctl}/bin/sbctl create-keys
+    '';
+
+    virtualisation = {
+      emptyDiskImages = [ 512 ];
+      mountHostNixStore = true;
+      efi.OVMF = pkgs.OVMFFull;
+      useEFIBoot = true;
+      useBootLoader = true;
+    };
+
+    boot = {
+      lanzaboote.enable = lib.mkVMOverride false;
+      loader.systemd-boot.enable = lib.mkVMOverride true;
+      initrd = {
+        availableKernelModules = [ "e1000" ];
+        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
+      };
+    };
+
+    environment.systemPackages = with pkgs; [ cryptsetup ];
+
+    specialisation."boot-luks".configuration = {
+
+      virtualisation = {
+        rootDevice = "/dev/mapper/cryptroot";
+        fileSystems."/".autoFormat = true;
+      };
+
+      boot.initrd.luks.devices = lib.mkVMOverride {
+        cryptroot = {
+          device = "/dev/vdb";
+          crypttabExtraOpts = [ "tpm2-device=auto" ];
+        };
+      };
+    };
   };
 
-  bootCommands = readFile ./check/decrypt.py;
+  testScript = readFile ./check/decrypt.py;
 }

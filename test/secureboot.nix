@@ -8,16 +8,17 @@
 let
   inherit (builtins)
     readFile
-    ;
-in
-{
+  ;
+
+in {
+
   name = "default";
 
   nodes.machine = { ... }: {
+
     _module.args = { inherit inputs; };
     imports = [
       self.nixosModules.default
-
       (import ./user/testA.nix {inherit inputs;})
     ];
 

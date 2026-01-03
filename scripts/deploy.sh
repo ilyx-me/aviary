@@ -3,7 +3,6 @@
 config=""
 target=""
 drive=""
-#luksHash=""
 luksPassword=""
 
 setConfig() {
@@ -108,7 +107,7 @@ setDriveRemovable() {
             return 0
         fi
 
-        echo -e "\033[31mInvalid choice\033[0m"	
+        echo -e "\033[31mInvalid choice\033[0m"
 
     done
 }
@@ -157,42 +156,7 @@ setDriveInternal() {
     done
 }
 
-
-#setLUKSPassword() {
-
-#    local useSops=0
-
-#    while true; do
-
-#        if [[ ! -r "/run/secrets/password-hash" ]]; then
-#            echo -e -n "\n\033[33mUnable to use sops-nix admin password for LUKS, file not readable\033[0m"
-#            exit 1
-#        fi
-
-#        hash=$(cat /run/secrets/password-hash)
-
-#        for i in {1..3}; do
-#            echo -e -n "\nConfirm LUKS password: "
-#            IFS= read -s input
-
-#            salt=$(echo "$hash" | cut -d'$' -f1-4)
-#            inputHash=$(mkpasswd --method=yescrypt --salt="$salt" "$input" )
-
-#            if [[ "$inputHash" != "$hash" ]]; then
-#                echo -e "\n\033[31mPasswords didn't match\033[0m"
-#                sleep 1
-#            else
-#                luksPassword="$input"
-#                luksHash="$hash"
-#                echo -e "\n\033[32mPasswords matched\033[0m"
-#                return 0
-#            fi
-#        done
-
-#    done
-#}
-
-confirmation() { 
+confirmation() {
 
     while true; do
 
@@ -203,7 +167,6 @@ confirmation() {
             echo -e "Drive:  ${drive}"
         fi
 
-        #echo -e "  LUKS: ${luksPassword//?/*}"
         echo -e -n "\nProceed with nixos-anywhere? [ y/N ] "
         read input
 
@@ -241,7 +204,6 @@ cleanup() {
 setConfig
 setTarget
 setDriveRemovable
-#setLUKSPassword
 confirmation
 
 mkdir -p /tmp/aviary-extra-files/persist/etc/ssh
@@ -252,7 +214,6 @@ mkdir -p /tmp/aviary-extra-files/etc/ssh
 cp /run/secrets/"${config}"-ssh-host /tmp/aviary-extra-files/etc/ssh/ssh_host_ed25519_key
 chmod 0400 /tmp/aviary-extra-files/etc/ssh/ssh_host_ed25519_key
 
-#ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "printf '%s' '$luksHash' > /luks-key"
 luksPasswordRecovery=$(cat /run/secrets/"$config"-luks-hash)
 ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "printf '%s' '$luksPasswordRecovery' > /luks-password-recovery"
 
@@ -271,8 +232,7 @@ fi
 if [[ "$target" == "localhost" ]]; then
     nixos-anywhere -f .\#$config --option pure-eval false --extra-files /tmp/aviary-extra-files --phases disko,install root@$target
     naExit=$?
-    
-    #ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "rm /luks-key"
+
     ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "rm /luks-password-recovery"
     ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "umount /mnt/boot /mnt/nix /mnt/persist /mnt"
     ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "dmsetup remove /dev/mapper/disk-primary-luks-btrfs-$(cat /tmp/egg-drive-name)"
@@ -281,7 +241,6 @@ else
     naExit=$?
 
     if [[ $naExit -ne 0 ]]; then
-        #ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "rm /luks-key"
         ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "rm /luks-password-recovery"
     fi
 fi

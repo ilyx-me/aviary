@@ -1,5 +1,3 @@
-# TODO make initrd service to generate ssh host key
-
 {
   config,
   inputs,
@@ -9,7 +7,6 @@
 }:
 
 let
-
   inherit ( builtins )
     readFile
     pathExists
@@ -20,7 +17,6 @@ let
   ;
 
   inherit ( lib.types )
-    nullOr
     str
   ;
 
@@ -80,9 +76,7 @@ in {
           enable = true;
           extraConfig = "HostKey /etc/ssh/ssh_host_ed25519_key";
           authorizedKeys = config.users.users."1000".openssh.authorizedKeys.keys;
-
-          # Prevent error since we're deploying keys out of band.
-          ignoreEmptyHostKeys = true;
+          ignoreEmptyHostKeys = true; # We're deploying keys out of band.
 
           # Using a different port prevents ssh clients from throwing MITM error.
           port = 2222;
@@ -93,9 +87,12 @@ in {
 
         tmpfiles.settings = {
 
-          # Copy the ts key into initrd. This has the unfortunate side effect of exposing
-          # the key to all users on the system via nix store which is why we use a different
-          # tailscale key from the main system.
+          # Copy the ts key into initrd.
+          #
+          # This exposes the key to everyone on the system via nix store or
+          # anyone with physical access to the system which is why we use a
+          # different tailscale key from the main system and
+          # ENSURE THIS KEY IS COMPLETELY LOCKED DOWN VIA TAILSCALE ACLS.
           "20-ts"."/run/secretsInitrd/ts-initrd".f = {
             group = "root";
             mode = "0400";
@@ -104,7 +101,7 @@ in {
               else readFile "${inputs.secrets}/${config.aviary.uID}/${host}-ts-initrd";
           };
 
-          # Put the dbus socket where tailscaled expects to stop repetative error
+          # Link the dbus socket to where tailscaled expects it
           "50-tailescale"."/var/run".d = {
             argument = "/run";
             type = "L";
@@ -169,7 +166,7 @@ in {
               authKey="$(cat /run/secretsInitrd/ts-initrd)"
               tailscale up -authkey "$authKey"
             '';
-            preStop = "tailscale logout";
+            preStop = "/run/current-system/sw/bin/tailscale logout";
           };
         };
 
@@ -183,19 +180,14 @@ in {
 
     #systemd.services.systemd-networkd-wait-online.enable = mkForce false; # Sometimes this fires after initrd
 
-    # Disabling these might be a bad idea
-    # These are tricky to get working in initrd and throw a [Depend] during boot
+    # Disabling these might be a bad idea but
+    # these are tricky to get working in initrd and throw a [Depend] during boot
     #systemd.services.systemd-networkd-persistent-storage.enable = false; # Persists mac address accross reboots
     #systemd.services.network-local-commands.enable = false; # Hook for custom network commands
 
     systemd.services.tailscaled = {
       after = [ "systemd-networkd.service" ];
       preStop = "/run/current-system/sw/bin/tailscale logout";
-      #wants = [ "systemd-networkd.service" ];
-      #postStart = ''
-      #  authKey="$(cat /run/secrets/${secretsName.ts})"
-      #  /run/current-system/sw/bin/tailscale up -authkey "$authKey"
-      #'';
     };
 
     networking.firewall.allowedTCPPorts = [ 22 ];
@@ -221,7 +213,7 @@ in {
 
       tailscale = {
         enable = true;
-        authKeyFile = secrets.${secretsName.ts}.path; #"/run/secrets/${secretsName.ts}";
+        authKeyFile = secrets.${secretsName.ts}.path;
         useRoutingFeatures = "client";
       };
     };

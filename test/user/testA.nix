@@ -6,10 +6,12 @@
 let
   inherit (builtins)
     readFile
-    ;
+  ;
+
 in {
 
   config = {
+
     environment.etc."ssh/ssh_host_ed25519_key" = {
       text = readFile "${inputs.secrets-test}/test-a/test-a-ssh-host";
       mode = "0400";

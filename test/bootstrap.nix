@@ -3,14 +3,14 @@
   pkgs,
   ...
 }:
-let
 
+let
   inherit (builtins)
     readFile
-    ;
+  ;
 
-in
-{
+in {
+
   name = "bootstrap";
 
   nodes.machine = { ... }: {

@@ -3,11 +3,14 @@
   inputs,
   lib,
   ...
-}: let
+}:
+
+let
   secrets = builtins.toString inputs.secrets;
 
   admin-ibis = builtins.readFile "${secrets}/00/ibis-ssh-admin-pub";
   admin-chicken = builtins.readFile "${secrets}/00/chicken-ssh-admin-pub";
+
 in {
 
   config = {
@@ -23,9 +26,7 @@ in {
     users.users = {
 
       root.openssh.authorizedKeys.keys = config.users.users."admin".openssh.authorizedKeys.keys;
-
       "admin".openssh.authorizedKeys.keys = [ admin-ibis admin-chicken ];
-
       "1000".hashedPasswordFile = lib.mkForce null;
     };
   };
