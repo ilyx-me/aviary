@@ -1,6 +1,6 @@
 {
   inputs,
-  pkgs,
+  lib,
   ...
 }:
 
@@ -25,9 +25,7 @@ in {
       useBootLoader = true;
     };
 
-    system.activationScripts."genSBKeys".text = ''
-      ${pkgs.sbctl}/bin/sbctl create-keys
-    '';
+    boot.lanzaboote.autoEnrollKeys.autoReboot = lib.mkVMOverride false;
   };
 
   testScript = readFile ./check/bootstrap.py;

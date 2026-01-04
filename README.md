@@ -2,11 +2,7 @@
 
 ### Secureboot Enrollment
 
-For this to work, the system needs to be in secureboot setup mode. Check secureboot status by running `bootctl` and ensuring `disabled (setup)` is present. This is usually enabled on the first boot after enabling secureboot in the UEFI settings but this may also be firmware specific.
-
-```bash
-sbctl enroll-keys --microsoft
-```
+Secureboot enrollment is automatic with lanzaboot. On the first boot of the system, lanzaboot will create the secureboot keys, reboot the system, enroll them and reboot again.
 
 ### TPM2 Enrollment
 
@@ -40,9 +36,7 @@ nix run -L .#checks.<arch>.<test>.driverInteractive # Debug
 
 ### Test Debugging
 
-Run a test with the interactive driver then use the following commands to interact with the machines.
-
-You can use `machines[1]` for `<machine>` to get the `booted_machine` when running diskoLib tests.
+Run a test with the interactive driver then use the following commands to interact with the machines. You can use `machines[1]` for `<machine>` to get the `booted_machine` when running diskoLib tests.
 
 ```python
 run_tests()                # Begins test execution, akin to running the automatic driver above
@@ -91,6 +85,4 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 # TODO
 
-- automatic secureboot enrollment via lanzaboote
 - separate private from secrets in environment/default
-- rename scripts folder to script

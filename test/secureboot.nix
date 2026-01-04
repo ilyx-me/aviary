@@ -1,6 +1,6 @@
 {
   inputs,
-  pkgs,
+  lib,
   self,
   ...
 }:
@@ -12,7 +12,7 @@ let
 
 in {
 
-  name = "default";
+  name = "secureboot";
 
   nodes.machine = { ... }: {
 
@@ -28,9 +28,7 @@ in {
       useSecureBoot = true;
     };
 
-    system.activationScripts."genSBKeys".text = ''
-      ${pkgs.sbctl}/bin/sbctl create-keys
-    '';
+    boot.lanzaboote.autoEnrollKeys.autoReboot = lib.mkVMOverride false;
   };
 
   testScript = readFile ./check/secureboot.py;

@@ -101,7 +101,7 @@
             {
               bootstrap = pkgs.testers.runNixOSTest (
                 import ./test/bootstrap.nix {
-                  inherit inputs pkgs;
+                  inherit inputs lib;
                 }
               );
 
@@ -167,7 +167,7 @@
 
               secureboot = pkgs.testers.runNixOSTest (
                 import ./test/secureboot.nix {
-                  inherit inputs pkgs self;
+                  inherit inputs lib self;
                 }
               );
 
