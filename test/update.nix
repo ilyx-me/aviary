@@ -40,9 +40,9 @@ in
 
     #aviary.uID = "test-a";
 
-    users.groups.admin = {};
-    users.users.admin.group = "admin";
-    users.users.admin.isSystemUser = true;
+    users.groups."admins" = {};
+    users.users."999".group = "admins";
+    users.users."999".isSystemUser = true;
     users.users."1000".group = "users";
     users.users."1000".isNormalUser = true;
     users.users."1000".name = "user";

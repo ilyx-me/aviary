@@ -172,7 +172,7 @@ in {
     hardware.enableAllFirmware = true;
     nix.channel.enable = false;
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    nix.settings.trusted-users = [ "root" "admin" "@wheel" ];
+    nix.settings.trusted-users = [ "root" "${config.users.users."999".name}" "@wheel" ];
 
     sops = {
 
@@ -187,22 +187,22 @@ in {
 
         ${secretsName.sshAdmin} = mkForce {
           mode = "0400";
-          owner = config.users.users."admin".name;
-          group = "admin";
-          path = "/home/admin/.ssh/id_ed25519";
+          owner = config.users.users."999".name;
+          group = "admins";
+          path = "/home/999/.ssh/id_ed25519";
         };
 
         ${secretsName.sshUser} = mkForce {
           mode = "0400";
           owner = config.users.users."1000".name;
-          group = "admin";
+          group = "admins";
           path = "/home/1000/.ssh/id_ed25519";
         };
 
         ${secretsName.luksRecovery} = {
           mode = "0440";
           owner = config.users.users."1000".name;
-          group = "admin";
+          group = "admins";
           restartUnits = [ "syncluksrecovery.service" ];
         };
 
@@ -210,7 +210,7 @@ in {
           neededForUsers = true;
           mode = "0440";
           owner = config.users.users."1000".name;
-          group = "admin";
+          group = "admins";
           restartUnits = [ "syncluks.service" ];
         };
       };
@@ -344,7 +344,7 @@ in {
       extraRules = [
 
         {
-          users = [ "admin" ];
+          users = [ "${config.users.users."999".name}" ];
           commands = [
 
             {
@@ -405,13 +405,16 @@ in {
       enableEmergencyMode = false;
       tmpfiles.rules = [
         "d /home/1000/.ssh 0700 ${config.users.users."1000".name} users -"
-        "d /home/admin/.ssh 0700 admin admin -"
+        "L /home/${config.users.users."1000".name} 0777 root root - /home/1000"
+        "d /home/999 0700 ${config.users.users."999".name} admins -"
+        "d /home/999/.ssh 0700 ${config.users.users."999".name} admins -"
+        "L /home/${config.users.users."999".name} 0777 root root - /home/999"
       ];
     };
 
     users = {
 
-      groups."admin" = { };
+      groups."admins" = { };
       mutableUsers = false;
 
       users = {
@@ -422,14 +425,15 @@ in {
             else [ (readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.sshAdminPub}") ];
         };
 
-        admin = {
+        "999" = {
           isSystemUser = true;
+          name = "admin";
           description = "Admin";
           extraGroups = [ "wheel" ];
-          group = "admin";
+          group = "admins";
           useDefaultShell = true;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
-          home = "/home/admin";
+          home = "/home/999";
         };
 
         "1000" = {

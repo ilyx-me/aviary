@@ -49,7 +49,7 @@ in {
 
     users.users = {
       root.hashedPassword = mkForce "";
-      admin.hashedPassword = mkForce "";
+      "999".hashedPassword = mkForce "";
       "1000".hashedPassword = mkForce "";
     };
   };

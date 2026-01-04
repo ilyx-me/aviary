@@ -21,7 +21,7 @@ let
   defaultPermissions = {
     mode = "0440";
     owner = config.users.users."1000".name;
-    group = "admin";
+    group = "admins";
   };
 
   u00-chicken = readFile "${secrets}/00/chicken-ssh-user-pub";
@@ -39,7 +39,7 @@ in {
         #"egg-ssh-user" = {
         #  mode = "0400";
         #  owner = config.users.users."1000".name;
-        #  group = "admin";
+        #  group = "admins";
         #};
         #"egg-ts" = defaultPermissions;
       };

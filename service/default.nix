@@ -30,7 +30,7 @@ let
   defaultPermissions = {
     mode = "0440";
     owner = config.users.users."1000".name;
-    group = "admin";
+    group = "admins";
   };
 
   wpaExecStart = writeShellScript "initrdwificonnect" ( readFile ../scripts/systemd/initrdwifi.sh );

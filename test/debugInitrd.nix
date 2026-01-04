@@ -21,9 +21,9 @@ in {
 
     boot.initrd.systemd.enable = true;
 
-    users.groups.admin = {};
-    users.users.admin.group = "admin";
-    users.users.admin.isSystemUser = true;
+    users.groups."admins" = {};
+    users.users."999".group = "admins";
+    users.users."999".isSystemUser = true;
     users.users."1000".isNormalUser = true;
   };
 

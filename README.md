@@ -91,7 +91,6 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 # TODO
 
-- /home/admin is set by default to root:root perms, change to admin:admin
 - automatic secureboot enrollment via lanzaboote
 - separate private from secrets in environment/default
 - rename scripts folder to script
