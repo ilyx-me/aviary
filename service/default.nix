@@ -33,7 +33,7 @@ let
     group = "admins";
   };
 
-  wpaExecStart = writeShellScript "initrdwificonnect" ( readFile ../scripts/systemd/initrdwifi.sh );
+  wpaExecStart = writeShellScript "initrdwificonnect" ( readFile ../script/systemd/initrdwifi.sh );
 
 in {
 

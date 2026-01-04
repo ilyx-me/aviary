@@ -55,15 +55,15 @@ let
   deviceMapperPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
 
   cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early" (
-    readFile ../../scripts/systemd/cryptsetupEarly.sh
+    readFile ../../script/systemd/cryptsetupEarly.sh
   );
 
   cryptsetupExecStartPost = writeShellScript "impermanence" (
-    readFile ../../scripts/systemd/impermanence.sh
+    readFile ../../script/systemd/impermanence.sh
   );
 
   pcrExecStart = writeShellScript "pcr15Check" (
-    readFile ../../scripts/systemd/pcr15Check.sh
+    readFile ../../script/systemd/pcr15Check.sh
   );
 
   systemdPath = config.boot.initrd.systemd.package;
