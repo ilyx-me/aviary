@@ -8,7 +8,6 @@
 }:
 
 let
-
   inherit ( builtins )
     head
     readFile
@@ -261,6 +260,19 @@ in {
           requiredBy = [ "sysroot.mount" ];
         };
 
+        "impermanence" = {
+          unitConfig.DefaultDependencies = "no";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${cryptsetupExecStartPost} ${deviceMapperPrimary}";
+          };
+          after = [ "systemd-makefs@dev-mapper-${escapeSystemdPath deviceMapperPrimary}.service" ]; # For runNixOSTest
+          before = [ "sysroot.mount" ];
+          wants = [ "systemd-makefs@dev-mapper-${escapeSystemdPath deviceMapperPrimary}.service" ]; # For runNixOSTest
+          wantedBy = [ "cryptsetup.target" ];
+        };
+
         "systemd-cryptsetup-early" = {
           unitConfig = {
             Description = "Early cryptography setup for ${deviceMapperPrimary}";
@@ -300,17 +312,14 @@ in {
           [
             ( nameValuePair "systemd-cryptsetup@${escapeSystemdPath attrs.name}" {
                 overrideStrategy = "asDropin";
-                serviceConfig = {
-
-                  ExecStartPost = if ( "${attrs.name}" == "${deviceMapperPrimary}" ) then
-                    "${cryptsetupExecStartPost} ${attrs.name}"
-                  else "";
-                };
 
                 after = [
                   "wpa_supplicant-initrd.service"
                 ] ++ optional ( acc != [ ] ) "${( head acc ).name}.service";
 
+                before = [ "impermanence.service" ];
+
+                requiredBy = [ "impermanence.service" ];
                 requires = [ "wpa_supplicant-initrd.service" ];
 
                 wants = [ "network-online.target" ];

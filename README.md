@@ -92,7 +92,6 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 # TODO
 
 - /home/admin is set by default to root:root perms, change to admin:admin
-- move impermance script to separate unit and stop mount /sysroot fail race condition
 - automatic secureboot enrollment via lanzaboote
 - separate private from secrets in environment/default
 - rename scripts folder to script
