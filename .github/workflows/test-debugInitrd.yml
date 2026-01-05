@@ -1,0 +1,21 @@
+name: test-debugInitrd
+on:
+  push:
+    branches: []
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  debugInitrd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v12
+      - name: configure ssh key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AVIARY_SECRETS_TEST_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/knownhosts
+      - name: run test default
+        run: nix run -L .#checks.x86_64-linux.debugInitrd.driver
