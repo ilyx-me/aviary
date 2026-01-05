@@ -177,13 +177,13 @@
                 }
               );
 
-              /*
               update = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/update.nix {
-                  inherit inputs lib self';
+                  inherit inputs lib self;
                 }
               );
 
+              /*
               wifi = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/wifi.nix {
                   inherit inputs lib;
