@@ -294,11 +294,11 @@
     "secrets-test": {
       "flake": false,
       "locked": {
-        "lastModified": 1767155349,
-        "narHash": "sha256-8p7bwKIg6zrB+P+nJUAz5Y20HeksYOO5ymd+jml/tvc=",
+        "lastModified": 1768081860,
+        "narHash": "sha256-7FM2CMYA9YSOwc7vCTXEfKvyMeuNhLAz9NCQV6izqGg=",
         "ref": "refs/heads/main",
-        "rev": "1afcc74dad7fa3f2d22cbd2e332bbc493cb67f02",
-        "revCount": 3,
+        "rev": "21005e6dbf0e0e8918b9a1b953184ab2892cd00a",
+        "revCount": 4,
         "type": "git",
         "url": "ssh://git@github.com/ilyx-me/aviarySecretsTest.git"
       },

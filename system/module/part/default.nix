@@ -43,7 +43,7 @@ in
         partitions = {
 
           esp = {
-            size = "2048M";
+            size = "4096M";
             type = "EF00";
             name = if pathExists /tmp/egg-drive-name then "esp-${readFile /tmp/egg-drive-name}" else "esp-${host}";
             content = {

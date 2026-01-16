@@ -23,9 +23,9 @@ in {
       (import ./user/testA.nix {inherit inputs;})
     ];
 
-    system.activationScripts."genSBKeys".text = ''
-      ${pkgs.sbctl}/bin/sbctl create-keys
-    '';
+    #system.activationScripts."genSBKeys".text = ''
+    #  ${pkgs.sbctl}/bin/sbctl create-keys
+    #'';
 
     virtualisation = {
       emptyDiskImages = [ 512 ];

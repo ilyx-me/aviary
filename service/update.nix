@@ -15,13 +15,22 @@
 
     services.fwupd.enable = true;
 
+    /*
     services.comin = {
       enable = true;
       remotes = [{
         name = "origin";
         url = "https://github.com/ilyx-me/aviary.git";
-        branches.main.name = "main";
+        branches.main.name = "dev-core-systems";
       }];
+    };
+    */
+
+    system.autoUpgrade = {
+      enable = true;
+      flake = "github:ilyx-me/aviary/dev-core-systems";
+      flags = [];
+      dates = "minutely";
     };
   };
 }
