@@ -71,6 +71,8 @@ in {
       "p54usb"
     ];
 
+    environment.systemPackages = [ pkgs.wpa_supplicant ];
+
     systemd = {
 
       targets.multi-user.wants = [ "wpa_supplicant-recovery.service" ];

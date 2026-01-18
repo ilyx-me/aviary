@@ -30,5 +30,7 @@
     ];
 
     boot.kernelModules = [ "kvm-intel" ];
+
+    hardware.bluetooth.enable = true;
   };
 }

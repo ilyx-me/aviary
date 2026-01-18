@@ -56,8 +56,10 @@ in {
 
       programs.git = {
         enable = true;
-        userName = readFile "${secrets}/${config.aviary.uID}/username-git";
-        userEmail = readFile "${secrets}/${config.aviary.uID}/email-git";
+        settings.user = {
+          name = readFile "${secrets}/${config.aviary.uID}/username-git";
+          email = readFile "${secrets}/${config.aviary.uID}/email-git";
+	};
       };
 
       home.packages = with pkgs; mkIf config.aviary.graphical [

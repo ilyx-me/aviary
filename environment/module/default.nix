@@ -244,7 +244,7 @@ in {
       services = {
 
         # Attempt to fix /sysroot dir not being created in time
-        create-needed-for-boot-dirs.wantedBy = [ "sysroot.mount" ];
+        # create-needed-for-boot-dirs.wantedBy = [ "sysroot.mount" ];
 
         systemd-ask-password-console.wantedBy = [ "cryptsetup.target" ];
 
@@ -371,10 +371,7 @@ in {
       };
     };
 
-    networking = {
-      useNetworkd = true;
-      wireless.enable = true;
-    };
+    networking.useNetworkd = true;
 
     environment.systemPackages = with pkgs; [
       age
