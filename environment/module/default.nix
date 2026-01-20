@@ -407,6 +407,26 @@ in {
         "d /home/999/.ssh 0700 ${config.users.users."999".name} admins -"
         "L /home/${config.users.users."999".name} 0777 root root - /home/999"
       ];
+
+      services = {
+        generate-sb-keys.after = [ "tpm-auto-enroll.service" ];
+
+	"tpm-auto-enroll" = {
+	  wantedBy = [ "multi-user.target" ];
+	  serviceConfig = {
+	    Type = "oneshot";
+	    RemainAfterExit = true;
+	  };
+
+	  unitConfig.ConditionPathExists = "${config.boot.lanzaboote.pkiBundle}/keys";
+
+	  script = ''
+	    if [ "$(od -An -t u1 /sys/firmware/efi/efivars/SecureBoot-* | tr -d ' ')" -eq 60001 ]; then
+	        /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
+	    fi
+	  '';
+	};
+      };
     };
 
     users = {

@@ -9,7 +9,7 @@ Secureboot enrollment is automatic with lanzaboot. On the first boot of the syst
 Make sure to change `hostname` to match your system.
 
 ```bash
-systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-hostname --tpm2-device=auto --tpm2-pcrs=0+2+4+7
+systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-hostname --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7
 ```
 
 # TESTING

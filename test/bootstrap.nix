@@ -16,6 +16,7 @@ in {
   nodes.machine = { ... }: {
     _module.args = { inherit inputs; };
     imports = [
+      inputs.impermanence.nixosModules.impermanence
       inputs.lanzaboote.nixosModules.lanzaboote
       ../environment/module/bootstrap.nix
     ];
