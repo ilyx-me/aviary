@@ -418,7 +418,7 @@ in {
 	    RemainAfterExit = true;
 	  };
 
-	  unitConfig.ConditionPathExists = "${config.boot.lanzaboote.pkiBundle}/keys";
+	  unitConfig.ConditionPathExists = "/var/lib/sbctl/keys";
 
 	  script = ''
 	    if [ "$(od -An -t u1 /sys/firmware/efi/efivars/SecureBoot-* | tr -d ' ')" -eq 60001 ]; then
