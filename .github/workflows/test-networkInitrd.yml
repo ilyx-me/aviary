@@ -9,8 +9,8 @@ jobs:
   networkInitrd:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@v12
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
