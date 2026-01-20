@@ -20,7 +20,6 @@ in {
     imports = [
       inputs.home-manager.nixosModules.default
       inputs.impermanence.nixosModules.impermanence
-      inputs.lanzaboote.nixosModules.lanzaboote
       inputs.sops-nix.nixosModules.sops
       ../environment/module/default.nix
       ../service/default.nix
@@ -28,10 +27,6 @@ in {
 
       (import ./user/testA.nix { inherit inputs; })
     ];
-
-    system.activationScripts."genSBKeys".text = ''
-      ${pkgs.sbctl}/bin/sbctl create-keys
-    '';
 
     virtualisation = {
       emptyDiskImages = [ 512 ];
@@ -42,7 +37,6 @@ in {
     };
 
     boot = {
-      lanzaboote.enable = lib.mkVMOverride false;
       loader.systemd-boot.enable = lib.mkVMOverride true;
       initrd = {
         availableKernelModules = [ "e1000" ];
