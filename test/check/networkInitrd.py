@@ -11,11 +11,11 @@ machine.wait_for_text("sh-")
 machine.send_chars("ip route show default\n")
 machine.wait_for_text("default via")
 
-machine.send_chars("systemctl is-active sshd\n")
+machine.send_chars("systemctl status sshd --no-pager\n")
 machine.wait_for_text("active")
 
 machine.send_chars("printf '\\033c'")
 machine.wait_for_text("sh-")
 
-machine.send_chars("systemctl is-active tailscaled\n")
-machine.wait_for_text("active")
+machine.send_chars("tailscale ip\n")
+machine.wait_for_text("100.")

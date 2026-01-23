@@ -13,15 +13,13 @@ let
 
 in {
 
-  name = "decrypt";
+  name = "persist";
   enableOCR = true;
 
   nodes.machine = { ... }: {
     _module.args = { inherit inputs; };
     imports = [
       self.nixosModules.default
-      ../environment/module/debug.nix
-
       (import ./user/testA.nix { inherit inputs; })
     ];
 
@@ -46,12 +44,24 @@ in {
     specialisation."boot-luks".configuration = {
 
       virtualisation = {
-        rootDevice = "/dev/mapper/cryptroot";
-        fileSystems."/".autoFormat = true;
+        rootDevice = "/dev/mapper/disk-primary-luks-btrfs-test-a";
+        fileSystems = {
+	  "/" = {
+	    autoFormat = true;
+	    fsType = lib.mkForce "btrfs";
+	    options = [ "subvol=root" "compress=zstd" "noatime" ];
+	  };
+	  "/persist" = {
+	    fsType = "btrfs";
+	    device = "/dev/mapper/disk-primary-luks-btrfs-test-a";
+	    options = [ "subvol=persist" "compress=zstd" "noatime" ];
+	    neededForBoot = true;
+	  };
+	};
       };
 
       boot.initrd.luks.devices = lib.mkVMOverride {
-        cryptroot = {
+        "disk-primary-luks-btrfs-test-a" = {
           device = "/dev/vdb";
           crypttabExtraOpts = [ "tpm2-device=auto" ];
         };
@@ -59,5 +69,5 @@ in {
     };
   };
 
-  testScript = readFile ./check/decrypt.py;
+  testScript = readFile ./check/persist.py;
 }

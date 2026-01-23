@@ -18,7 +18,7 @@ in {
 
     _module.args = { inherit inputs; };
     imports = [
-      self.nixosModules.default
+      self.nixosModules.bootstrap
       (import ./user/testA.nix {inherit inputs;})
     ];
 

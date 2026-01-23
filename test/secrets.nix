@@ -11,16 +11,16 @@ let
 
 in {
 
-  name = "network";
+  name = "secrets";
 
   nodes.machine = { ... }: {
     _module.args = { inherit inputs; };
     imports = [
       self.nixosModules.default
 
-      (import ./user/testA.nix { inherit inputs; })
+      (import ./user/testA.nix {inherit inputs;})
     ];
   };
 
-  testScript = readFile ./check/network.py;
+  testScript = readFile ./check/secrets.py;
 }

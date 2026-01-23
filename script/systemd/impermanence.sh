@@ -13,6 +13,12 @@ delete_subvolume_recursively() {
 mkdir /btrfs_tmp
 mount /dev/mapper/"$mapper_device" /btrfs_tmp
 
+# Ensure persist subvolue exists
+# Mostly needed for runNixOSTests using BTRFS
+if [[ ! -e /btrfs_tmp/persist ]]; then
+    btrfs subvolume create /btrfs_tmp/persist
+fi
+
 if [[ -e /btrfs_tmp/root ]]; then
     mkdir -p /btrfs_tmp/old_roots
     timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%-d_%H:%M:%S")

@@ -57,8 +57,8 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 [x] secureboot
 [x] TPM2 measured boot
 [x] PCR15 checked boot
-[ ] persistant files
-[ ] secrets
+[x] persistant files
+[x] secrets
 [x] reach multi-user.target
 [x] network (ssh + tailscale)
 [ ] wifi (via services.vwifi)
@@ -87,5 +87,4 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 - separate private from secrets in environment/default
 - remaining tests
-- cachix nix installer for github actions
 - btrfs root filesystem for relevant tests

@@ -216,6 +216,10 @@ in {
       };
     };
 
+    nixpkgs.config = lib.mkIf (config.system.nixos.variant_id != "test") {
+      allowUnfree = true;
+    };
+
     system.stateVersion = mkDefault config.system.nixos.release;
 
     fileSystems."/persist".neededForBoot = true;

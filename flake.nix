@@ -107,7 +107,7 @@
 
               debug = pkgs.testers.runNixOSTest (
                 import ./test/debug.nix {
-                  inherit inputs;
+                  inherit inputs self;
                 }
               );
 
@@ -117,7 +117,7 @@
 
               decrypt = pkgs.testers.runNixOSTest (
                 import ./test/decrypt.nix {
-                  inherit inputs lib pkgs;
+                  inherit inputs lib pkgs self;
                 }
               );
 
@@ -143,13 +143,13 @@
 
               network = pkgs.testers.runNixOSTest (
                 import ./test/network.nix {
-                  inherit inputs;
+                  inherit inputs self;
                 }
               );
 
               networkInitrd = pkgs.testers.runNixOSTest (
                 import ./test/networkInitrd.nix {
-                  inherit inputs lib pkgs;
+                  inherit inputs lib pkgs self;
                 }
               );
 
@@ -165,6 +165,18 @@
                 }
               );
 
+              persist = pkgs.testers.runNixOSTest (
+                import ./test/persist.nix {
+                  inherit inputs lib pkgs self;
+                }
+              );
+
+              secrets = pkgs.testers.runNixOSTest (
+                import ./test/secrets.nix {
+                  inherit inputs self;
+                }
+              );
+
               secureboot = pkgs.testers.runNixOSTest (
                 import ./test/secureboot.nix {
                   inherit inputs lib self;
@@ -177,13 +189,13 @@
                 }
               );
 
+              /*
               update = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/update.nix {
                   inherit inputs lib self pkgs;
                 }
               );
 
-              /*
               wifi = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/wifi.nix {
                   inherit inputs lib;
@@ -199,29 +211,26 @@
           default = { ... }: {
             #_module.args = { inherit inputs; }; # Can be used for diskoLib tests, can also be put in their extraInstallerConfig/extraSystemConfig
             imports = [
-              inputs.comin.nixosModules.comin
-              inputs.disko.nixosModules.default
               inputs.home-manager.nixosModules.default
               inputs.impermanence.nixosModules.impermanence
-              inputs.lanzaboote.nixosModules.lanzaboote
               inputs.sops-nix.nixosModules.sops
-              ./environment/module/bootstrap.nix
               ./environment/module/default.nix
               ./service/default.nix
             ];
           };
 
+          bootstrap = { ... }: {
+            imports = [
+	      self.nixosModules.default
+              inputs.disko.nixosModules.default
+              inputs.lanzaboote.nixosModules.lanzaboote
+              ./environment/module/bootstrap.nix
+            ];
+          };
+
           recovery = { ... }: {
             imports = [
-              inputs.comin.nixosModules.comin
-              inputs.disko.nixosModules.default
-              inputs.home-manager.nixosModules.default
-              inputs.impermanence.nixosModules.impermanence
-              inputs.lanzaboote.nixosModules.lanzaboote
-              inputs.sops-nix.nixosModules.sops
-              ./environment/module/bootstrap.nix
-              ./environment/module/default.nix
-              ./service/default.nix
+              self.nixosModules.bootstrap
               ./environment/module/recovery.nix
             ];
           };
@@ -235,12 +244,11 @@
               ./system/module/part/default.nix
               ./system/module/part/recovery.nix
               ({ ... }: {
-                nixpkgs.config.allowUnfree = true;
                 nixpkgs.hostPlatform = "x86_64-linux";
                 networking.hostName = "test-a";
                 system.nixos.variant_id = "test";
                 boot.initrd.network.ssh.authorizedKeys = [ "none" ];
-                sops.defaultSopsFile = "${toString inputs.secrets-test}/test-a.yaml";
+                sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
                 aviary.uID = "test-a";
               })
             ];
@@ -254,7 +262,6 @@
               ./system/module/part/recovery.nix
               ./user/recovery.nix
               ({ ... }: {
-                nixpkgs.config.allowUnfree = true;
                 nixpkgs.hostPlatform = "x86_64-linux";
                 networking.hostName = "egg";
               })
@@ -264,23 +271,12 @@
           chicken = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
-              inputs.comin.nixosModules.comin
-              inputs.disko.nixosModules.default
-              inputs.home-manager.nixosModules.default
-              inputs.impermanence.nixosModules.impermanence
-              inputs.lanzaboote.nixosModules.lanzaboote
-              inputs.sops-nix.nixosModules.sops
-              ./environment/module/bootstrap.nix
-              ./environment/module/default.nix
+              self.nixosModules.bootstrap
               ./environment/module/debug.nix #TODO REMOVE ME
-              ./service/default.nix
-              ./user/00.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/chicken.nix
-              ({ ... }: {
-                nixpkgs.config.allowUnfree = true;
-              })
+              ./user/00.nix
             ];
           };
         };

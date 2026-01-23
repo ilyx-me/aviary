@@ -28,6 +28,8 @@ in {
 
   extraInstallerConfig = {
     systemd.tmpfiles.settings."10-luks-pwd"."/luks-password-recovery".f.argument = "password";
+
+    virtualisation.emptyDiskImages = lib.mkForce [ 8192 ];
   };
 
   extraSystemConfig = { };

@@ -23,10 +23,6 @@ in {
       (import ./user/testA.nix {inherit inputs;})
     ];
 
-    #system.activationScripts."genSBKeys".text = ''
-    #  ${pkgs.sbctl}/bin/sbctl create-keys
-    #'';
-
     virtualisation = {
       emptyDiskImages = [ 512 ];
       mountHostNixStore = true;
@@ -37,7 +33,6 @@ in {
     };
 
     boot = {
-      lanzaboote.enable = lib.mkVMOverride false;
       loader.systemd-boot.enable = lib.mkVMOverride true;
       initrd = {
         availableKernelModules = [ "tpm_tis" ];
