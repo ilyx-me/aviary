@@ -273,6 +273,8 @@
             modules = [
               self.nixosModules.bootstrap
               ./environment/module/debug.nix #TODO REMOVE ME
+	      ./environment/module/graphical.nix
+	      ./environment/module/niri.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/chicken.nix

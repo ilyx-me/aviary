@@ -7,11 +7,19 @@
 {
   config = {
     boot = {
-      kernelParams = [ "quiet" "splash" ];
+      consoleLogLevel = 3;
+      kernelParams = [ "quiet" "udev.log_level=3" "systemd.show_status=auto" ];
+      loader.timeout = lib.mkForce 0;
+      initrd.verbose = false;
 
       plymouth = {
         enable = true;
-        theme = "spinner";
+        theme = "loader_2";
+	themePackages = [
+	  (pkgs.adi1090x-plymouth-themes.override {
+	    selected_themes = [ "loader_2" ];
+	  })
+	];
       };
 
       initrd.systemd.network.networks = {
@@ -72,7 +80,7 @@
     security.rtkit.enable = true;
 
     users.users = {
-      "admin".extraGroups = [ "networkmanager" ];
+      "999".extraGroups = [ "networkmanager" ];
       "1000".extraGroups = [ "networkmanager" ];
     };
 
@@ -87,8 +95,7 @@
           Type = "oneshot";
           Restart = "on-failure";
           RestartSec = 30;
-          ExecStart = "/run/current-system/sw/bin/flatpak -u remote-add --if-not-exists \
-              flathub https://dl.flathub.org/repo/flathub.flatpakrepo";
+          ExecStart = "/run/current-system/sw/bin/flatpak -u remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo";
         };
         Install = {
           WantedBy = [ "default.target" ];
