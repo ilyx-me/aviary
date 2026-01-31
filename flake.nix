@@ -11,6 +11,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    dgop = {
+      url = "github:AvengeMedia/dgop";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
     };
@@ -30,6 +40,11 @@
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    niri = {
+      url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -272,6 +287,7 @@
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.bootstrap
+	      inputs.dms.nixosModules.greeter
               ./environment/module/debug.nix #TODO REMOVE ME
 	      ./environment/module/graphical.nix
 	      ./environment/module/niri.nix

@@ -54,10 +54,22 @@
 
     environment = {
       systemPackages = with pkgs; [
-        flatpak
-        gnome-software
+        adwaita-icon-theme
+	baobab
+	bazaar
+	flatpak
+	ghostty
+	gnome-disk-utility
+	mission-center
+	nautilus
+	nautilus-python
+	resources
         steam-devices-udev-rules
+	warehouse
       ];
+
+      pathsToLink = [ "/share/nautilus-python/extensions" ];
+      sessionVariables.NAUTILUS_4_EXTENSION_DIR = lib.mkForce "${pkgs.nautilus-python}/lib/nautilus/extensions-4";
 
       persistence."/persist".directories = [
         "/etc/NetworkManager/system-connections"
@@ -83,6 +95,9 @@
       "999".extraGroups = [ "networkmanager" ];
       "1000".extraGroups = [ "networkmanager" ];
     };
+
+    # Prevent last second debug console messages after plymouth
+    systemd.shutdownRamfs.enable = false;
 
     home-manager.users."1000" = {
 
