@@ -16,9 +16,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    dms-plugin-registry = {
+      url = "github:AvengeMedia/dms-plugin-registry";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     dgop = {
       url = "github:AvengeMedia/dgop";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    firefox-gnome-theme = {
+      url = "github:rafaelmardojai/firefox-gnome-theme";
+      flake = false;
     };
 
     flake-parts = {
@@ -287,13 +297,25 @@
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.bootstrap
-	      inputs.dms.nixosModules.greeter
-              ./environment/module/debug.nix #TODO REMOVE ME
 	      ./environment/module/graphical.nix
 	      ./environment/module/niri.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/chicken.nix
+              ./user/00.nix
+            ];
+          };
+
+          ibis = nixpkgs.lib.nixosSystem {
+            specialArgs = { inherit inputs; };
+            modules = [
+              self.nixosModules.bootstrap
+	      ./environment/module/graphical.nix
+	      ./environment/module/niri.nix
+              ./system/module/part/default.nix
+              ./system/module/part/single.nix
+	      ./system/module/part/quota.nix
+              ./system/ibis.nix
               ./user/00.nix
             ];
           };

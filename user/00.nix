@@ -32,16 +32,14 @@ in {
 
     sops = {
       defaultSopsFile = "${secrets}/00.yaml";
+
+      # hostname-luks and hostname-ssh-host must exist on the machine that deploys hostname
       secrets = {
         "egg-luks" = defaultPermissions;
-        #"egg-ssh-admin" = defaultPermissions;
         "egg-ssh-host" = defaultPermissions;
-        #"egg-ssh-user" = {
-        #  mode = "0400";
-        #  owner = config.users.users."1000".name;
-        #  group = "admins";
-        #};
-        #"egg-ts" = defaultPermissions;
+
+	"ibis-luks" = defaultPermissions;
+	"ibis-ssh-host" = defaultPermissions;
       };
     };
 

@@ -1,0 +1,56 @@
+{
+  "dankActions": {
+    "enabled": true,
+    "variants": [
+      {
+        "icon": "menu",
+        "displayText": "",
+        "displayCommand": "",
+        "clickCommand": "niri msg action toggle-overview",
+        "middleClickCommand": "",
+        "rightClickCommand": "",
+        "updateInterval": 0,
+        "showIcon": true,
+        "showText": true,
+        "visibilityCommand": "",
+        "visibilityInterval": 0,
+        "id": "variant_1771466194729",
+        "name": "Toggle Overview"
+      },
+      {
+        "icon": "apps",
+        "displayText": "",
+        "displayCommand": "",
+        "clickCommand": "dms ipc call spotlight toggle",
+        "middleClickCommand": "",
+        "rightClickCommand": "",
+        "updateInterval": 0,
+        "showIcon": true,
+        "showText": true,
+        "visibilityCommand": "",
+        "visibilityInterval": 0,
+        "id": "variant_1771704855975",
+        "name": "Launcher"
+      },
+      {
+        "icon": "keyboard",
+        "displayText": "",
+        "displayCommand": "",
+        "clickCommand": "wvkbd-mobintl -L 360",
+        "middleClickCommand": "",
+        "rightClickCommand": "",
+        "updateInterval": 0,
+        "showIcon": true,
+        "showText": true,
+        "visibilityCommand": "",
+        "visibilityInterval": 0,
+        "id": "variant_1771964673752",
+        "name": "OSK"
+      }
+    ]
+  },
+  "dankKDEConnect": {
+    "enabled": true,
+    "selectedDeviceId": "ca8e727030fa4efebcbc92beecdc58cd"
+  }
+}

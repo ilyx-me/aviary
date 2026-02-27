@@ -1,4 +1,5 @@
 {
+   inputs,
    lib,
    pkgs,
    ...
@@ -53,19 +54,24 @@
     };
 
     environment = {
+      etc."firefox/policies/policies.json".target = "librewolf/policies/policies.json";
       systemPackages = with pkgs; [
         adwaita-icon-theme
+	amberol
 	baobab
 	bazaar
+	clapper
+	clapper-enhancers
 	flatpak
 	ghostty
 	gnome-disk-utility
-	mission-center
+	gnome-text-editor
+	loupe
 	nautilus
 	nautilus-python
+	papers
 	resources
         steam-devices-udev-rules
-	warehouse
       ];
 
       pathsToLink = [ "/share/nautilus-python/extensions" ];
@@ -75,6 +81,9 @@
         "/etc/NetworkManager/system-connections"
       ];
     };
+
+    # Required for Sunshine remote inputs
+    hardware.uinput.enable = true;
 
     services = {
       flatpak.enable = true;
@@ -87,19 +96,89 @@
         alsa.support32Bit = true;
         pulse.enable = true;
       };
+      sunshine = {
+        enable = true;
+	openFirewall = true;
+        capSysAdmin = true;
+      };
     };
 
     security.rtkit.enable = true;
 
     users.users = {
       "999".extraGroups = [ "networkmanager" ];
-      "1000".extraGroups = [ "networkmanager" ];
+      "1000".extraGroups = [ "networkmanager" "uinput" ];
     };
 
     # Prevent last second debug console messages after plymouth
     systemd.shutdownRamfs.enable = false;
 
+    programs.kdeconnect = {
+      enable = true;
+      #package = pkgs.valent;
+    };
+
+    programs.firefox = {
+      enable = true;
+      package = pkgs.librewolf;
+      policies = {
+        DisableTelemetry = true;
+	DisableFirefoxStudies = true;
+
+        ExtensionSettings = {
+          # Ublock
+	  "uBlock0@raymondhill.net" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+            installation_mode = "force_installed";
+          };
+
+          # Unhook
+	  "myallychou@gmail.com" = {
+	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/youtube-recommended-videos/latest.xpi";
+	    installation_mode = "normal_installed";
+	  };
+
+	  # Bitwarden
+	  "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+	    installation_mode = "normal_installed";
+	  };
+
+	  # Vimium
+	  "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
+	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
+	    installation_mode = "normal_installed";
+	  };
+
+	  # No Tabs
+	  "{c9f848fb-3fb6-4390-9fc1-e4dd4d1c5122}" = {
+	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/adsum-notabs/latest.xpi";
+	    installation_mode = "normal_installed";
+	  };
+
+	  # Open external links in a container
+	  "{f069aec0-43c5-4bbf-b6b4-df95c4326b98}" = {
+	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/open-url-in-container/latest.xpi";
+	    installation_mode = "normal_installed";
+	  };
+        };
+      };
+    };
+
     home-manager.users."1000" = {
+
+      xdg.desktopEntries = {
+        "cups" = {
+	  name = "cups";
+	  noDisplay = true;
+	};
+        "nvim" = {
+	  name = "nvim";
+	  noDisplay = true;
+	};
+      };
+
+      home.file.".librewolf/default/chrome/firefox-gnome-theme".source = inputs.firefox-gnome-theme;
 
       systemd.user.services."flathub" = {
         Unit = {
@@ -118,35 +197,57 @@
       };
 
       programs = {
-        ghostty.settings = {
-          gtk-tabs-location = "hidden";
+        ghostty = {
+	  enable = true;
+	  package = null;
+	  systemd.enable = false;
+	  settings = {
+            gtk-tabs-location = "hidden";
+	    theme = "dark:Adwaita Dark,light:Adwaita";
+	  };
         };
 
         librewolf = {
           enable = true;
+	  package = null;
+
+	  profiles."default".userChrome = ''
+	    @import "firefox-gnome-theme/userChrome.css";
+
+	    /* Hide tabs entirely */
+	    #TabsToolbar {
+	       visibility: collapse !important;
+	    }
+	  '';
+
+	  profiles."default".userContent = ''
+	    @import "firefox-gnome-theme/userContent.css";
+	  '';
+
           settings = {
-            "browser.download.alwaysOpenPanel" = true;
-            "browser.download.autohideButton" = true;
+            "browser.download.useDownloadDir" = true;
+            "browser.download.autohideButton" = false;
             "webgl.disabled" = false;
-            "privacy.resistFingerprinting" = false;
-            "privacy.clearOnShutdown.history" = false;
-            "privacy.clearOnShutdown.cookies" = false;
-            "network.cookie.lifetimePolicy" = 0;
+            "privacy.resistFingerprinting" = false; # Required for auto themeing
+            #"privacy.clearOnShutdown.history" = false;
+            #"privacy.clearOnShutdown.cookies" = false;
             "browser.toolbars.bookmarks.visibility" = "never";
             "browser.startup.page" = 3;
-            "extensions.pictureinpicture.enable_picture_in_picture_overrides" = true;
-            "browser.newtabpage.activity-stream.showSearch" = false;
-            "browser.search.separatePrivateDefault" = false;
-            "browser.search.suggest.enabled.private" = true;
-            "browser.search.suggest.enabled" = true;
+            #"extensions.pictureinpicture.enable_picture_in_picture_overrides" = true;
+            #"browser.search.suggest.enabled" = true;
             "browser.uidensity" = 2;
-            "browser.urlbar.suggest.searches" = true;
-            "general.useragent.compatMode.firefox" = true;
-            "sidebar.verticalTabs" = true;
-            "sidebar.main.tools" = "history,bookmarks";
-            "browser.uiCustomization.navBarWhenVerticalTabs" = ''["vertical-spacer","back-button","forward-button","stop-reload-button","urlbar-container","downloads-button","fxa-toolbar-menu-button","ublock0_raymondhill_net-browser-action","unified-extensions-button"]'';
-            #"browser.uiCustomization.state" = ''{"placements":{"widget-overflow-fixed-list":[],"unified-extensions-area":[],"nav-bar":["sidebar-button","vertical-spacer","back-button","forward-button","stop-reload-button","urlbar-container","downloads-button","fxa-toolbar-menu-button","ublock0_raymondhill_net-browser-action","unified-extensions-button"],"toolbar-menubar":["menubar-items"],"TabsToolbar":[],"vertical-tabs":["tabbrowser-tabs"],"PersonalToolbar":["personal-bookmarks"]},"seen":["ublock0_raymondhill_net-browser-action","developer-button","screenshot-button"],"dirtyAreaCache":["unified-extensions-area","nav-bar","toolbar-menubar","TabsToolbar","PersonalToolbar","vertical-tabs"],"currentVersion":23,"newElementCount":21}'';
-          };
+            #"browser.urlbar.suggest.searches" = true;
+	    "ui.key.menuAccessKey" = 0;
+
+            # Config for no tabs
+            "browser.uiCustomization.state" = ''{"placements":{"widget-overflow-fixed-list":[],"unified-extensions-area":["_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action","ublock0_raymondhill_net-browser-action","myallychou_gmail_com-browser-action"],"nav-bar":["back-button","forward-button","stop-reload-button","urlbar-container","new-window-button","privatebrowsing-button","customizableui-special-spring8","vertical-spacer","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action","unified-extensions-button","downloads-button"],"toolbar-menubar":["menubar-items"],"TabsToolbar":[],"vertical-tabs":["tabbrowser-tabs"],"PersonalToolbar":["personal-bookmarks"]},"seen":["developer-button","screenshot-button","ublock0_raymondhill_net-browser-action","_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action","myallychou_gmail_com-browser-action","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action"],"dirtyAreaCache":["unified-extensions-area","nav-bar","toolbar-menubar","TabsToolbar","vertical-tabs","PersonalToolbar","widget-overflow-fixed-list"],"currentVersion":23,"newElementCount":17}'';
+	    "sidebar.verticalTabs.dragToPinPromo.dismissed" = true;
+	    "browser.toolbarbuttons.introduced.sidebar-button" = true;
+	    #"browser.link.open_newwindow" = 1; # Open links for 'new windows' in same tab
+	    #"browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
+	    "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+	    "svg.context-properties.content.enabled" = true;
+	  };
         };
       };
     };

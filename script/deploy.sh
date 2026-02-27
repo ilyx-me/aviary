@@ -214,7 +214,7 @@ mkdir -p /tmp/aviary-extra-files/etc/ssh
 cp /run/secrets/"${config}"-ssh-host /tmp/aviary-extra-files/etc/ssh/ssh_host_ed25519_key
 chmod 0400 /tmp/aviary-extra-files/etc/ssh/ssh_host_ed25519_key
 
-luksPasswordRecovery=$(cat /run/secrets/"$config"-luks-hash)
+luksPasswordRecovery=$(cat /run/secrets/"$config"-luks)
 ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "printf '%s' '$luksPasswordRecovery' > /luks-password-recovery"
 
 ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "mkdir -p /mnt"
