@@ -48,9 +48,5 @@
         "name": "OSK"
       }
     ]
-  },
-  "dankKDEConnect": {
-    "enabled": true,
-    "selectedDeviceId": "ca8e727030fa4efebcbc92beecdc58cd"
   }
 }

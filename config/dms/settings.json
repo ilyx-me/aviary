@@ -123,11 +123,6 @@
       "id": "idleInhibitor",
       "enabled": true,
       "width": 50
-    },
-    {
-      "id": "plugin_dankKDEConnect",
-      "enabled": true,
-      "width": 50
     }
   ],
   "showWorkspaceIndex": false,
@@ -182,8 +177,8 @@
   "browserPickerViewMode": "grid",
   "browserUsageHistory": {
     "librewolf": {
-      "count": 2,
-      "lastUsed": 1772125861276,
+      "count": 6,
+      "lastUsed": 1772725067876,
       "name": "LibreWolf"
     }
   },
@@ -193,7 +188,7 @@
   "appLauncherGridColumns": 4,
   "spotlightCloseNiriOverview": true,
   "spotlightSectionViewModes": {
-    "apps": "list"
+    "apps": "grid"
   },
   "appDrawerSectionViewModes": {
     "apps": "grid"
@@ -252,9 +247,9 @@
   "acSuspendTimeout": 600,
   "acSuspendBehavior": 0,
   "acProfileName": "",
-  "batteryMonitorTimeout": 0,
-  "batteryLockTimeout": 0,
-  "batterySuspendTimeout": 0,
+  "batteryMonitorTimeout": 180,
+  "batteryLockTimeout": 300,
+  "batterySuspendTimeout": 600,
   "batterySuspendBehavior": 0,
   "batteryProfileName": "",
   "batteryChargeLimit": 100,
@@ -302,7 +297,7 @@
   "dockGroupByApp": true,
   "dockOpenOnOverview": true,
   "dockPosition": 1,
-  "dockSpacing": 8,
+  "dockSpacing": 7,
   "dockBottomGap": 0,
   "dockMargin": 4,
   "dockIconSize": 48,
@@ -402,26 +397,7 @@
   },
   "hyprlandOutputSettings": {},
   "displayProfiles": {
-    "niri": {
-      "profile_1771880474925_vg0b65": {
-        "id": "profile_1771880474925_vg0b65",
-        "name": "Default",
-        "outputSet": [
-          "eDP-1"
-        ],
-        "createdAt": 1771880474925,
-        "updatedAt": 1771880474925
-      },
-      "profile_1771880515603_6zz6w8": {
-        "id": "profile_1771880515603_6zz6w8",
-        "name": "Mobile",
-        "outputSet": [
-          "eDP-1"
-        ],
-        "createdAt": 1771880515603,
-        "updatedAt": 1771880515603
-      }
-    }
+    "niri": {}
   },
   "activeDisplayProfile": {
     "niri": "profile_1771880474925_vg0b65"
@@ -441,7 +417,7 @@
       "showOnLastDisplay": true,
       "leftWidgets": [
         {
-          "id": "launcherButton",
+          "id": "dankActions:variant_1771466194729",
           "enabled": true
         },
         {
@@ -451,7 +427,7 @@
       ],
       "centerWidgets": [
         {
-          "id": "dankActions:variant_1771964673752",
+          "id": "dankActions:variant_1771704855975",
           "enabled": true
         },
         {
@@ -486,6 +462,10 @@
           "showMicPercent": false,
           "showBatteryIcon": true,
           "showPrinterIcon": false
+        },
+        {
+          "id": "dankActions:variant_1771964673752",
+          "enabled": true
         }
       ],
       "spacing": 7,
@@ -606,7 +586,7 @@
       "enabled": false
     },
     "dms_settings": {
-      "enabled": false
+      "enabled": true
     }
   },
   "clipboardEnterToPaste": false,

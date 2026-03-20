@@ -19,6 +19,8 @@
 
     aviary.drive.primary = "/dev/disk/by-id/nvme-eui.002538a311b7cacb";
 
+    hardware.microsoft-surface.kernelVersion = "stable";
+
     boot = {
       kernelModules = [ "kvm-intel" ];
 

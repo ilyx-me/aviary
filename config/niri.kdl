@@ -1,9 +1,7 @@
 include "dms/alttab.kdl"
 include "dms/colors.kdl"
-include "dms/cursor.kdl"
 include "dms/layout.kdl"
 include "dms/outputs.kdl"
-include "dms/windowrules.kdl"
 include "dms/wpblur.kdl"
 
 input {
@@ -32,15 +30,15 @@ input {
         accel-profile "flat"
     }
 
-    tablet {
-        map-to-output "eDP-1"
-        calibration-matrix 2.0 0.0 0.0 0.0 2.0 0.0
-    }
+    //tablet {
+    //    map-to-output "eDP-1"
+    //    calibration-matrix 2.0 0.0 0.0 0.0 2.0 0.0
+    //}
 
-    touch {
-        map-to-output "eDP-1"
-        calibration-matrix 2.0 0.0 0.0 0.0 2.0 0.0
-    }
+    //touch {
+    //    map-to-output "eDP-1"
+    //    calibration-matrix 2.0 0.0 0.0 0.0 2.0 0.0
+    //}
 }
 
 layout {
@@ -80,9 +78,51 @@ hotkey-overlay {
 // You can also set this to null to disable saving screenshots to disk.
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
+gestures {
+    hot-corners {
+        off
+    }
+}
+
+cursor {
+    xcursor-theme "XCursor-Pro-Dark"
+    xcursor-size 24
+}
+
+environment {
+    _JAVA_AWT_WM_NONREPARENTING "1"
+    XDG_CURRENT_DESKTOP "niri"
+    QT_QPA_PLATFORM "wayland"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    QT_QPA_PLATFORMTHEME_QT6 "gtk3"
+    QT_STYLE_OVERRIDE "adwaita-dark"
+    TZ "America/Los_Angeles"
+}
+
 // DMS wants to set this to true but this makes GTK4 windoes non-resizable at the edges
 window-rule {
     tiled-state false
+}
+
+window-rule {
+    match app-id="librewolf$" title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="^Bitwarden$"
+    block-out-from "screen-capture"
+}
+
+window-rule {
+    match app-id="^org.keepassxc.KeePassXC$"
+    block-out-from "screen-capture"
+}
+
+window-rule {
+    match app-id="^org.gnome.World.Secrets"
+    block-out-from "screen-capture"
 }
 
 window-rule {
@@ -93,10 +133,11 @@ window-rule {
     shadow { off; }
 }
 
-gestures {
-    hot-corners {
-        off
-    }
+window-rule {
+    match app-id="^[Ww]aydroid"
+    open-maximized-to-edges false
+    default-window-height { proportion 1.0; }
+    default-column-width { proportion 1.0; }
 }
 
 binds {
@@ -203,5 +244,7 @@ binds {
     Mod+Ctrl+Shift+WheelScrollUp   hotkey-overlay-title="Move Left" { move-column-left; }
 }
 
+include "dms/cursor.kdl"
 include "dms/binds.kdl"
+include "dms/windowrules.kdl"
 include "aviaryUserOverrides.kdl"

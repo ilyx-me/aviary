@@ -388,8 +388,10 @@ in {
       rsync
       sbctl
       sbsigntool
+      shpool
       sops
       ssh-to-age
+      tio
     ];
 
     programs = {
@@ -431,6 +433,12 @@ in {
 	  '';
 	};
       };
+    };
+
+    services = {
+      fwupd.enable = true;
+      timesyncd.enable = false;
+      ntpd-rs.enable = true;
     };
 
     users = {

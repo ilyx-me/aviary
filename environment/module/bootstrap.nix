@@ -34,7 +34,6 @@ in {
         timeout = 5;
         systemd-boot = {
           enable = mkForce false; # Using Lanzaboote for secureboot
-          consoleMode = "max";
           editor = false; # Prevent passing Kernel parameters at boot
         };
 

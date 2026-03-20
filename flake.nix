@@ -6,6 +6,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    danksearch = {
+      url = "github:AvengeMedia/danksearch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -312,6 +317,7 @@
               self.nixosModules.bootstrap
 	      ./environment/module/graphical.nix
 	      ./environment/module/niri.nix
+	      ./environment/module/waydroid.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
 	      ./system/module/part/quota.nix

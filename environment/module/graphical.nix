@@ -9,19 +9,16 @@
   config = {
     boot = {
       consoleLogLevel = 3;
-      kernelParams = [ "quiet" "udev.log_level=3" "systemd.show_status=auto" ];
+      kernelParams = [ "quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "splash" ]; # plymouth.debug
       loader.timeout = lib.mkForce 0;
       initrd.verbose = false;
 
       plymouth = {
         enable = true;
-        theme = "loader_2";
-	themePackages = [
-	  (pkgs.adi1090x-plymouth-themes.override {
-	    selected_themes = [ "loader_2" ];
-	  })
-	];
+        theme = "spinner";
       };
+
+      initrd.systemd.services.plymouth-start.serviceConfig.ExecStartPre = "/bin/sh -c 'while [ ! -e /dev/dri/by-path/pci-*-card ]; do :; done'";
 
       initrd.systemd.network.networks = {
         "99-ethernet-default-dhcp" = {
@@ -86,6 +83,7 @@
     hardware.uinput.enable = true;
 
     services = {
+      logind.settings.Login.WallMessages = "off";
       flatpak.enable = true;
       power-profiles-daemon.enable = true;
       printing.enable = true;
@@ -100,6 +98,44 @@
         enable = true;
 	openFirewall = true;
         capSysAdmin = true;
+	settings = {
+	  port = 47989;
+          origin_web_ui_allowed = "pc";
+	  lan_encryption_mode = 2;
+	  wan_encryption_mode = 2;
+	  capture = "kms";
+	  credentials_file = "login.json";
+	};
+	applications = {
+          env = {};
+	  apps = [
+	    {
+	      name = "Desktop";
+	      image-path = "desktop.png";
+	    }
+	    {
+	      name = "Desktop 2x";
+	      image-path = "desktop.png";
+	      prep-cmd = [
+	        {
+		  do = "niri msg output eDP-1 scale 2.0";
+		  undo = "niri msg output eDP-1 scale 1.5";
+		}
+	      ];
+	    }
+	    {
+	      name = "Steam Big Picture";
+	      image-path = "steam.png";
+	      detached = [ "setsid steam steam://open/bigpicture" ];
+	      prep-cmd = [
+	        {
+		  do = "";
+		  undo = "setsid steam steam://close/bigpicture";
+		}
+	      ];
+	    }
+	  ];
+	};
       };
     };
 
@@ -112,11 +148,6 @@
 
     # Prevent last second debug console messages after plymouth
     systemd.shutdownRamfs.enable = false;
-
-    programs.kdeconnect = {
-      enable = true;
-      #package = pkgs.valent;
-    };
 
     programs.firefox = {
       enable = true;
