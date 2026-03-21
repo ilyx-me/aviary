@@ -36,7 +36,7 @@
         "icon": "keyboard",
         "displayText": "",
         "displayCommand": "",
-        "clickCommand": "wvkbd-mobintl -L 360",
+        "clickCommand": "systemctl --user kill osk --signal=SIGRTMIN",
         "middleClickCommand": "",
         "rightClickCommand": "",
         "updateInterval": 0,

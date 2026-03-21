@@ -97,7 +97,6 @@ environment {
     QT_QPA_PLATFORMTHEME "gtk3"
     QT_QPA_PLATFORMTHEME_QT6 "gtk3"
     QT_STYLE_OVERRIDE "adwaita-dark"
-    TZ "America/Los_Angeles"
 }
 
 // DMS wants to set this to true but this makes GTK4 windoes non-resizable at the edges

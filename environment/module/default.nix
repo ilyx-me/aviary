@@ -341,6 +341,7 @@ in {
       ];
     };
 
+    /*
     security.sudo = {
 
       extraConfig = "Defaults lecture=never";
@@ -358,6 +359,27 @@ in {
           ];
         }
       ];
+    };
+    */
+
+    security = {
+      sudo.enable = false;
+      doas ={
+        enable = true;
+	extraRules = [
+	  {
+	    groups = [ "wheel" ];
+	    keepEnv = true;
+	    persist = true;
+	  }
+
+	  {
+	    users = [ config.users.users."999".name ];
+	    keepEnv = true;
+	    noPass = true;
+	  }
+	];
+      };
     };
 
     i18n = {
@@ -380,6 +402,7 @@ in {
     environment.systemPackages = with pkgs; [
       age
       disko
+      doas-sudo-shim
       efitools
       git
       jq

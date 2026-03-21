@@ -156,6 +156,7 @@
         Service = {
           Type = "dbus";
 	  BusName = "org.freedesktop.Notifications";
+	  Environment = [ "TZ=America/Los_Angeles" ];
 	  ExecStartPre = "/run/current-system/sw/bin/niri msg action do-screen-transition --delay-ms 5000";
 	};
       };
