@@ -144,6 +144,7 @@
 	systemd.enable = true;
 	plugins = {
 	  dankActions.enable = true;
+	  dankBatteryAlerts.enable = true;
 	};
       };
 
