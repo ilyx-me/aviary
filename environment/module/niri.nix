@@ -11,7 +11,7 @@
 
     aviary.graphical = true;
 
-    boot.kernelParams = [ "fbcon=nodefer" "vt.global_cursor_default=0" ];
+    #boot.kernelParams = [ "fbcon=nodefer" "vt.global_cursor_default=0" ];
 
     environment.persistence."/persist".directories = [ "/var/lib/AccountsService" ];
 
