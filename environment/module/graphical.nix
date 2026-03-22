@@ -18,7 +18,7 @@
         theme = "bgrt";
       };
 
-      #initrd.systemd.services.plymouth-start.serviceConfig.ExecStartPre = "/bin/sh -c 'while [ ! -e /dev/dri/by-path/pci-*-card ]; do :; done'";
+      initrd.systemd.services.plymouth-start.serviceConfig.ExecStartPre = "/bin/sh -c 'while [ ! -e /dev/dri/by-path/pci-*-card ]; do :; done'";
 
       initrd.systemd.network.networks = {
         "99-ethernet-default-dhcp" = {
