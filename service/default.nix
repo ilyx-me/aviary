@@ -186,9 +186,11 @@ in {
     #systemd.services.network-local-commands.enable = false; # Hook for custom network commands
 
     systemd.services.tailscaled = {
-      after = [ "systemd-networkd.service" ];
+      after = [ "systemd-networkd.service" "multi-user.target" ];
       preStop = "/run/current-system/sw/bin/tailscale logout";
     };
+
+    systemd.services.tailscaled-autoconnect.after = [ "multi-user.target" ];
 
     networking.firewall.allowedTCPPorts = [ 22 ];
 
