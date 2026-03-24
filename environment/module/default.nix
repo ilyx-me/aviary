@@ -438,9 +438,10 @@ in {
       ];
 
       services = {
-        generate-sb-keys.after = [ "tpm-auto-enroll.service" ];
+        #generate-sb-keys.after = [ "tpm-auto-enroll.service" ];
 
 	"tpm-auto-enroll" = {
+	  after = [ "multi-user.target" ];
 	  wantedBy = [ "multi-user.target" ];
 	  serviceConfig = {
 	    Type = "oneshot";
