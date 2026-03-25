@@ -27,26 +27,29 @@
 
     services.greetd = {
       enable = true;
-      settings.initial_session = {
-        command = "niri-session > /dev/null 2>&1";
-	user = config.users.users."1000".name;
-      };
-      settings.default_session = {
-        command = "niri-session > /dev/null 2>&1"; # This session doesn't init correctly; need to look at user targets/services
-	user = config.users.users."1000".name;
+      #restart = true;
+      settings = {
+        initial_session = {
+          command = "niri-session > /dev/null 2>&1";
+	  user = config.users.users."1000".name;
+        };
+        default_session = {
+	  command = "${pkgs.greetd}/bin/agreety --cmd 'niri-session > /dev/null 2>&1'";
+	  user = "greeter";
+	};
       };
     };
 
     systemd = {
-      services."getty@tty1" = {
-        overrideStrategy = "asDropin";
-        serviceConfig = {
-          ExecStart = [
-	    ""
-	    "/run/current-system/sw/bin/agetty --skip-login --nonewline --noissue --autologin ${config.users.users."1000".name} --noclear %I $TERM"
-	  ];
-        };
-      };
+      #services."getty@tty1" = {
+      #  overrideStrategy = "asDropin";
+      #  serviceConfig = {
+      #    ExecStart = [
+      #	    ""
+      #	    "/run/current-system/sw/bin/agetty --skip-login --nonewline --noissue --autologin ${config.users.users."1000".name} --noclear %I $TERM"
+      #	  ];
+      #  };
+      #};
 
       tmpfiles.rules = [
         "C /var/lib/AccountsService/icons/${config.users.users."1000".name} - - - - ${builtins.path { path = "${inputs.secrets}/recovery/wallpaper.png"; }}"
@@ -172,9 +175,10 @@
 	};
 	Service = {
 	  Type = "oneshot";
+	  TimeoutSec = "infinity";
 	  RemainAfterExit = "yes";
 	  ExecStart = pkgs.writeShellScript "dms-initial-lock" ''
-	    /run/current-system/sw/bin/loginctl lock-session
+	    /home/1000/.nix-profile/bin/dms ipc lock lock
 	    /run/current-system/sw/bin/gnome-keyring-daemon --replace
 	    /home/1000/.nix-profile/bin/dms ipc profile setImage /var/lib/AccountsService/icons/${config.users.users."1000".name}
 	    while IFS= read -r line; do
