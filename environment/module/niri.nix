@@ -135,10 +135,10 @@
         noDisplay = true;
       };
 
-      programs.bash = {
-        enable = true;
-        initExtra = "setterm -cursor on";
-      };
+      #programs.bash = {
+      #  enable = true;
+      #  initExtra = "setterm -cursor on";
+      #};
 
       programs.dank-material-shell = {
         enable = true;

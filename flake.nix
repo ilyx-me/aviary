@@ -308,6 +308,7 @@
               ./system/module/part/single.nix
               ./system/chicken.nix
               ./user/00.nix
+	      ./service/update.nix
             ];
           };
 
@@ -323,6 +324,7 @@
 	      ./system/module/part/quota.nix
               ./system/ibis.nix
               ./user/00.nix
+              ./service/update.nix
             ];
           };
         };

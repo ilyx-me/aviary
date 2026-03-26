@@ -13,8 +13,6 @@
       randomizedDelaySec = "45min";
     };
 
-    services.fwupd.enable = true;
-
     /*
     services.comin = {
       enable = true;
