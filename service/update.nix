@@ -27,8 +27,15 @@
     system.autoUpgrade = {
       enable = true;
       flake = "github:ilyx-me/aviary/dev-core-systems";
-      flags = [];
+      flags = [ "--no-write-lock-file" ];
       dates = "minutely";
+      #randomizedDelaySec = "5min";
+      #fixedRandomDelay = true;
+      persistent = false;
+    };
+
+    systemd.services.nixos-upgrade.environment = {
+      GIT_SSH_COMMAND = "ssh -i '/home/999/.ssh/id_ed25519' -o IdentitiesOnly=yes";
     };
   };
 }
