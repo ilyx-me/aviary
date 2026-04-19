@@ -28,7 +28,7 @@
       enable = true;
       flake = "github:ilyx-me/aviary/dev-core-systems";
       flags = [ "--no-write-lock-file" ];
-      dates = "minutely";
+      dates = "hourly";
       #randomizedDelaySec = "5min";
       #fixedRandomDelay = true;
       persistent = false;
