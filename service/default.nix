@@ -187,7 +187,7 @@ in {
 
     systemd.services.tailscaled = {
       after = [ "systemd-networkd.service" "multi-user.target" ];
-      preStop = "/run/current-system/sw/bin/tailscale logout";
+      # preStop = "/run/current-system/sw/bin/tailscale logout";
     };
 
     systemd.services.tailscaled-autoconnect.after = [ "multi-user.target" ];
