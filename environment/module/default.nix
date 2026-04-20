@@ -178,9 +178,9 @@ in {
 
       validateSopsFiles = false;
       age = {
-        sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
-        keyFile = "/var/keys/age_host_key";
-        generateKey = true;
+        # sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
+        keyFile = "/persist/var/keys/age_host_key";
+        # generateKey = true;
       };
 
       secrets = {
@@ -238,6 +238,7 @@ in {
       files = [
         "/etc/machine-id"
         "/etc/ssh/ssh_host_ed25519_key"
+	"/var/keys/age_host_key"
       ];
     };
 
