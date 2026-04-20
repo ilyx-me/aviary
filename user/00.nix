@@ -33,13 +33,13 @@ in {
     sops = {
       defaultSopsFile = "${secrets}/00.yaml";
 
-      # hostname-luks and hostname-ssh-host must exist on the machine that deploys hostname
+      # <hostname>-age and <hostname>-luks must exist on the machine that deploys hostname
       secrets = {
+        "egg-age" = defaultPermissions;
         "egg-luks" = defaultPermissions;
-        "egg-ssh-host" = defaultPermissions;
 
+        "ibis-age" = defaultPermissions;
 	"ibis-luks" = defaultPermissions;
-	"ibis-ssh-host" = defaultPermissions;
       };
     };
 
