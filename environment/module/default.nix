@@ -176,7 +176,7 @@ in {
 
     sops = {
 
-      validateSopsFiles = false;
+      # validateSopsFiles = false;
       age = {
         # sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
         keyFile = "/persist/var/keys/age_host_key";
@@ -403,7 +403,7 @@ in {
     environment.systemPackages = with pkgs; [
       age
       disko
-      doas-sudo-shim
+      # doas-sudo-shim
       efitools
       git
       jq
@@ -414,7 +414,7 @@ in {
       sbsigntool
       shpool
       sops
-      ssh-to-age
+      # ssh-to-age
       tio
     ];
 
