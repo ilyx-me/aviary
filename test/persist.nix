@@ -20,7 +20,7 @@ in {
     _module.args = { inherit inputs; };
     imports = [
       self.nixosModules.default
-      (import ./user/testA.nix { inherit inputs; })
+      (import ./user/testA.nix { inherit inputs lib; })
     ];
 
     virtualisation = {

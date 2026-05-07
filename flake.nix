@@ -137,7 +137,7 @@
 
               debug = pkgs.testers.runNixOSTest (
                 import ./test/debug.nix {
-                  inherit inputs self;
+                  inherit inputs lib self;
                 }
               );
 
@@ -153,7 +153,7 @@
 
               default = pkgs.testers.runNixOSTest (
                 import ./test/default.nix {
-                  inherit inputs self;
+                  inherit inputs lib self;
                 }
               );
 
@@ -173,7 +173,7 @@
 
               network = pkgs.testers.runNixOSTest (
                 import ./test/network.nix {
-                  inherit inputs self;
+                  inherit inputs lib self;
                 }
               );
 
@@ -203,7 +203,7 @@
 
               secrets = pkgs.testers.runNixOSTest (
                 import ./test/secrets.nix {
-                  inherit inputs self;
+                  inherit inputs lib self;
                 }
               );
 

@@ -1,5 +1,6 @@
 {
   inputs,
+  lib,
   self,
   ...
 }:
@@ -19,7 +20,7 @@ in
       self.nixosModules.default
       ../environment/module/debug.nix
 
-      (import ./user/testA.nix { inherit inputs; })
+      (import ./user/testA.nix { inherit inputs lib; })
     ];
   };
 

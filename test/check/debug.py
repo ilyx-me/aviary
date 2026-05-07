@@ -1,5 +1,6 @@
 # log into root
 machine.wait_for_unit("multi-user.target")
+machine.wait_for_text("login:")
 machine.send_chars("root\n")
 machine.wait_for_text("root@")
 assert '"session":"1","uid":0,"user":"root"' in machine.succeed("loginctl list-sessions --json=short")
