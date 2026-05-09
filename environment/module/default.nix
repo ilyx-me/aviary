@@ -405,7 +405,6 @@ in {
       disko
       # doas-sudo-shim
       efitools
-      git
       jq
       linux-firmware
       nixos-anywhere
@@ -419,6 +418,10 @@ in {
     ];
 
     programs = {
+      git = {
+        enable = true;
+        config.safe.directory = [ "/home/1000/aviary" ];
+      };
       nano.enable = false;
       neovim = {
         enable = true;

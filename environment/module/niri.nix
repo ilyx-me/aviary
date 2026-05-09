@@ -19,6 +19,7 @@
 
     services.upower.enable = true;
     services.accounts-daemon.enable = true;
+    services.gvfs.enable = true;
     services.iio-niri.enable = true;
     services.input-remapper = {
       enable = true;
@@ -149,6 +150,15 @@
 	  dankActions.enable = true;
 	  dankBatteryAlerts.enable = true;
 	};
+      };
+
+      services.udiskie = {
+        enable = true;
+	tray = "never";
+        settings = {
+          # workaround for https://github.com/nix-community/home-manager/issues/632
+          program_options.file_manager = "${pkgs.nautilus}/bin/nautilus";
+        };
       };
 
       systemd.user.services.dms = {

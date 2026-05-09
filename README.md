@@ -2,15 +2,19 @@
 
 ### Secureboot Enrollment
 
-Secureboot enrollment is automatic with lanzaboot. On the first boot of the system, lanzaboot will create the secureboot keys, reboot the system, enroll them and reboot again.
+Secureboot enrollment is automatic with Lanzaboot via `generate-sb-keys.service`. On the first boot of the system, lanzaboot will create the secureboot keys, reboot the system, enroll them and reboot again. This works on most systems so long as the UEFI firmware is in secureboot setup mode (usually a separate option or automatically toggled when secureboot is off) however some older systems may need to have this done manually so consult your specific firmware documentation.
 
-### TPM2 Enrollment
+Lanzaboot will attempt to put the secureboot keys into the EFI partition at `/boot/loader/keys/auto` but you can also find them at `/var/lib/sbctl` on the root filesystem.
 
-Make sure to change `hostname` to match your system.
+### TPM Decryption
+
+TPM decription is automatically set up after Secureboot keys are enrolled via `tpm-auto-enroll.service`. Manually enrolling setting up TPM decription can be done like so:
 
 ```bash
-systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-hostname --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7
+systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-<hostname> --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7
 ```
+
+Make sure to change `<hostname>` to match your system.
 
 # TESTING
 
@@ -24,10 +28,10 @@ nix flake check
 
 Where `<test>` is the name of the test to run and `<arch>` is one of the following:
 
-- `aarch64-darwin`
-- `aarch64-linux`
-- `x86_64-darwin`
-- `x86_64-linux`
+ - `aarch64-darwin`
+ - `aarch64-linux`
+ - `x86_64-darwin`
+ - `x86_64-linux`
 
 ```bash
 nix run -L .#checks.<arch>.<test>.driver            # Automatic
@@ -53,38 +57,45 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 ### General
 
-[x] UEFI boot
-[x] secureboot
-[x] TPM2 measured boot
-[x] PCR15 checked boot
-[x] persistant files
-[x] secrets
-[x] reach multi-user.target
-[x] network (ssh + tailscale)
-[ ] wifi (via services.vwifi)
-[ ] automatic updates (comin)
+ - [x] UEFI boot
+ - [x] secureboot
+ - [x] TPM2 measured boot
+ - [x] PCR15 checked boot
+ - [x] persistant files
+ - [x] secrets
+ - [x] reach multi-user.target
+ - [x] network (ssh + tailscale)
+ - [ ] wifi (via services.vwifi)
+ - [ ] automatic updates
 
 ### Initrd
 
-[x] network (ssh + tailscale)
-[ ] wifi (services.vwifi?)
-[x] LUKS decryption (over ssh)
+ - [x] network (ssh + tailscale)
+ - [ ] wifi (services.vwifi?)
+ - [x] LUKS decryption (over ssh)
 
 ### Debug
 
-[x] initrd f9 tty
-[x] root, admin, and user login
-[ ] recovery deployment
+ - [x] initrd f9 tty
+ - [x] root, admin, and user login
+ - [ ] recovery deployment
 
 ### Formating
-[x] recovery
-[x] single
-[ ] singleQuota
-[ ] double
-[ ] redundant
+ - [x] recovery
+ - [x] single
+ - [ ] singleQuota
+ - [ ] double
+ - [ ] redundant
 
 # TODO
 
-- separate private from secrets in environment/default
-- remaining tests
-- btrfs root filesystem for relevant tests
+ - separate private from secrets in environment/default
+ - remaining tests
+   - automatic updates
+   - recovery deployment
+   - singleQuota
+ - btrfs root filesystem for relevant tests
+ - disko-install for recovery and deployment
+ - verify first boot
+ - sunshine secrets
+ - osk

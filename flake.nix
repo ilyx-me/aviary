@@ -1,10 +1,6 @@
 {
   description = "Aviary by ilyx";
   inputs = {
-    comin = {
-      url = "github:nlewo/comin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     danksearch = {
       url = "github:AvengeMedia/danksearch";
@@ -12,7 +8,7 @@
     };
 
     disko = {
-      url = "github:nix-community/disko";
+      url = "github:nix-community/disko/5ae05d98d2bebc0a9521c9fc89bd2e5cffa05926"; # 1-20-2026 last working version for nixos 25.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -55,11 +51,6 @@
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    niri = {
-      url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -267,6 +258,7 @@
         };
 
         nixosConfigurations = {
+	  /*
           deploy-test = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
@@ -283,6 +275,7 @@
               })
             ];
           };
+	  */
 
           egg = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
