@@ -27,7 +27,7 @@ in {
   disko-config = diskoConfig;
 
   extraInstallerConfig = {
-    systemd.tmpfiles.settings."10-luks-pwd"."/luks-password-recovery".f.argument = "password";
+    systemd.tmpfiles.settings."10-luks-pwd"."/tmp/aviaryInstall/luks-password-recovery".f.argument = "password";
 
     virtualisation.emptyDiskImages = lib.mkForce [ 8192 ];
   };

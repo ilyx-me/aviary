@@ -272,6 +272,7 @@
                 boot.initrd.network.ssh.authorizedKeys = [ "none" ];
                 sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
                 aviary.uID = "test-a";
+		nixpkgs.config.allowUnfree = true;
               })
             ];
           };

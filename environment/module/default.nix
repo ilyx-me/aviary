@@ -51,8 +51,8 @@ let
   secrets = config.sops.secrets;
   secretsName = config.aviary.secrets;
 
-  deviceDiskPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-${host}";
-  deviceMapperPrimary = if pathExists /tmp/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
+  deviceDiskPrimary = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-primary-luks-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-primary-luks-${host}";
+  deviceMapperPrimary = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
 
   cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early" (
     readFile ../../script/systemd/cryptsetupEarly.sh

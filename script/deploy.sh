@@ -1,9 +1,48 @@
 #!/bin/sh
 
 config=""
-target=""
 drive=""
-luksPassword=""
+luks=""
+age=""
+
+setAge() {
+
+    while true; do
+	echo ""
+        read -s -p "Enter age private key for ${config}: " input
+
+	echo -en "$input" | age-keygen -y > /dev/null 2>&1
+        if [[ $? -ne 0 ]]; then
+	    echo ""
+	    echo -e "\033[31mAge key invalid\033[0m"
+	    continue
+        fi
+
+	echo ""
+        echo -e "\033[32mAge key valid\033[0m"
+	age="$input"
+	return 0
+    done
+}
+
+setLuks() {
+
+    while true; do
+	echo ""
+        read -s -p "Enter luks recovery password for ${config}: " input
+
+        if [[ -z "$input" ]]; then
+	    echo ""
+	    echo -e "\033[31mLuks recovery password cannot be empty\033[0m"
+	    continue
+        fi
+
+	echo ""
+	echo -e "\033[32mLuks recovery password valid\033[0m"
+	luks="$input"
+	return 0
+    done
+}
 
 setConfig() {
 
@@ -22,19 +61,8 @@ setConfig() {
         fi
 
         if [[ "$config" != "" && "$config" != "null" ]]; then
-
-            if [[ -r /run/secrets/"${config}"-ssh-host ]]; then
-                echo -e "\033[32mDeploying config ${config}\033[0m"
-                return 0
-            fi
-
-            if [[ -e /run/secrets/"${config}"-ssh-host ]]; then
-                echo -e "\033[31mUnable to read SSH host key SOPS secret for ${config}\033[0m"
-                exit 1
-            fi
-
-            echo -e "\033[31mSSH host key SOPS secret not present for ${config}\033[0m"
-            exit 1
+            echo -e "\033[32mDeploying config ${config}\033[0m"
+            return 0
         fi
 
         echo -e "\033[31mInvalid choice\033[0m"
@@ -43,29 +71,34 @@ setConfig() {
 }
 
 
-setTarget() {
-
-    while true; do
-
-        echo -e -n "\nHostname of deploy target [ localhost ] "
-        read input
-
-        if [[ $input == "" ]]; then
-            input="localhost"
-        fi
-
-        ssh -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 root@$input exit
-
-        if [[ $? -ne 0 ]]; then
-            echo -e "\033[31mCouldn't connect to target ${input}\033[0m"
-        else
-            echo -e "\033[32mConnected to target ${input}\033[0m"
-            target=$input
-            return 0
-        fi
-
-    done
-}
+#setTarget() {
+#
+#    while true; do
+#
+#        echo -e -n "\nHostname of deploy target [ localhost ] "
+#        read input
+#
+#        if [[ "$input" == "" ]]; then
+#            input="localhost"
+#        fi
+#
+#	if [[ "$input" != "localhost" ]]; then
+#	    ssh -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 root@$input exit
+#
+#            if [[ $? -ne 0 ]]; then
+#                echo -e "\033[31mCouldn't connect to target ${input}\033[0m"
+#            else
+#                echo -e "\033[32mConnected to target ${input}\033[0m"
+#            fi
+#        else
+#	    echo -e "\033[31mOk\033[0m"
+#	fi
+#
+#        target=$input
+#        return 0
+#
+#    done
+#}
 
 setDriveRemovable() {
 
@@ -77,21 +110,17 @@ setDriveRemovable() {
     while true; do
 
         echo ""
-        ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target \
-        lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL | \
-        awk '$1 == "1" && $2 == "disk" {print $3,$4,$5,$6}' | nl -w 2 -s ') '
+	lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL | \
+          awk '$1 == "1" && $2 == "disk" {print $3,$4,$5,$6}' | nl -w 2 -s ') '
         echo -e " A) Show non-removable devices..."
         echo -e -n "\nDevice to deploy on [ 1..A ] "
         read input
 
         if [[ "$input" =~ ^[0-9]+$ ]]; then
-
-            drive=$(ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target \
-              lsblk -o HOTPLUG,TYPE,NAME | \
+	    drive=$(lsblk -o HOTPLUG,TYPE,NAME | \
               awk '$1 == "1" && $2 == "disk" {print $3}' | \
               awk -v inp=$input 'NR == inp {print "/dev/"$1}')
-
-        fi
+	fi
 
         if [[ "$input" == "A" ]]; then
 
@@ -117,9 +146,8 @@ setDriveInternal() {
     while true; do
 
         echo ""
-        ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target \
-        lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL,ID | \
-        awk '$1 == "0" && $2 == "disk" {print $3,$4,$5,$6,$7}' | nl -w 2 -s ') '
+	lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL,ID | \
+          awk '$1 == "0" && $2 == "disk" {print $3,$4,$5,$6,$7}' | nl -w 2 -s ') '
         echo -e " \033[32mB) (RECOMMENDED)\033[0m Show removable device only..."
         echo -e "\n\033[31mWARNING: THESE DEVICES MAY CONTAIN AN OPERATING SYSTEM OR OTHER CRITICAL DATA\033[0m"
         echo -e -n "Device to deploy on [ 1..\033[32mB\033[0m ] "
@@ -131,12 +159,9 @@ setDriveInternal() {
             read inputConfirm
 
             if [[ ${inputConfirm,,} == "y" ]]; then
-
-                drive=$(ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target \
-                  lsblk -o HOTPLUG,TYPE,NAME | \
+		drive=$(lsblk -o HOTPLUG,TYPE,NAME | \
                   awk '$1 == "0" && $2 == "disk" {print $3}' | \
                   awk -v inp=$input 'NR == inp {print "/dev/"$1}')
-
             else
                   return 0
             fi
@@ -161,13 +186,13 @@ confirmation() {
     while true; do
 
         echo -e "\nConfig: ${config}"
-        echo -e "Target: ${target}"
+        #echo -e "Target: ${target}"
 
         if [[ "$config" == "egg" ]]; then
             echo -e "Drive:  ${drive}"
         fi
 
-        echo -e -n "\nProceed with nixos-anywhere? [ y/N ] "
+        echo -e -n "\nProceed with installation? [ y/N ] "
         read input
 
         if [[ "${input,,}" == "n" || "${input,,}" == "" ]]; then
@@ -186,71 +211,39 @@ confirmation() {
     done
 }
 
-cleanup() {
-
-    if [[ -e "/tmp/egg-drive" ]]; then
-        rm -f /tmp/egg-drive
-    fi
-
-    if [[ -e "/tmp/egg-drive-name" ]]; then
-        rm -f /tmp/egg-drive-name
-    fi
-
-    if [[ -e "/tmp/aviary-extra-files" ]]; then
-        rm -rf /tmp/aviary-extra-files
-    fi
-}
-
 setConfig
-setTarget
+setLuks
+setAge
 setDriveRemovable
 confirmation
 
-mkdir -p /tmp/aviary-extra-files/persist/etc/ssh
-cp /run/secrets/"${config}"-ssh-host /tmp/aviary-extra-files/persist/etc/ssh/ssh_host_ed25519_key
-chmod 0400 /tmp/aviary-extra-files/persist/etc/ssh/ssh_host_ed25519_key
+mkdir -p /tmp/aviaryInstall
 
-mkdir -p /tmp/aviary-extra-files/etc/ssh
-cp /run/secrets/"${config}"-ssh-host /tmp/aviary-extra-files/etc/ssh/ssh_host_ed25519_key
-chmod 0400 /tmp/aviary-extra-files/etc/ssh/ssh_host_ed25519_key
+touch /tmp/aviaryInstall/age_host_key
+chmod 0600 /tmp/aviaryInstall/age_host_key
+echo -n "${age}" > /tmp/aviaryInstall/age_host_key
 
-luksPasswordRecovery=$(cat /run/secrets/"$config"-luks)
-ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "printf '%s' '$luksPasswordRecovery' > /luks-password-recovery"
-
-ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "mkdir -p /mnt"
-
-sbctl create-keys --disable-landlock -e /tmp/aviary-extra-files/var/lib/sbctl/keys -d /tmp/aviary-extra-files/var/lib/sbctl/GUID
-mkdir -p /tmp/aviary-extra-files/persist/var/lib
-cp -r /tmp/aviary-extra-files/var/lib/sbctl /tmp/aviary-extra-files/persist/var/lib
+touch /tmp/aviaryInstall/luks-password-recovery
+chmod 0600 /tmp/aviaryInstall/luks-password-recovery
+echo -n "${luks}" > /tmp/aviaryInstall/luks-password-recovery
 
 if [[ "$config" == "egg" ]]; then
-    echo -n ${drive} | tee /tmp/egg-drive >/dev/null
-    rand_str=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 8)
-    echo -n "egg-${rand_str}" > /tmp/egg-drive-name
-fi
+    randStr=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 8)
+    echo -n "egg-${randStr}" > /tmp/aviaryInstall/egg-drive-name
 
-if [[ "$target" == "localhost" ]]; then
-    nixos-anywhere -f .\#$config --option pure-eval false --extra-files /tmp/aviary-extra-files --phases disko,install root@$target
-    naExit=$?
-
-    ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "rm /luks-password-recovery"
-    ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "umount /mnt/boot /mnt/nix /mnt/persist /mnt"
-    ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "dmsetup remove /dev/mapper/disk-primary-luks-btrfs-$(cat /tmp/egg-drive-name)"
+    disko-install --flake .\#${config} --extra-files /tmp/aviaryInstall/age_host_key /persist/var/keys/age_host_key --disk primary "${drive}"
 else
-    nixos-anywhere -f .\#$config --option pure-eval false --extra-files /tmp/aviary-extra-files --phases disko,install,reboot root@$target
-    naExit=$?
-
-    if [[ $naExit -ne 0 ]]; then
-        ssh -o BatchMode=yes -o ConnectTimeout=5 root@$target "rm /luks-password-recovery"
-    fi
+    disko-install --flake .\#${config} --extra-files /tmp/aviaryInstall/age_host_key /persist/var/keys/age_host_key
 fi
 
-cleanup
+diExit=$?
 
-if [[ $naExit -ne 0 ]]; then
-    echo -e "\n\033[31mDeployment with nixos-anywhere failed\033[0m"
+rm -rf /tmp/aviaryInstall
+
+if [[ $diExit -ne 0 ]]; then
+    echo -e "\n\033[31mDeployment with disko-install failed\033[0m"
     exit 1
 fi
 
-echo -e "\n\033[32mDeployment with nixos-anywhere successful\033[0m"
+echo -e "\n\033[32mDeployment with disko-install successful\033[0m"
 exit 0
