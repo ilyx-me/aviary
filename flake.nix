@@ -321,6 +321,20 @@
               ./service/update.nix
             ];
           };
+
+          quail = nixpkgs.lib.nixosSystem {
+            specialArgs = { inherit inputs; };
+            modules = [
+              self.nixosModules.bootstrap
+	      ./environment/module/graphical.nix
+	      ./environment/module/niri.nix
+              ./system/module/part/default.nix
+              ./system/module/part/single.nix
+              ./system/quail.nix
+              ./user/03.nix
+	      ./service/update.nix
+            ];
+          };
         };
       };
     };

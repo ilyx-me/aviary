@@ -75,7 +75,7 @@ in {
         ssh = {
           enable = true;
           extraConfig = "HostKey /etc/ssh/ssh_host_ed25519_key";
-          authorizedKeys = config.users.users."1000".openssh.authorizedKeys.keys;
+          authorizedKeys = config.users.users."999".openssh.authorizedKeys.keys;
           ignoreEmptyHostKeys = true; # We're deploying keys out of band.
 
           # Using a different port prevents ssh clients from throwing MITM error.
@@ -156,6 +156,7 @@ in {
             wantedBy = [ "cryptsetup.target" ];
             unitConfig.DefaultDependencies = "no";
             serviceConfig = {
+	      LogLevelMax = "notice";
               TimeoutSec = "infinity";
               Environment = [
                 "PORT=${toString config.services.tailscale.port}"
@@ -187,6 +188,7 @@ in {
 
     systemd.services.tailscaled = {
       after = [ "systemd-networkd.service" "multi-user.target" ];
+      serviceConfig.LogLevelMax = "notice";
       # preStop = "/run/current-system/sw/bin/tailscale logout";
     };
 

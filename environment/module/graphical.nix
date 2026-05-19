@@ -1,4 +1,5 @@
 {
+   config,
    inputs,
    lib,
    pkgs,
@@ -7,6 +8,14 @@
 
 {
   config = {
+
+    sops.secrets."sunshine-creds" = {
+      mode = "0400";
+      owner = config.users.users."1000".name;
+      group = "users";
+      path = "/home/1000/.config/sunshine/login.json";
+    };
+
     boot = {
       consoleLogLevel = 3;
       kernelParams = [ "quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "splash" ]; # plymouth.debug

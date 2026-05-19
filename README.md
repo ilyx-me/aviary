@@ -94,8 +94,6 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
    - automatic updates
    - recovery deployment
    - singleQuota
- - btrfs root filesystem for relevant tests
- - disko-install for recovery and deployment
  - verify first boot
- - sunshine secrets
- - osk
+ - remove sudo and su ability for 1000
+ - turn off trackpad while typing

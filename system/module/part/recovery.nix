@@ -12,7 +12,7 @@
         mountOptions = [
           "defaults"
           "mode=755"
-          "size=2G"
+          "size=4G"
         ];
       };
     };

@@ -102,10 +102,10 @@ setConfig() {
 
 setDriveRemovable() {
 
-    if [[ "$config" != "egg" ]]; then
-        echo -e "\033[33mConfig is $config, make sure to set drive declaritively\033[0m"
-        return 0
-    fi
+    #if [[ "$config" != "egg" ]]; then
+    #    echo -e "\033[33mConfig is $config, make sure to set drive declaritively\033[0m"
+    #    return 0
+    #fi
 
     while true; do
 
@@ -233,7 +233,7 @@ if [[ "$config" == "egg" ]]; then
 
     disko-install --flake .\#${config} --extra-files /tmp/aviaryInstall/age_host_key /persist/var/keys/age_host_key --disk primary "${drive}"
 else
-    disko-install --flake .\#${config} --extra-files /tmp/aviaryInstall/age_host_key /persist/var/keys/age_host_key
+    disko-install --flake .\#${config} --extra-files /tmp/aviaryInstall/age_host_key /persist/var/keys/age_host_key --disk primary "${drive}" --write-efi-boot-entries
 fi
 
 diExit=$?

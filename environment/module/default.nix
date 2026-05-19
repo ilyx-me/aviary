@@ -68,6 +68,9 @@ let
 
   systemdPath = config.boot.initrd.systemd.package;
 
+  u00-chicken = readFile "${inputs.secrets}/00/chicken-ssh-user-pub";
+  u00-ibis = readFile "${inputs.secrets}/00/ibis-ssh-user-pub";
+
 in {
 
   options.aviary = {
@@ -211,7 +214,6 @@ in {
           mode = "0440";
           owner = config.users.users."1000".name;
           group = "admins";
-          restartUnits = [ "syncluks.service" ];
         };
       };
     };
@@ -420,7 +422,10 @@ in {
     programs = {
       git = {
         enable = true;
-        config.safe.directory = [ "/home/1000/aviary" ];
+        config.safe.directory = [
+	  "/home/999/aviary"
+	  "/home/1000/aviary"
+	];
       };
       nano.enable = false;
       neovim = {
@@ -466,7 +471,10 @@ in {
     services = {
       fwupd.enable = true;
       timesyncd.enable = false;
-      ntpd-rs.enable = true;
+      ntpd-rs = {
+        enable = true;
+	settings.observability.log-level = "warn";
+      };
     };
 
     users = {
@@ -478,8 +486,8 @@ in {
 
         root = {
           description = mkForce "root";
-          openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
-            else [ (readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.sshAdminPub}") ];
+          #openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
+          #  else [ (readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.sshAdminPub}") ];
         };
 
         "999" = {
@@ -490,6 +498,8 @@ in {
           group = "admins";
           useDefaultShell = true;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
+	  openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
+	    else [ u00-chicken u00-ibis ];
           home = "/home/999";
         };
 
