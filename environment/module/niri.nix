@@ -11,8 +11,6 @@
 
     aviary.graphical = true;
 
-    #boot.kernelParams = [ "fbcon=nodefer" "vt.global_cursor_default=0" ];
-
     environment.persistence."/persist".directories = [ "/var/lib/AccountsService" ];
 
     programs.niri.enable = true;
@@ -28,7 +26,6 @@
 
     services.greetd = {
       enable = true;
-      #restart = true;
       settings = {
         initial_session = {
           command = "niri-session > /dev/null 2>&1";
@@ -42,19 +39,36 @@
     };
 
     systemd = {
-      #services."getty@tty1" = {
-      #  overrideStrategy = "asDropin";
-      #  serviceConfig = {
-      #    ExecStart = [
-      #	    ""
-      #	    "/run/current-system/sw/bin/agetty --skip-login --nonewline --noissue --autologin ${config.users.users."1000".name} --noclear %I $TERM"
-      #	  ];
-      #  };
-      #};
 
       tmpfiles.rules = [
         "C /var/lib/AccountsService/icons/${config.users.users."1000".name} - - - - ${builtins.path { path = "${inputs.secrets}/recovery/wallpaper.png"; }}"
+	"d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
+	"d /home/1000/.config/niri 0755 ${config.users.users."1000".name} users -"
+	"L /home/1000/.config/niri/config.kdl - - - - ${builtins.path { path = ../../config/niri.kdl; }}"
+	"f /home/1000/.config/niri/aviaryUserOverrides.kdl 0644 ${config.users.users."1000".name} users - -"
+	"d /home/1000/.config/DankMaterialShell 0755 ${config.users.users."1000".name} users -"
+	"C /home/1000/.config/DankMaterialShell/clsettings.json - - - - ${builtins.path { path = ../../config/dms/clsettings.json; }}"
+	"C /home/1000/.config/DankMaterialShell/plugin_settings.json - - - - ${builtins.path { path = ../../config/dms/plugin_settings.json; }}"
+        "C /home/1000/.config/DankMaterialShell/settings.json - - - - ${builtins.path { path = ../../config/dms/settings.json; }}"
+        "d /home/1000/.local 0700 ${config.users.users."1000".name} users -"
+        "d /home/1000/.local/state 0700 ${config.users.users."1000".name} users -"
+        "d /home/1000/.local/state/DankMaterialShell 0755 ${config.users.users."1000".name} users -"
+        "C /home/1000/.local/state/DankMaterialShell/session.json - - - - ${builtins.path { path = ../../config/dms/session.json; }}"
       ];
+
+      services.systemd-tmpfiles-setup.postStart = ''
+        chown ${config.users.users."1000".name}:users \
+	    /home/1000/.config/DankMaterialShell/clsettings.json \
+            /home/1000/.config/DankMaterialShell/plugin_settings.json \
+            /home/1000/.config/DankMaterialShell/settings.json \
+            /home/1000/.local/state/DankMaterialShell/session.json
+
+	chmod 0644 \
+	    /home/1000/.config/DankMaterialShell/clsettings.json \
+            /home/1000/.config/DankMaterialShell/plugin_settings.json \
+            /home/1000/.config/DankMaterialShell/settings.json \
+            /home/1000/.local/state/DankMaterialShell/session.json
+      '';
 
       user.services.niri.enable = false;
 
@@ -96,28 +110,10 @@
 	inputs.danksearch.homeModules.default
       ];
 
-      home.file = {
-        "wallpaper.png" = {
-	  source = "${inputs.secrets}/recovery/wallpaper.png";
-	  target = "/home/1000/.config/DankMaterialShell/wallpaper.png";
-	};
-        "niri.kdl" = {
-          source = ../../config/niri.kdl;
-	  target = "/home/1000/.config/niri/config.kdl";
-        };
+      home.file."wallpaper.png" = {
+	source = "${inputs.secrets}/recovery/wallpaper.png";
+	target = "/home/1000/.config/DankMaterialShell/wallpaper.png";
       };
-
-      systemd.user.tmpfiles.rules = [
-        "f /home/1000/.config/niri/aviaryUserOverrides.kdl 0644 ${config.users.users."1000".name} users - -"
-	"C /home/1000/.config/DankMaterialShell/clsettings.json - - - - ${builtins.path { path = ../../config/dms/clsettings.json; }}"
-	"z /home/1000/.config/DankMaterialShell/clsettings.json 0644 ${config.users.users."1000".name} users - -"
-	"C /home/1000/.config/DankMaterialShell/plugin_settings.json - - - - ${builtins.path { path = ../../config/dms/plugin_settings.json; }}"
-        "z /home/1000/.config/DankMaterialShell/plugin_settings.json 0644 ${config.users.users."1000".name} users - -"
-        "C /home/1000/.config/DankMaterialShell/settings.json - - - - ${builtins.path { path = ../../config/dms/settings.json; }}"
-        "z /home/1000/.config/DankMaterialShell/settings.json 0644 ${config.users.users."1000".name} users - -"
-        "C /home/1000/.local/state/DankMaterialShell/session.json - - - - ${builtins.path { path = ../../config/dms/session.json; }}"
-        "z /home/1000/.local/state/DankMaterialShell/session.json 0644 ${config.users.users."1000".name} users - -"
-      ];
 
       home.packages = [ pkgs.nerd-fonts.adwaita-mono ];
 
@@ -135,11 +131,6 @@
 	exec = "ikhal";
         noDisplay = true;
       };
-
-      #programs.bash = {
-      #  enable = true;
-      #  initExtra = "setterm -cursor on";
-      #};
 
       programs.dank-material-shell = {
         enable = true;

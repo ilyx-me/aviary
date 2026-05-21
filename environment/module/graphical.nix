@@ -158,6 +158,11 @@
     # Prevent last second debug console messages after plymouth
     systemd.shutdownRamfs.enable = false;
 
+    systemd.tmpfiles.rules = [
+      "d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
+      "d /home/1000/.config/sunshine 0755 ${config.users.users."1000".name} users -"
+    ];
+
     programs.firefox = {
       enable = true;
       package = pkgs.librewolf;
