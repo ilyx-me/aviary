@@ -25,8 +25,8 @@ in
 
     primary = mkOption {
       type = str;
-      default = host + "-drive-primary";
-      example = "hostname-drive-primary";
+      default = "set-the-primary-system-drive";
+      example = "/dev/vdb";
       description = "System primary drive";
     };
   };

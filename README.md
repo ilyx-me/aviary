@@ -94,6 +94,6 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
    - automatic updates
    - recovery deployment
    - singleQuota
- - verify first boot
- - remove sudo and su ability for 1000
+ - Get first boot to DMS without niri flicker
+ - Add separate PW for 999
  - turn off trackpad while typing

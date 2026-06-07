@@ -151,7 +151,7 @@
               /*
               deploy = pkgs.testers.runNixOSTest ( #TODO FINISH
                 import ./test/deploy.nix {
-                  inherit inputs lib self';
+                  inherit inputs lib pkgs self;
                 }
               );
 
@@ -259,7 +259,7 @@
 
         nixosConfigurations = {
 	  /*
-          deploy-test = nixpkgs.lib.nixosSystem {
+	  deploy-test = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.recovery
@@ -273,6 +273,7 @@
                 sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
                 aviary.uID = "test-a";
 		nixpkgs.config.allowUnfree = true;
+		aviary.drive.primary = "/dev/vdb";
               })
             ];
           };
