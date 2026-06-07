@@ -112,7 +112,7 @@ in {
         initrdBin = [ pkgs.wpa_supplicant pkgs.tailscale pkgs.openssh ];
 
         dbus.enable = true;
-        sockets.dbus.unitConfig.DefaultDependencies = "no"; # Not set up by dbus.enable = true;
+        #sockets.dbus.unitConfig.DefaultDependencies = false; # Not set up by dbus.enable = true;
 
         users.root.shell = "/bin/systemd-tty-ask-password-agent";
 
@@ -149,7 +149,7 @@ in {
             unitConfig.DefaultDependencies = false;
           };
 
-          dbus.unitConfig.DefaultDependencies = "no"; # Not set up by dbus.enable = true;
+          #dbus.unitConfig.DefaultDependencies = false; # Not set up by dbus.enable = true;
 
           tailscaled = {
             wants = [ "dbus.service" "network-online.target" ];

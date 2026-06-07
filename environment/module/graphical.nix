@@ -55,7 +55,7 @@
 
     networking = {
       useNetworkd = lib.mkForce false;
-      wireless.enable = lib.mkForce false;
+      wireless.enable = true;
       networkmanager.enable = true;
     };
 

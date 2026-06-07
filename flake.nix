@@ -8,7 +8,7 @@
     };
 
     disko = {
-      url = "github:nix-community/disko/5ae05d98d2bebc0a9521c9fc89bd2e5cffa05926"; # 1-20-2026 last working version for nixos 25.11
+      url = "github:nix-community/disko"; #/5ae05d98d2bebc0a9521c9fc89bd2e5cffa05926"; # 1-20-2026 last working version for nixos 25.11
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -41,7 +41,7 @@
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -55,7 +55,7 @@
     };
 
     nixpkgs = {
-      url = "github:nixos/nixpkgs/nixos-25.11";
+      url = "github:nixos/nixpkgs/nixos-26.05";
     };
 
     secrets = {
