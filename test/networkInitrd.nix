@@ -35,6 +35,7 @@ in {
 
     boot = {
       loader.systemd-boot.enable = lib.mkVMOverride true;
+      supportedFilesystems = [ "btrfs" ];
       initrd = {
         availableKernelModules = [ "e1000" ];
         systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
@@ -47,7 +48,7 @@ in {
 
       virtualisation = {
         rootDevice = "/dev/mapper/cryptroot";
-        fileSystems."/".autoFormat = true;
+        fileSystems."/".fsType = lib.mkVMOverride "btrfs";
       };
 
       boot.initrd.luks.devices = lib.mkVMOverride {

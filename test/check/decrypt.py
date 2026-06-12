@@ -1,6 +1,8 @@
 # Check initrd debug on tty9
 machine.wait_for_unit("multi-user.target")
 machine.succeed("echo -n password | cryptsetup luksFormat -q --iter-time=1 /dev/vdb -")
+machine.succeed("echo -n password | cryptsetup luksOpen -q /dev/vdb cryptroot")
+machine.succeed("mkfs.btrfs /dev/mapper/cryptroot")
 machine.succeed("bootctl set-default nixos-generation-1-specialisation-boot-luks.conf")
 machine.succeed("sync")
 machine.crash()

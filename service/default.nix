@@ -67,7 +67,7 @@ in {
 
     boot.initrd = {
 
-      availableKernelModules = [ "ccm" "ctr" "tun" ];
+      availableKernelModules = [ "ccm" "ctr" "tun" "nft_chain_nat" ];
 
       network = {
         enable = true;
@@ -100,25 +100,25 @@ in {
             argument = if config.system.nixos.variant_id == "test" then readFile "${inputs.secrets-test}/${config.aviary.uID}/${host}-ts-initrd"
               else readFile "${inputs.secrets}/${config.aviary.uID}/${host}-ts-initrd";
           };
-
-          # Link the dbus socket to where tailscaled expects it
-          "50-tailescale"."/var/run".d = {
-            argument = "/run";
-            type = "L";
-          };
         };
 
         packages = [ pkgs.wpa_supplicant pkgs.tailscale pkgs.openssh ];
         initrdBin = [ pkgs.wpa_supplicant pkgs.tailscale pkgs.openssh ];
 
-        dbus.enable = true;
-        #sockets.dbus.unitConfig.DefaultDependencies = false; # Not set up by dbus.enable = true;
-
         users.root.shell = "/bin/systemd-tty-ask-password-agent";
 
-        network.links."10-wifi" = {
-          matchConfig.Type = "wlan";
-          linkConfig.Name = "wifi0";
+        network = {
+	  links."10-wifi" = {
+            matchConfig.Type = "wlan";
+            linkConfig.Name = "wifi0";
+          };
+	  networks."20-tailscale" = {
+	    matchConfig.Name = config.services.tailscale.interfaceName;
+	    linkConfig = {
+	      Unmanaged = true;
+	      ActivationPolicy = "manual";
+	    };
+	  };
         };
 
         targets.cryptsetup.wants = [ "wpa_supplicant-initrd.service" ];
@@ -149,12 +149,9 @@ in {
             unitConfig.DefaultDependencies = false;
           };
 
-          #dbus.unitConfig.DefaultDependencies = false; # Not set up by dbus.enable = true;
-
           tailscaled = {
-            wants = [ "dbus.service" "network-online.target" ];
             wantedBy = [ "cryptsetup.target" ];
-            unitConfig.DefaultDependencies = "no";
+            unitConfig.DefaultDependencies = false;
             serviceConfig = {
 	      LogLevelMax = "notice";
               TimeoutSec = "infinity";
@@ -179,17 +176,9 @@ in {
       "/var/lib/tailscale"
     ];
 
-    #systemd.services.systemd-networkd-wait-online.enable = mkForce false; # Sometimes this fires after initrd
-
-    # Disabling these might be a bad idea but
-    # these are tricky to get working in initrd and throw a [Depend] during boot
-    #systemd.services.systemd-networkd-persistent-storage.enable = false; # Persists mac address accross reboots
-    #systemd.services.network-local-commands.enable = false; # Hook for custom network commands
-
     systemd.services.tailscaled = {
       after = [ "systemd-networkd.service" "multi-user.target" ];
       serviceConfig.LogLevelMax = "notice";
-      # preStop = "/run/current-system/sw/bin/tailscale logout";
     };
 
     systemd.services.tailscaled-autoconnect.after = [ "multi-user.target" ];

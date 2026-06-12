@@ -33,6 +33,7 @@ in {
 
     boot = {
       loader.systemd-boot.enable = lib.mkVMOverride true;
+      supportedFilesystems = [ "btrfs" ];
       initrd = {
         availableKernelModules = [ "e1000" ];
         systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
@@ -47,8 +48,7 @@ in {
         rootDevice = "/dev/mapper/disk-primary-luks-btrfs-test-a";
         fileSystems = {
 	  "/" = {
-	    autoFormat = true;
-	    fsType = lib.mkForce "btrfs";
+	    fsType = lib.mkVMOverride "btrfs";
 	    options = [ "subvol=root" "compress=zstd" "noatime" ];
 	  };
 	  "/persist" = {

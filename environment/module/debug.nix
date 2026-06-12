@@ -47,10 +47,25 @@ in {
       extraArgs = mkForce [];
     };
 
-    users.users = {
-      root.hashedPassword = mkForce "";
-      "999".hashedPassword = mkForce "";
-      "1000".hashedPassword = mkForce "";
+    users = {
+
+      users = {
+
+	root.hashedPassword = mkForce "";
+
+	"999" = {
+          isSystemUser = true;
+          hashedPassword = mkForce "";
+	  group = "admins";
+        };
+
+        "1000" = {
+	  isNormalUser = true;
+	  hashedPassword = mkForce "";
+	};
+      };
+
+      groups."admins" = { };
     };
   };
 }
