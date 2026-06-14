@@ -72,6 +72,8 @@
 	ghostty
 	gnome-disk-utility
 	gnome-text-editor
+        inotify-tools
+	libnotify
 	loupe
 	nautilus
 	nautilus-python
@@ -225,19 +227,64 @@
 
       home.file.".librewolf/default/chrome/firefox-gnome-theme".source = inputs.firefox-gnome-theme;
 
-      systemd.user.services."flathub" = {
-        Unit = {
-          After = [ "network-online.target" ];
-          Description = "Add Flathub repo if not present";
+      systemd.user.services = {
+        "flathub" = {
+          Unit = {
+            After = [ "network-online.target" ];
+            Description = "Add Flathub repo if not present";
+          };
+          Service = {
+            Type = "oneshot";
+            Restart = "on-failure";
+            RestartSec = 30;
+            ExecStart = "/run/current-system/sw/bin/flatpak -u remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo";
+          };
+          Install = {
+            WantedBy = [ "default.target" ];
+          };
         };
-        Service = {
-          Type = "oneshot";
-          Restart = "on-failure";
-          RestartSec = 30;
-          ExecStart = "/run/current-system/sw/bin/flatpak -u remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo";
-        };
-        Install = {
-          WantedBy = [ "default.target" ];
+
+	"nixos-upgrade-notify" = {
+          Install.WantedBy = [ "graphical-session.target" ];
+          Service = {
+            Type = "simple";
+            ExecStart = pkgs.writeShellScript "nixos-upgrade-notify.sh" ''
+              /run/current-system/sw/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status | while read file; do
+                  sleep 1
+
+                  status=$(cat $file)
+
+                  if [[ "$status" == "nixos-upgrade-start" ]]; then
+                      /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		          -u normal \
+		          -i "drive-harddisk" \
+			  "Updating System" \
+			  "Downloading and installing system updates. Performance may be impaired for the duration."
+                  fi
+
+                  if [[ "$status" == "nixos-upgrade-success" ]]; then
+                      /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		         -u normal \
+			 -i "drive-harddisk" \
+			 "Update Successful" \
+			 "Please reboot the system to finalize changes."
+                  fi
+
+                  if [[ "$status" == "nixos-upgrade-failure" ]]; then
+                      /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		          -u critical \
+			  -i "drive-harddisk" \
+			  "Update Failed" \
+			  "An error occured. Please run 'journalctl -u nixos-upgrade' for details."
+                  fi
+              done
+            '';
+            Restart = "always";
+          };
+          Unit = {
+            Description = "nixos-upgrade notifications";
+            After = [ "graphical-session.target" ];
+          };
         };
       };
 
