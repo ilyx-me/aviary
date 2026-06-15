@@ -69,7 +69,7 @@ in
 		  extraArgs = [ "-f" ];
 		  subvolumes = {
 		    "home" = {
-		      mountOptions = [ "compressed=zstd" "noatime" ];
+		      mountOptions = [ "compress=zstd" "noatime" ];
 		      mountpoint = "/home";
 		    };
 		  };

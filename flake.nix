@@ -232,6 +232,7 @@
           default = { ... }: {
             #_module.args = { inherit inputs; }; # Can be used for diskoLib tests, can also be put in their extraInstallerConfig/extraSystemConfig
             imports = [
+	      ({ ... }: { system.configurationRevision = self.rev or self.dirtyRev or null; })
               inputs.home-manager.nixosModules.default
               inputs.impermanence.nixosModules.impermanence
               inputs.sops-nix.nixosModules.sops
