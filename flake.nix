@@ -293,6 +293,20 @@
             ];
           };
 
+	  cardinal = nixpkgs.lib.nixosSystem {
+	    specialArgs = { inherit inputs; };
+	    modules = [
+	      self.nixosModules.bootstrap
+	      ./environment/module/graphical.nix
+	      ./environment/module/niri.nix
+	      ./system/module/part/default.nix
+	      ./system/module/part/double.nix
+	      ./system/cardinal.nix
+	      ./user/00.nix
+	      ./service/update.nix
+	    ];
+	  };
+
           chicken = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [

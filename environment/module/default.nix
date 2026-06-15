@@ -58,7 +58,7 @@ let
     readFile ../../script/systemd/cryptsetupEarly.sh
   );
 
-  cryptsetupExecStartPost = writeShellScript "impermanence" (
+  impermanenceExecStart = writeShellScript "impermanence" (
     readFile ../../script/systemd/impermanence.sh
   );
 
@@ -272,7 +272,7 @@ in {
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
-            ExecStart = "${cryptsetupExecStartPost} ${deviceMapperPrimary}";
+            ExecStart = "${impermanenceExecStart} ${deviceMapperPrimary}";
           };
           after = [ "systemd-makefs@dev-mapper-${escapeSystemdPath deviceMapperPrimary}.service" ]; # For runNixOSTest
           before = [ "sysroot.mount" ];
@@ -338,7 +338,7 @@ in {
       ));
 
       storePaths = [
-        cryptsetupExecStartPost
+        impermanenceExecStart
         cryptsetupEarlyExecStart
         pcrExecStart
       ];
@@ -462,6 +462,10 @@ in {
 	  script = ''
 	    if [ "$(od -An -t u1 /sys/firmware/efi/efivars/SecureBoot-* | tr -d ' ')" -eq 60001 ]; then
 	        /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
+
+		if [ -e "/dev/disk/by-partlabel/disk-secondary-luks-${host}" ]; then
+		    /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-secondary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
+		fi
 	    fi
 	  '';
 	};
