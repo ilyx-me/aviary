@@ -26,6 +26,7 @@
 
     boot = {
       kernelModules = [ "kvm-intel" ];
+      kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
       initrd.availableKernelModules = [
         "ahci"
 	"atlantic"
@@ -45,6 +46,7 @@
       nvidia = {
         open = true;
 	package = config.boot.kernelPackages.nvidiaPackages.stable;
+	powerManagement.enable = true;
       };
     };
   };
