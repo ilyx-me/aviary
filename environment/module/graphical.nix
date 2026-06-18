@@ -19,6 +19,7 @@
     boot = {
       consoleLogLevel = 3;
       kernelParams = [ "quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "splash" ]; # plymouth.debug
+      kernel.sysctl."vm.max_map_count" = 1048576;
       loader.timeout = lib.mkForce 0;
       initrd.verbose = false;
 
@@ -69,6 +70,7 @@
 	clapper
 	clapper-enhancers
 	flatpak
+	gamescope
 	ghostty
 	gnome-disk-utility
 	gnome-text-editor
@@ -89,6 +91,8 @@
         "/etc/NetworkManager/system-connections"
       ];
     };
+
+    programs.steam.enable = true;
 
     # Required for Sunshine remote inputs
     hardware.uinput.enable = true;
