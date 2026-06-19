@@ -274,7 +274,14 @@
 		                  -u normal \
 			          -i "drive-harddisk" \
 			         "Update Successful" \
-			         "Please reboot the system to finalize changes."
+			         "In place upgrade complete. No action required."
+			      ;;
+			  "nixos-upgrade-reboot")
+                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		                  -u critical \
+			          -i "drive-harddisk" \
+			         "Reboot Required" \
+			         "Please restart the system to finalize remaining changes."
 			      ;;
 			  "nixos-upgrade-failure")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
