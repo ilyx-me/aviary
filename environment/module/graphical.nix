@@ -253,35 +253,41 @@
           Service = {
             Type = "simple";
             ExecStart = pkgs.writeShellScript "nixos-upgrade-notify.sh" ''
-              /run/current-system/sw/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status | while read file; do
-                  sleep 1
+	      status_last=""
 
-                  status=$(cat $file)
+              while read file; do
+                  sleep 0.5
 
-                  if [[ "$status" == "nixos-upgrade-start" ]]; then
-                      /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		          -u normal \
-		          -i "drive-harddisk" \
-			  "Updating System" \
-			  "Downloading and installing system updates. Performance may be impaired for the duration."
-                  fi
+                  status_current=$(cat "$file" 2>/dev/null || echo -n "")
 
-                  if [[ "$status" == "nixos-upgrade-success" ]]; then
-                      /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		         -u normal \
-			 -i "drive-harddisk" \
-			 "Update Successful" \
-			 "Please reboot the system to finalize changes."
-                  fi
+                  if [[ "$status_current" != "$status_last" ]]; then
+		      case "$status_current" in
+                          "nixos-upgrade-start")
+		              /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		                  -u normal \
+		                  -i "drive-harddisk" \
+			          "Updating System" \
+			          "Downloading and installing system updates. Performance may be impaired for the duration."
+                              ;;
+			  "nixos-upgrade-success")
+                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		                  -u normal \
+			          -i "drive-harddisk" \
+			         "Update Successful" \
+			         "Please reboot the system to finalize changes."
+			      ;;
+			  "nixos-upgrade-failure")
+                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		                  -u critical \
+			          -i "drive-harddisk" \
+			          "Update Failed" \
+			          "An error occured. Please run 'journalctl -u nixos-upgrade' for details."
+			      ;;
+		      esac
 
-                  if [[ "$status" == "nixos-upgrade-failure" ]]; then
-                      /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		          -u critical \
-			  -i "drive-harddisk" \
-			  "Update Failed" \
-			  "An error occured. Please run 'journalctl -u nixos-upgrade' for details."
-                  fi
-              done
+		      status_last="$status_current"
+	          fi
+	      done < <(/run/current-system/sw/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status)
             '';
             Restart = "always";
           };
