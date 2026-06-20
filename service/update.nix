@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   ...
 }:
@@ -25,7 +26,7 @@
     };
 
     systemd.services.nixos-upgrade.environment = {
-      GIT_SSH_COMMAND = "ssh -i '/home/999/.ssh/id_ed25519' -o IdentitiesOnly=yes";
+      GIT_SSH_COMMAND = "ssh -i '/run/secrets/${config.aviary.secrets.sshAdmin}' -o IdentitiesOnly=yes";
     };
 
     systemd.services = {
