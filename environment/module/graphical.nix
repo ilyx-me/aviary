@@ -77,6 +77,7 @@
         inotify-tools
 	libnotify
 	loupe
+	mangohud
 	nautilus
 	nautilus-python
 	papers
