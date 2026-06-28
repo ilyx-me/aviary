@@ -96,7 +96,6 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
    - singleQuota
  - Get first boot to DMS without niri flicker
  - Add separate PW for 999
- - turn off trackpad while typing
  - default mime types
    - folders, web sites, music, video, images
  - disable sunshine desktop audio sharing by default
@@ -104,3 +103,5 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
  - dms black overview background
  - flatpak auto updates
  - browser tabs by default
+ - set very short timeout for plymouth start service in initrd for headless desktops
+ - duckduckgo default search

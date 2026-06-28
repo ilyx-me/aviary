@@ -17,7 +17,10 @@
 
     nixpkgs.hostPlatform = "x86_64-linux";
 
-    aviary.drive.primary = "/dev/disk/by-id/wwn-0x500080d911304b53";
+    aviary = {
+      drive.primary = "/dev/disk/by-id/wwn-0x500080d911304b53";
+      virtualDisplay = "HDMI-A-3";
+    };
 
     boot = {
       kernelModules = [ "kvm-intel" ];

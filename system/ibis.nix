@@ -17,7 +17,10 @@
 
     nixpkgs.hostPlatform = "x86_64-linux";
 
-    aviary.drive.primary = "/dev/disk/by-id/nvme-eui.002538a311b7cacb";
+    aviary = {
+      drive.primary = "/dev/disk/by-id/nvme-eui.002538a311b7cacb";
+      virtualDisplay = "HDMI-A-1";
+    };
 
     hardware.microsoft-surface.kernelVersion = "stable";
 
