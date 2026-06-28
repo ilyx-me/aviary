@@ -105,3 +105,4 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
  - browser tabs by default
  - set very short timeout for plymouth start service in initrd for headless desktops
  - duckduckgo default search
+ - make tmpfile for /run/nixos-upgrade/status
