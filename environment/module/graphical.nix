@@ -34,7 +34,8 @@
 	"rd.udev.log_level=3"
 	"splash"
 	"vm.max_map_count=1048576"
-	"video=${config.aviary.virtualDisplay}:1920x1080R@60D"
+	"video=${config.aviary.virtualDisplay}:e"
+        "drm.edid_firmware=${config.aviary.virtualDisplay}:edid/virtual-display.bin"
 	#"plymouth.debug"
       ];
       loader.timeout = lib.mkForce 0;
