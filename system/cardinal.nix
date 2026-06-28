@@ -19,9 +19,13 @@
 
     nixpkgs.hostPlatform = "x86_64-linux";
 
-    aviary.drive = {
-      primary = "/dev/disk/by-id/nvme-eui.5cd2e41ba6540100";
-      secondary = "/dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b4918ecea";
+    aviary = {
+      drive = {
+        primary = "/dev/disk/by-id/nvme-eui.5cd2e41ba6540100";
+        secondary = "/dev/disk/by-id/nvme-eui.e8238fa6bf530001001b448b4918ecea";
+      };
+
+      virtualDisplay = "HDMI-A-1";
     };
 
     boot = {

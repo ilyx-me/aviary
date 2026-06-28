@@ -97,4 +97,10 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
  - Get first boot to DMS without niri flicker
  - Add separate PW for 999
  - turn off trackpad while typing
- - nixos-upgrade notifications
+ - default mime types
+   - folders, web sites, music, video, images
+ - disable sunshine desktop audio sharing by default
+ - auto updates
+ - dms black overview background
+ - flatpak auto updates
+ - browser tabs by default

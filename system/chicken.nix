@@ -16,7 +16,10 @@
 
     nixpkgs.hostPlatform = "x86_64-linux";
 
-    aviary.drive.primary = "/dev/disk/by-id/nvme-eui.0025385481b04ee1";
+    aviary = {
+      drive.primary = "/dev/disk/by-id/nvme-eui.0025385481b04ee1";
+      virtualDisplay = "HDMI-A-2";
+    };
 
     boot = {
       kernelModules = [ "kvm-intel" ];

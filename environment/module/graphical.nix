@@ -7,6 +7,16 @@
 }:
 
 {
+  options.aviary = {
+
+    virtualDisplay = lib.mkOption {
+      type = lib.types.str;
+      default = null;
+      example = "HDMI-A-2";
+      description = "Display output to use for sunshine gpu accelerated virtual display";
+    };
+  };
+
   config = {
 
     sops.secrets."sunshine-creds" = {
@@ -18,8 +28,15 @@
 
     boot = {
       consoleLogLevel = 3;
-      kernelParams = [ "quiet" "systemd.show_status=auto" "rd.udev.log_level=3" "splash" ]; # plymouth.debug
-      kernel.sysctl."vm.max_map_count" = 1048576;
+      kernelParams = [
+        "quiet"
+	"systemd.show_status=auto"
+	"rd.udev.log_level=3"
+	"splash"
+	"vm.max_map_count=1048576"
+	"video=${config.aviary.virtualDisplay}:1920x1080R@60D"
+	#"plymouth.debug"
+      ];
       loader.timeout = lib.mkForce 0;
       initrd.verbose = false;
 
@@ -95,8 +112,18 @@
 
     programs.steam.enable = true;
 
-    # Required for Sunshine remote inputs
-    hardware.uinput.enable = true;
+    hardware = {
+      uinput.enable = true; # Required for Sunshine remote inputs
+      display = {
+        outputs."${config.aviary.virtualDisplay}".edid = "virtual-display.bin";
+        edid.packages = [ # from https://edid.build
+          (pkgs.runCommand "edid-virtual-display" { } ''
+            mkdir -p $out/lib/firmware/edid
+            echo -n 'AP///////wAx2AAAAAAAAAEkAQOAAAB4Au6Ro1RMmSYPUFQAAAABAQEBAQEBAQEBAQEBAQEBGjaAoHA4H0AwIDUAAAAAAAAUAAAA/QAeeB//dwAKICAgICAgAAAA/ABWaXJ0dWFsIERpc3AKAAAAEAAAAAAAAAAAAAAAAAAAAeYCAymxRhAiP19hduIAymcDDAAAABhEathdxAF4gGAAHnjjBcAA4wYEARo2gKBwOB9AMCA1AAAAAAAAFJUuAKCgoBVQMCA1AAAAAAAAFG9eAKCgoClQMCA1AAAAAAAAFFbCAKCgoFVQMCA1AAAAAAAAFAAAAAAAAAAAAAAAAAAAKA==' | base64 -d > "$out/lib/firmware/edid/virtual-display.bin"
+	  '')
+	];
+      };
+    };
 
     services = {
       logind.settings.Login.WallMessages = "off";
@@ -169,6 +196,13 @@
       "d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
       "d /home/1000/.config/sunshine 0755 ${config.users.users."1000".name} users -"
     ];
+
+    systemd.user.services.sunshine = {
+      after = lib.mkForce [ "graphical-session-pre-lock.target" ];
+      partOf = lib.mkForce [ "graphical-session-pre-lock.target" ];
+      wants = lib.mkForce [ "graphical-session-pre-lock.target" ];
+      wantedBy = lib.mkForce [ "graphical-session-pre-lock.target" ];
+    };
 
     programs.firefox = {
       enable = true;
@@ -304,6 +338,37 @@
             After = [ "graphical-session.target" ];
           };
         };
+
+	"sunshine-virtual-display" = {
+	  Install.WantedBy = [ "graphical-session-pre-lock.target" ];
+	  Service = {
+	    Type = "simple";
+	    ExecStart = pkgs.writeShellScript "sunshine-virtual-display.sh" ''
+	      while read -r line; do
+	          displayState="on"
+	          for p in /sys/class/drm/*/status; do
+		      con=''${p%/status}
+		      displayOut=''${con#*/card?-}
+		      if [[ "$displayOut" == "${config.aviary.virtualDisplay}" ]]; then
+		          continue
+		      fi
+
+                      if [[ "$(cat $p)" == "connected" ]]; then
+		          displayState="off"
+		      fi
+	          done
+		  echo "DRM event detected, turning virtual display $displayState"
+		  /run/current-system/sw/bin/niri msg output "${config.aviary.virtualDisplay}" $displayState
+	      done < <(/run/current-system/sw/bin/udevadm monitor --kernel --subsystem=drm)
+	    '';
+	    Restart = "always";
+	    RestartSec = 5;
+	  };
+	  Unit = {
+	    Description = "Dynamically enable/disable virtual display for sunshine";
+	    After = [ "graphical-session-pre-lock.target" ];
+	  };
+	};
       };
 
       programs = {
