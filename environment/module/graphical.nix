@@ -33,11 +33,16 @@
 	"systemd.show_status=auto"
 	"rd.udev.log_level=3"
 	"splash"
-	"vm.max_map_count=1048576"
 	"video=${config.aviary.virtualDisplay}:e"
         "drm.edid_firmware=${config.aviary.virtualDisplay}:edid/virtual-display.bin"
 	#"plymouth.debug"
       ];
+      kernel.sysctl = {
+        "vm.max_map_count" = 1048576;
+	"net.core.netdev_budget" = 600;
+	"net.core.netdev_budget_usecs" = 8000;
+        "net.core.netdev_max_backlog" = 10000;
+      };
       loader.timeout = lib.mkForce 0;
       initrd.verbose = false;
 
@@ -78,7 +83,10 @@
     networking = {
       useNetworkd = lib.mkForce false;
       wireless.enable = true;
-      networkmanager.enable = true;
+      networkmanager = {
+        enable = true;
+	wifi.powersave = false;
+      };
     };
 
     environment = {
@@ -152,6 +160,7 @@
 	  wan_encryption_mode = 2;
 	  capture = "kms";
 	  credentials_file = "login.json";
+	  fec_percentage = 50;
 	};
 	applications = {
           env = {};
@@ -197,8 +206,11 @@
     systemd.shutdownRamfs.enable = false;
 
     systemd.tmpfiles.rules = [
-      "d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
-      "d /home/1000/.config/sunshine 0755 ${config.users.users."1000".name} users -"
+      "d /home/1000/.config 0700 ${config.users.users."1000".name} users - -"
+      "d /home/1000/.config/sunshine 0755 ${config.users.users."1000".name} users - -"
+      "d /home/1000/.config/librewolf 0700 ${config.users.users."1000".name} users - -"
+      "d /home/1000/.config/librewolf/librewolf 0700 ${config.users.users."1000".name} users - -"
+      "L /home/1000/.librewolf - - - - /home/1000/.config/librewolf/librewolf"
     ];
 
     systemd.user.services.sunshine = {
@@ -222,33 +234,9 @@
             installation_mode = "force_installed";
           };
 
-          # Unhook
-	  "myallychou@gmail.com" = {
-	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/youtube-recommended-videos/latest.xpi";
-	    installation_mode = "normal_installed";
-	  };
-
 	  # Bitwarden
 	  "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
 	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-	    installation_mode = "normal_installed";
-	  };
-
-	  # Vimium
-	  "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
-	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
-	    installation_mode = "normal_installed";
-	  };
-
-	  # No Tabs
-	  "{c9f848fb-3fb6-4390-9fc1-e4dd4d1c5122}" = {
-	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/adsum-notabs/latest.xpi";
-	    installation_mode = "normal_installed";
-	  };
-
-	  # Open external links in a container
-	  "{f069aec0-43c5-4bbf-b6b4-df95c4326b98}" = {
-	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/open-url-in-container/latest.xpi";
 	    installation_mode = "normal_installed";
 	  };
         };
@@ -268,7 +256,7 @@
 	};
       };
 
-      home.file.".librewolf/default/chrome/firefox-gnome-theme".source = inputs.firefox-gnome-theme;
+      home.file.".config/librewolf/librewolf/default/chrome/firefox-gnome-theme".source = inputs.firefox-gnome-theme;
 
       systemd.user.services = {
         "flathub" = {
@@ -380,36 +368,73 @@
 	  enable = true;
 	  package = null;
 	  systemd.enable = false;
-	  settings = {
-            gtk-tabs-location = "hidden";
-	    theme = "dark:Adwaita Dark,light:Adwaita";
-	  };
+	  settings.theme = "dark:Adwaita Dark,light:Adwaita";
         };
 
         librewolf = {
           enable = true;
 	  package = null;
 
-	  profiles."default".userChrome = ''
-	    @import "firefox-gnome-theme/userChrome.css";
+	  profiles."default" = {
+	    userChrome = ''
+	      @import "firefox-gnome-theme/userChrome.css";
+	    '';
 
-	    /* Hide tabs entirely */
-	    #TabsToolbar {
-	       visibility: collapse !important;
-	    }
-	  '';
+	    userContent = ''
+	      @import "firefox-gnome-theme/userContent.css";
+	    '';
 
-	  profiles."default".userContent = ''
-	    @import "firefox-gnome-theme/userContent.css";
-	  '';
+	    search = {
+	      force = true;
+              default = "ddg";
+              privateDefault = "ddg";
+
+              engines = {
+                "Nix Packages" = {
+                  urls = [{
+                    template = "https://search.nixos.org/packages";
+                    params = [
+                      { name = "channel"; value = "unstable"; }
+                      { name = "query";   value = "{searchTerms}"; }
+                    ];
+                  }];
+                  icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                  definedAliases = [ "@np" ];
+                };
+
+                "Nix Options" = {
+                  urls = [{
+                    template = "https://search.nixos.org/options";
+                    params = [
+                      { name = "channel"; value = "unstable"; }
+                      { name = "query";   value = "{searchTerms}"; }
+                    ];
+                  }];
+                  icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                  definedAliases = [ "@no" ];
+                };
+
+                "NixOS Wiki" = {
+                  urls = [{
+                    template = "https://wiki.nixos.org/w/index.php";
+                    params = [
+                      { name = "search"; value = "{searchTerms}"; }
+                    ];
+                  }];
+                  icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                  definedAliases = [ "@nw" ];
+                };
+              };
+	    };
+	  };
 
           settings = {
             "browser.download.useDownloadDir" = true;
             "browser.download.autohideButton" = false;
             "webgl.disabled" = false;
             "privacy.resistFingerprinting" = false; # Required for auto themeing
-            #"privacy.clearOnShutdown.history" = false;
-            #"privacy.clearOnShutdown.cookies" = false;
+            "privacy.clearOnShutdown.history" = false;
+            "privacy.clearOnShutdown.cookies" = false;
             "browser.toolbars.bookmarks.visibility" = "never";
             "browser.startup.page" = 3;
             #"extensions.pictureinpicture.enable_picture_in_picture_overrides" = true;
@@ -417,15 +442,68 @@
             "browser.uidensity" = 2;
             #"browser.urlbar.suggest.searches" = true;
 	    "ui.key.menuAccessKey" = 0;
-
-            # Config for no tabs
-            "browser.uiCustomization.state" = ''{"placements":{"widget-overflow-fixed-list":[],"unified-extensions-area":["_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action","ublock0_raymondhill_net-browser-action","myallychou_gmail_com-browser-action"],"nav-bar":["back-button","forward-button","stop-reload-button","urlbar-container","new-window-button","privatebrowsing-button","customizableui-special-spring8","vertical-spacer","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action","unified-extensions-button","downloads-button"],"toolbar-menubar":["menubar-items"],"TabsToolbar":[],"vertical-tabs":["tabbrowser-tabs"],"PersonalToolbar":["personal-bookmarks"]},"seen":["developer-button","screenshot-button","ublock0_raymondhill_net-browser-action","_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action","myallychou_gmail_com-browser-action","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action"],"dirtyAreaCache":["unified-extensions-area","nav-bar","toolbar-menubar","TabsToolbar","vertical-tabs","PersonalToolbar","widget-overflow-fixed-list"],"currentVersion":23,"newElementCount":17}'';
 	    "sidebar.verticalTabs.dragToPinPromo.dismissed" = true;
-	    "browser.toolbarbuttons.introduced.sidebar-button" = true;
-	    #"browser.link.open_newwindow" = 1; # Open links for 'new windows' in same tab
-	    #"browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
-	    "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-	    "svg.context-properties.content.enabled" = true;
+            "browser.toolbarbuttons.introduced.sidebar-button" = true;
+            #"browser.link.open_newwindow" = 1; # Open links for 'new windows' in same tab
+            #"browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
+            "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+            "svg.context-properties.content.enabled" = true;
+            "browser.uiCustomization.state" = ''
+              {
+                "placements": {
+                  "widget-overflow-fixed-list": [],
+                  "unified-extensions-area": [
+                    "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action",
+                    "ublock0_raymondhill_net-browser-action",
+                    "myallychou_gmail_com-browser-action"
+                  ],
+                  "nav-bar": [
+                    "back-button",
+                    "forward-button",
+                    "stop-reload-button",
+                    "urlbar-container",
+                    "new-window-button",
+                    "privatebrowsing-button",
+		    "reset-pbm-toolbar-button",
+                    "customizableui-special-spring8",
+                    "vertical-spacer",
+                    "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action",
+                    "unified-extensions-button",
+                    "downloads-button"
+                  ],
+                  "toolbar-menubar": [
+                    "menubar-items"
+                  ],
+                  "TabsToolbar": [
+                    "tabbrowser-tabs"
+                  ],
+                  "vertical-tabs": [],
+                  "PersonalToolbar": [
+                    "personal-bookmarks"
+                  ]
+                },
+                "seen": [
+                  "developer-button",
+                  "screenshot-button",
+                  "ublock0_raymondhill_net-browser-action",
+                  "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action",
+                  "myallychou_gmail_com-browser-action",
+                  "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action",
+                  "reset-pbm-toolbar-button"
+                ],
+                "dirtyAreaCache": [
+                  "unified-extensions-area",
+                  "nav-bar",
+                  "toolbar-menubar",
+                  "TabsToolbar",
+                  "vertical-tabs",
+                  "PersonalToolbar",
+                  "widget-overflow-fixed-list"
+                ],
+                "currentVersion": 24,
+                "newElementCount": 17
+              }
+	    '';
 	  };
         };
       };

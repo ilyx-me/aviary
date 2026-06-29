@@ -29,14 +29,16 @@
       GIT_SSH_COMMAND = "ssh -i '/run/secrets/${config.aviary.secrets.sshAdmin}' -o IdentitiesOnly=yes";
     };
 
+    systemd.tmpfiles.rules = [
+      "d /run/nixos-upgrade 0755 root root - -"
+      "f /run/nixos-upgrade/status 0644 root root - -"
+    ];
+
     systemd.services = {
       nixos-upgrade = {
         preStart = ''
 	  revision_repo=$(/run/current-system/sw/bin/git ls-remote https://github.com/ilyx-me/aviary dev-core-systems | /run/current-system/sw/bin/cut -f1)
 	  revision_system=$(/run/current-system/sw/bin/nixos-version --configuration-revision)
-
-	  mkdir -p -m 0755 /run/nixos-upgrade
-	  umask 022
 
 	  if [[ "$revision_system" == "$revision_repo" ]]; then
 	      echo "System revision matches repository revision, exiting..."
@@ -53,9 +55,6 @@
       };
 
       "nixos-upgrade-failure".script = ''
-        mkdir -p -m 0755 /run/nixos-upgrade
-	umask 022
-
 	upgrade_status=$(cat "/run/nixos-upgrade/status" 2>/dev/null || echo -n "")
 
 	if [[ "$upgrade_status" == "nixos-upgrade-skip" ]]; then
@@ -66,9 +65,6 @@
       '';
 
       "nixos-upgrade-success".script = ''
-        mkdir -p -m 0755 /run/nixos-upgrade
-	umask 022
-
 	booted="$(/run/current-system/sw/bin/readlink /run/booted-system/{initrd,kernel,kernel-modules})"
 	built="$(/run/current-system/sw/bin/readlink /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
 
