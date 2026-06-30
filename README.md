@@ -89,15 +89,14 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 # TODO
 
+ - dms black overview background - dms bug??
  - separate private from secrets in environment/default
+ - Add separate PW for 999
  - remaining tests
    - automatic updates
    - recovery deployment
    - singleQuota
  - Get first boot to DMS without niri flicker
- - Add separate PW for 999
- - default mime types
-   - folders, web sites, music, video, images
  - auto updates
- - dms black overview background
  - flatpak auto updates
+ - moonlight default config
