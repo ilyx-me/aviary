@@ -152,7 +152,13 @@
         Service = {
           Type = "dbus";
 	  BusName = "org.freedesktop.Notifications";
-	  Environment = [ "TZ=America/Los_Angeles" ];
+	  Environment = [
+	    "TZ=America/Los_Angeles"
+            "_JAVA_AWT_WM_NONREPARENTING=1"
+	    "ELECTRON_OZONE_PLATFORM_HINT=auto"
+            "QT_STYLE_OVERRIDE=adwaita"
+	    "QT_WAYLAND_DECORATION=adwaita"
+	  ];
 	  ExecStartPre = "/run/current-system/sw/bin/niri msg action do-screen-transition --delay-ms 5000";
 	};
       };

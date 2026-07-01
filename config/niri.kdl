@@ -90,16 +90,6 @@ cursor {
     xcursor-size 24
 }
 
-environment {
-    _JAVA_AWT_WM_NONREPARENTING "1"
-    XDG_CURRENT_DESKTOP "niri"
-    QT_QPA_PLATFORM "wayland"
-    ELECTRON_OZONE_PLATFORM_HINT "auto"
-    QT_QPA_PLATFORMTHEME "gtk3"
-    QT_QPA_PLATFORMTHEME_QT6 "gtk3"
-    QT_STYLE_OVERRIDE "adwaita-dark"
-}
-
 // DMS wants to set this to true but this makes GTK4 windoes non-resizable at the edges
 window-rule {
     tiled-state false

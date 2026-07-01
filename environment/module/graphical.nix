@@ -313,31 +313,38 @@
                           "nixos-upgrade-start")
 		              /run/current-system/sw/bin/notify-send -a "NixOS System" \
 		                  -u normal \
-		                  -i "drive-harddisk" \
+		                  -i "nix-snowflake" \
 			          "Updating System" \
 			          "Downloading and installing system updates. Performance may be impaired for the duration."
                               ;;
 			  "nixos-upgrade-success")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
 		                  -u normal \
-			          -i "drive-harddisk" \
-			         "Update Successful" \
-			         "In place upgrade complete. No action required."
+			          -i "nix-snowflake" \
+			          "Update Successful" \
+			          "In place upgrade complete. No action required."
 			      ;;
 			  "nixos-upgrade-reboot")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
 		                  -u critical \
-			          -i "drive-harddisk" \
-			         "Reboot Required" \
-			         "Please restart the system to finalize remaining changes."
+			          -i "nix-snowflake" \
+			          "Reboot Required" \
+			          "Please restart the system to finalize remaining changes."
 			      ;;
 			  "nixos-upgrade-failure")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
 		                  -u critical \
-			          -i "drive-harddisk" \
+			          -i "nix-snowflake" \
 			          "Update Failed" \
-			          "An error occured. Please run 'journalctl -u nixos-upgrade' for details."
+			          "An error occured. Please run 'journalctl -eu nixos-upgrade' for details."
 			      ;;
+			  "nixos-upgrade-network")
+                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
+		                  -u normal \
+			          -i "nix-snowflake" \
+			          "Network Connection Failed" \
+			          "Could not check for system updates. Please check the network connection."
+		              ;;
 		      esac
 
 		      status_last="$status_current"

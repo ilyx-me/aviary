@@ -37,8 +37,14 @@
     systemd.services = {
       nixos-upgrade = {
         preStart = ''
-	  revision_repo=$(/run/current-system/sw/bin/git ls-remote https://github.com/ilyx-me/aviary dev-core-systems | /run/current-system/sw/bin/cut -f1)
 	  revision_system=$(/run/current-system/sw/bin/nixos-version --configuration-revision)
+
+	  set -o pipefail
+	  revision_repo=$(/run/current-system/sw/bin/git ls-remote https://github.com/ilyx-me/aviary dev-core-systems | /run/current-system/sw/bin/cut -f1) || {
+	      echo "Unable to get repository revision, exiting..."
+	      echo -n "nixos-upgrade-network" > /run/nixos-upgrade/status
+	      exit 1
+	  }
 
 	  if [[ "$revision_system" == "$revision_repo" ]]; then
 	      echo "System revision matches repository revision, exiting..."
@@ -58,6 +64,10 @@
 	upgrade_status=$(cat "/run/nixos-upgrade/status" 2>/dev/null || echo -n "")
 
 	if [[ "$upgrade_status" == "nixos-upgrade-skip" ]]; then
+	    exit 0
+	fi
+
+        if [[ "$upgrade_status" == "nixos-upgrade-network" ]]; then
 	    exit 0
 	fi
 
