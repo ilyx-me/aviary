@@ -107,6 +107,7 @@
 	libnotify
 	loupe
 	mangohud
+        moonlight-qt
 	nautilus
 	nautilus-python
 	papers
@@ -391,6 +392,32 @@
 	};
       };
 
+      systemd.user.tmpfiles =
+
+      let
+        moonlightConfig = lib.strings.escapeC [ " " "\n" ] (lib.generators.toINI {} {
+	  General = {
+	    audiocfg = 0;
+	    capturesyskeys = 1;
+	    connwarnings = false;
+	    gameopts = true;
+	    gamepadmouse = true;
+	    hostaudio = true;
+	    keepawake = true;
+	    quitAppAfter = true;
+            uidisplaymode = 0;
+	    vsync = false;
+	    windowmode = 0;
+	  };
+	});
+
+      in {
+	rules = [
+	  "d /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project 0755 ${config.users.users."1000".name} users - -"
+          "f /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project/Moonlight.conf 0755 ${config.users.users."1000".name} users - ${ moonlightConfig }"
+        ];
+      };
+
       programs = {
         ghostty = {
 	  enable = true;
@@ -463,6 +490,7 @@
             "privacy.resistFingerprinting" = false; # Required for auto themeing
             "privacy.clearOnShutdown.history" = false;
             "privacy.clearOnShutdown.cookies" = false;
+            "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
             "browser.toolbars.bookmarks.visibility" = "never";
             "browser.startup.page" = 3;
             #"extensions.pictureinpicture.enable_picture_in_picture_overrides" = true;

@@ -99,4 +99,3 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
  - Get first boot to DMS without niri flicker
  - auto updates
  - flatpak auto updates
- - moonlight default config
