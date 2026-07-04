@@ -48,7 +48,7 @@ in {
 
       virtualisation = {
         rootDevice = "/dev/mapper/cryptroot";
-	fileSystems."/".fsType = lib.mkVMOverride "btrfs";
+        fileSystems."/".fsType = lib.mkVMOverride "btrfs";
       };
 
       boot.initrd.luks.devices = lib.mkVMOverride {

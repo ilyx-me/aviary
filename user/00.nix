@@ -39,7 +39,7 @@ in {
         "egg-luks" = defaultPermissions;
 
         "ibis-age" = defaultPermissions;
-	"ibis-luks" = defaultPermissions;
+        "ibis-luks" = defaultPermissions;
       };
     };
 
@@ -79,6 +79,12 @@ in {
 
     home-manager.users."1000" = {
 
+      imports = [
+        inputs.nixvim.homeModules.nixvim
+        ./module/nvim.nix
+        ./module/starship.nix
+      ];
+
       programs = {
         ghostty.settings.gtk-tabs-location = "hidden";
         git = {
@@ -86,26 +92,26 @@ in {
           settings.user = {
             name = readFile "${secrets}/${config.aviary.uID}/username-git";
             email = readFile "${secrets}/${config.aviary.uID}/email-git";
-	  };
+          };
         };
 
-	librewolf = {
-	  profiles."default".userChrome = lib.mkForce ''
+        librewolf = {
+          profiles."default".userChrome = lib.mkForce ''
             @import "firefox-gnome-theme/userChrome.css";
             
             /* Hide tabs entirely */
             #TabsToolbar {
                 visibility: collapse !important;
             }
-	  '';
+          '';
 
           /*
-	  settings = {
+          settings = {
             "browser.link.open_newwindow" = 1;                   # Open links for 'new windows' in same tab
             "browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
-	  };
-	  */
-	};
+          };
+          */
+        };
       };
 
       home.packages = with pkgs; mkIf config.aviary.graphical [

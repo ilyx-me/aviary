@@ -6,7 +6,7 @@ include "dms/wpblur.kdl"
 
 input {
     keyboard {
-	numlock
+        numlock
         xkb {
             // If this section is empty, niri will fetch xkb settings
             // from org.freedesktop.locale1. You can control these using
@@ -16,11 +16,11 @@ input {
 
     touchpad {
         tap
-	dwt
+        dwt
         natural-scroll
-	accel-speed 0.5
+        accel-speed 0.5
         accel-profile "flat"
-	click-method "clickfinger"
+        click-method "clickfinger"
     }
 
     mouse {
@@ -51,15 +51,15 @@ layout {
     }
     preset-column-widths {
         proportion 0.33
-	proportion 0.5
-	proportion 0.66
+        proportion 0.5
+        proportion 0.66
         proportion 1.0
     }
     preset-window-heights {
-	proportion 0.33
-	proportion 0.5
-	proportion 0.66
-	proportion 1.0
+        proportion 0.33
+        proportion 0.5
+        proportion 0.66
+        proportion 1.0
     }
     struts {
         left 32

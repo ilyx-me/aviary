@@ -47,17 +47,17 @@ in {
       virtualisation = {
         rootDevice = "/dev/mapper/disk-primary-luks-btrfs-test-a";
         fileSystems = {
-	  "/" = {
-	    fsType = lib.mkVMOverride "btrfs";
-	    options = [ "subvol=root" "compress=zstd" "noatime" ];
-	  };
-	  "/persist" = {
-	    fsType = "btrfs";
-	    device = "/dev/mapper/disk-primary-luks-btrfs-test-a";
-	    options = [ "subvol=persist" "compress=zstd" "noatime" ];
-	    neededForBoot = true;
-	  };
-	};
+          "/" = {
+            fsType = lib.mkVMOverride "btrfs";
+            options = [ "subvol=root" "compress=zstd" "noatime" ];
+          };
+          "/persist" = {
+            fsType = "btrfs";
+            device = "/dev/mapper/disk-primary-luks-btrfs-test-a";
+            options = [ "subvol=persist" "compress=zstd" "noatime" ];
+            neededForBoot = true;
+          };
+        };
       };
 
       boot.initrd.luks.devices = lib.mkVMOverride {

@@ -50,34 +50,34 @@ in
 
       secondary = {
 
-	device = config.aviary.drive.secondary;
+        device = config.aviary.drive.secondary;
 
-	type = "disk";
-	content = {
-	  type = "gpt";
-	  partitions = {
-	    home = {
-	      size = "100%";
-	      name = if pathExists /tmp/aviaryInstall/egg-drive-name then "luks-${readFile /tmp/aviaryInstall/egg-drive-name}" else "luks-${host}";
-	      content = {
-	        type = "luks";
-		name = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-secondary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-secondary-luks-btrfs-${host}";
-		settings.allowDiscards = true;
-		passwordFile = "/tmp/aviaryInstall/luks-password-recovery";
-		content = {
-		  type = "btrfs";
-		  extraArgs = [ "-f" ];
-		  subvolumes = {
-		    "home" = {
-		      mountOptions = [ "compress=zstd" "noatime" ];
-		      mountpoint = "/home";
-		    };
-		  };
-		};
-	      };
-	    };
-	  };
-	};
+        type = "disk";
+        content = {
+          type = "gpt";
+          partitions = {
+            home = {
+              size = "100%";
+              name = if pathExists /tmp/aviaryInstall/egg-drive-name then "luks-${readFile /tmp/aviaryInstall/egg-drive-name}" else "luks-${host}";
+              content = {
+                type = "luks";
+                name = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-secondary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-secondary-luks-btrfs-${host}";
+                settings.allowDiscards = true;
+                passwordFile = "/tmp/aviaryInstall/luks-password-recovery";
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    "home" = {
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountpoint = "/home";
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
       };
     };
   };

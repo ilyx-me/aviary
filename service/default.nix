@@ -108,17 +108,17 @@ in {
         users.root.shell = "/bin/systemd-tty-ask-password-agent";
 
         network = {
-	  links."10-wifi" = {
+          links."10-wifi" = {
             matchConfig.Type = "wlan";
             linkConfig.Name = "wifi0";
           };
-	  networks."20-tailscale" = {
-	    matchConfig.Name = config.services.tailscale.interfaceName;
-	    linkConfig = {
-	      Unmanaged = true;
-	      ActivationPolicy = "manual";
-	    };
-	  };
+          networks."20-tailscale" = {
+            matchConfig.Name = config.services.tailscale.interfaceName;
+            linkConfig = {
+              Unmanaged = true;
+              ActivationPolicy = "manual";
+            };
+          };
         };
 
         targets.cryptsetup.wants = [ "wpa_supplicant-initrd.service" ];
@@ -153,7 +153,7 @@ in {
             wantedBy = [ "cryptsetup.target" ];
             unitConfig.DefaultDependencies = false;
             serviceConfig = {
-	      LogLevelMax = "notice";
+              LogLevelMax = "notice";
               TimeoutSec = "infinity";
               Environment = [
                 "PORT=${toString config.services.tailscale.port}"

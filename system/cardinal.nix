@@ -33,15 +33,15 @@
       kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
       initrd.availableKernelModules = [
         "ahci"
-	"atlantic"
-	"e1000e"
-	"iwlmvm"
-	"iwlwifi"
-	"nvme"
-	"sd_mod"
-	"usbhid"
-	"usb_storage"
-	"xhci_pci"
+        "atlantic"
+        "e1000e"
+        "iwlmvm"
+        "iwlwifi"
+        "nvme"
+        "sd_mod"
+        "usbhid"
+        "usb_storage"
+        "xhci_pci"
       ];
     };
 
@@ -49,8 +49,8 @@
       bluetooth.enable = true;
       nvidia = {
         open = true;
-	package = config.boot.kernelPackages.nvidiaPackages.stable;
-	powerManagement.enable = true;
+        package = config.boot.kernelPackages.nvidiaPackages.stable;
+        powerManagement.enable = true;
       };
     };
   };

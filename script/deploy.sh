@@ -8,39 +8,39 @@ age=""
 setAge() {
 
     while true; do
-	echo ""
+        echo ""
         read -s -p "Enter age private key for ${config}: " input
 
-	echo -en "$input" | age-keygen -y > /dev/null 2>&1
+        echo -en "$input" | age-keygen -y > /dev/null 2>&1
         if [[ $? -ne 0 ]]; then
-	    echo ""
-	    echo -e "\033[31mAge key invalid\033[0m"
-	    continue
+            echo ""
+            echo -e "\033[31mAge key invalid\033[0m"
+            continue
         fi
 
-	echo ""
+        echo ""
         echo -e "\033[32mAge key valid\033[0m"
-	age="$input"
-	return 0
+        age="$input"
+        return 0
     done
 }
 
 setLuks() {
 
     while true; do
-	echo ""
+        echo ""
         read -s -p "Enter luks recovery password for ${config}: " input
 
         if [[ -z "$input" ]]; then
-	    echo ""
-	    echo -e "\033[31mLuks recovery password cannot be empty\033[0m"
-	    continue
+            echo ""
+            echo -e "\033[31mLuks recovery password cannot be empty\033[0m"
+            continue
         fi
 
-	echo ""
-	echo -e "\033[32mLuks recovery password valid\033[0m"
-	luks="$input"
-	return 0
+        echo ""
+        echo -e "\033[32mLuks recovery password valid\033[0m"
+        luks="$input"
+        return 0
     done
 }
 
@@ -82,8 +82,8 @@ setConfig() {
 #            input="localhost"
 #        fi
 #
-#	if [[ "$input" != "localhost" ]]; then
-#	    ssh -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 root@$input exit
+#        if [[ "$input" != "localhost" ]]; then
+#            ssh -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=5 root@$input exit
 #
 #            if [[ $? -ne 0 ]]; then
 #                echo -e "\033[31mCouldn't connect to target ${input}\033[0m"
@@ -91,8 +91,8 @@ setConfig() {
 #                echo -e "\033[32mConnected to target ${input}\033[0m"
 #            fi
 #        else
-#	    echo -e "\033[31mOk\033[0m"
-#	fi
+#            echo -e "\033[31mOk\033[0m"
+#        fi
 #
 #        target=$input
 #        return 0
@@ -110,17 +110,17 @@ setDriveRemovable() {
     while true; do
 
         echo ""
-	lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL | \
+        lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL | \
           awk '$1 == "1" && $2 == "disk" {print $3,$4,$5,$6}' | nl -w 2 -s ') '
         echo -e " A) Show non-removable devices..."
         echo -e -n "\nDevice to deploy on [ 1..A ] "
         read input
 
         if [[ "$input" =~ ^[0-9]+$ ]]; then
-	    drive=$(lsblk -o HOTPLUG,TYPE,NAME | \
+            drive=$(lsblk -o HOTPLUG,TYPE,NAME | \
               awk '$1 == "1" && $2 == "disk" {print $3}' | \
               awk -v inp=$input 'NR == inp {print "/dev/"$1}')
-	fi
+        fi
 
         if [[ "$input" == "A" ]]; then
 
@@ -146,7 +146,7 @@ setDriveInternal() {
     while true; do
 
         echo ""
-	lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL,ID | \
+        lsblk -o HOTPLUG,TYPE,NAME,SIZE,VENDOR,MODEL,ID | \
           awk '$1 == "0" && $2 == "disk" {print $3,$4,$5,$6,$7}' | nl -w 2 -s ') '
         echo -e " \033[32mB) (RECOMMENDED)\033[0m Show removable device only..."
         echo -e "\n\033[31mWARNING: THESE DEVICES MAY CONTAIN AN OPERATING SYSTEM OR OTHER CRITICAL DATA\033[0m"
@@ -159,7 +159,7 @@ setDriveInternal() {
             read inputConfirm
 
             if [[ ${inputConfirm,,} == "y" ]]; then
-		drive=$(lsblk -o HOTPLUG,TYPE,NAME | \
+                drive=$(lsblk -o HOTPLUG,TYPE,NAME | \
                   awk '$1 == "0" && $2 == "disk" {print $3}' | \
                   awk -v inp=$input 'NR == inp {print "/dev/"$1}')
             else

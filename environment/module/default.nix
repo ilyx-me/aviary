@@ -240,7 +240,7 @@ in {
       files = [
         "/etc/machine-id"
         "/etc/ssh/ssh_host_ed25519_key"
-	"/var/keys/age_host_key"
+        "/var/keys/age_host_key"
       ];
     };
 
@@ -369,19 +369,19 @@ in {
       sudo.enable = false;
       doas ={
         enable = true;
-	extraRules = [
-	  {
-	    groups = [ "wheel" ];
-	    keepEnv = true;
-	    persist = true;
-	  }
+        extraRules = [
+          {
+            groups = [ "wheel" ];
+            keepEnv = true;
+            persist = true;
+          }
 
-	  {
-	    users = [ config.users.users."999".name ];
-	    keepEnv = true;
-	    noPass = true;
-	  }
-	];
+          {
+            users = [ config.users.users."999".name ];
+            keepEnv = true;
+            noPass = true;
+          }
+        ];
       };
     };
 
@@ -423,9 +423,9 @@ in {
       git = {
         enable = true;
         config.safe.directory = [
-	  "/home/999/aviary"
-	  "/home/1000/aviary"
-	];
+          "/home/999/aviary"
+          "/home/1000/aviary"
+        ];
       };
       nano.enable = false;
       neovim = {
@@ -449,26 +449,26 @@ in {
       services = {
         #generate-sb-keys.after = [ "tpm-auto-enroll.service" ];
 
-	"tpm-auto-enroll" = {
-	  after = [ "multi-user.target" ];
-	  wantedBy = [ "multi-user.target" ];
-	  serviceConfig = {
-	    Type = "oneshot";
-	    RemainAfterExit = true;
-	  };
+        "tpm-auto-enroll" = {
+          after = [ "multi-user.target" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
 
-	  unitConfig.ConditionPathExists = "/var/lib/sbctl/keys";
+          unitConfig.ConditionPathExists = "/var/lib/sbctl/keys";
 
-	  script = ''
-	    if [ "$(od -An -t u1 /sys/firmware/efi/efivars/SecureBoot-* | tr -d ' ')" -eq 60001 ]; then
-	        /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
+          script = ''
+            if [ "$(od -An -t u1 /sys/firmware/efi/efivars/SecureBoot-* | tr -d ' ')" -eq 60001 ]; then
+                /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
 
-		if [ -e "/dev/disk/by-partlabel/disk-secondary-luks-${host}" ]; then
-		    /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-secondary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
-		fi
-	    fi
-	  '';
-	};
+                if [ -e "/dev/disk/by-partlabel/disk-secondary-luks-${host}" ]; then
+                    /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-secondary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
+                fi
+            fi
+          '';
+        };
       };
     };
 
@@ -477,7 +477,7 @@ in {
       timesyncd.enable = false;
       ntpd-rs = {
         enable = true;
-	settings.observability.log-level = "warn";
+        settings.observability.log-level = "warn";
       };
     };
 
@@ -502,8 +502,8 @@ in {
           group = "admins";
           useDefaultShell = true;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
-	  openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
-	    else [ u00-chicken u00-ibis ];
+          openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
+            else [ u00-chicken u00-ibis ];
           home = "/home/999";
         };
 

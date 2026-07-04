@@ -30,17 +30,17 @@
       consoleLogLevel = 3;
       kernelParams = [
         "quiet"
-	"systemd.show_status=auto"
-	"rd.udev.log_level=3"
-	"splash"
-	"video=${config.aviary.virtualDisplay}:e"
+        "systemd.show_status=auto"
+        "rd.udev.log_level=3"
+        "splash"
+        "video=${config.aviary.virtualDisplay}:e"
         "drm.edid_firmware=${config.aviary.virtualDisplay}:edid/virtual-display.bin"
-	#"plymouth.debug"
+        #"plymouth.debug"
       ];
       kernel.sysctl = {
         "vm.max_map_count" = 1048576;
-	"net.core.netdev_budget" = 600;
-	"net.core.netdev_budget_usecs" = 8000;
+        "net.core.netdev_budget" = 600;
+        "net.core.netdev_budget_usecs" = 8000;
         "net.core.netdev_max_backlog" = 10000;
       };
       loader.timeout = lib.mkForce 0;
@@ -53,7 +53,7 @@
 
       initrd.systemd.services.plymouth-start.serviceConfig = {
         ExecStartPre = "/bin/sh -c 'while [ ! -e /dev/dri/by-path/pci-*-card ]; do :; done'";
-	TimeoutStartSec = 10;
+        TimeoutStartSec = 10;
       };
 
       initrd.systemd.network.networks = {
@@ -85,7 +85,7 @@
       wireless.enable = true;
       networkmanager = {
         enable = true;
-	wifi.powersave = false;
+        wifi.powersave = false;
       };
     };
 
@@ -93,25 +93,25 @@
       etc."firefox/policies/policies.json".target = "librewolf/policies/policies.json";
       systemPackages = with pkgs; [
         adwaita-icon-theme
-	amberol
-	baobab
-	bazaar
-	clapper
-	clapper-enhancers
-	flatpak
-	gamescope
-	ghostty
-	gnome-disk-utility
-	gnome-text-editor
+        amberol
+        baobab
+        bazaar
+        clapper
+        clapper-enhancers
+        flatpak
+        gamescope
+        ghostty
+        gnome-disk-utility
+        gnome-text-editor
         inotify-tools
-	libnotify
-	loupe
-	mangohud
+        libnotify
+        loupe
+        mangohud
         moonlight-qt
-	nautilus
-	nautilus-python
-	papers
-	resources
+        nautilus
+        nautilus-python
+        papers
+        resources
         steam-devices-udev-rules
       ];
 
@@ -133,8 +133,8 @@
           (pkgs.runCommand "edid-virtual-display" { } ''
             mkdir -p $out/lib/firmware/edid
             echo -n 'AP///////wAx2AAAAAAAAAEkAQOAAAB4Au6Ro1RMmSYPUFQAAAABAQEBAQEBAQEBAQEBAQEBGjaAoHA4H0AwIDUAAAAAAAAUAAAA/QAeeB//dwAKICAgICAgAAAA/ABWaXJ0dWFsIERpc3AKAAAAEAAAAAAAAAAAAAAAAAAAAeYCAymxRhAiP19hduIAymcDDAAAABhEathdxAF4gGAAHnjjBcAA4wYEARo2gKBwOB9AMCA1AAAAAAAAFJUuAKCgoBVQMCA1AAAAAAAAFG9eAKCgoClQMCA1AAAAAAAAFFbCAKCgoFVQMCA1AAAAAAAAFAAAAAAAAAAAAAAAAAAAKA==' | base64 -d > "$out/lib/firmware/edid/virtual-display.bin"
-	  '')
-	];
+          '')
+        ];
       };
     };
 
@@ -152,43 +152,43 @@
       };
       sunshine = {
         enable = true;
-	openFirewall = true;
+        openFirewall = true;
         capSysAdmin = true;
-	settings = {
-	  port = 47989;
+        settings = {
+          port = 47989;
           origin_web_ui_allowed = "pc";
-	  lan_encryption_mode = 2;
-	  wan_encryption_mode = 2;
-	  capture = "kms";
-	  credentials_file = "login.json";
-	  fec_percentage = 50;
-	};
-	applications = {
+          lan_encryption_mode = 2;
+          wan_encryption_mode = 2;
+          capture = "kms";
+          credentials_file = "login.json";
+          fec_percentage = 50;
+        };
+        applications = {
           env = {};
-	  apps = [
-	    {
-	      name = "Desktop";
-	      image-path = "desktop.png";
-	    }
-	    {
-	      name = "Desktop 2x";
-	      image-path = "desktop.png";
-	      prep-cmd = [{
-		do = "niri msg output eDP-1 scale 2.0";
-		undo = "niri msg output eDP-1 scale 1.5";
+          apps = [
+            {
+              name = "Desktop";
+              image-path = "desktop.png";
+            }
+            {
+              name = "Desktop 2x";
+              image-path = "desktop.png";
+              prep-cmd = [{
+                do = "niri msg output eDP-1 scale 2.0";
+                undo = "niri msg output eDP-1 scale 1.5";
               }];
-	    }
-	    {
-	      name = "Steam Big Picture";
-	      image-path = "steam.png";
-	      detached = [ "setsid steam steam://open/bigpicture" ];
-	      prep-cmd = [{
-		do = "";
-		undo = "setsid steam steam://close/bigpicture";
-	      }];
-	    }
-	  ];
-	};
+            }
+            {
+              name = "Steam Big Picture";
+              image-path = "steam.png";
+              detached = [ "setsid steam steam://open/bigpicture" ];
+              prep-cmd = [{
+                do = "";
+                undo = "setsid steam steam://close/bigpicture";
+              }];
+            }
+          ];
+        };
       };
     };
 
@@ -222,20 +222,20 @@
       package = pkgs.librewolf;
       policies = {
         DisableTelemetry = true;
-	DisableFirefoxStudies = true;
+        DisableFirefoxStudies = true;
 
         ExtensionSettings = {
           # Ublock
-	  "uBlock0@raymondhill.net" = {
+          "uBlock0@raymondhill.net" = {
             install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
             installation_mode = "force_installed";
           };
 
-	  # Bitwarden
-	  "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-	    install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-	    installation_mode = "normal_installed";
-	  };
+          # Bitwarden
+          "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+            installation_mode = "normal_installed";
+          };
         };
       };
     };
@@ -269,12 +269,12 @@
 
       xdg.desktopEntries = {
         "cups" = {
-	  name = "cups";
-	  noDisplay = true;
-	};
+          name = "cups";
+          noDisplay = true;
+        };
         "nvim" = {
-	  name = "nvim";
-	  noDisplay = true;
+          name = "nvim";
+          noDisplay = true;
         };
       };
 
@@ -297,12 +297,12 @@
           };
         };
 
-	"nixos-upgrade-notify" = {
+        "nixos-upgrade-notify" = {
           Install.WantedBy = [ "graphical-session.target" ];
           Service = {
             Type = "simple";
             ExecStart = pkgs.writeShellScript "nixos-upgrade-notify.sh" ''
-	      status_last=""
+              status_last=""
 
               while read file; do
                   sleep 0.5
@@ -310,47 +310,47 @@
                   status_current=$(cat "$file" 2>/dev/null || echo -n "")
 
                   if [[ "$status_current" != "$status_last" ]]; then
-		      case "$status_current" in
+                      case "$status_current" in
                           "nixos-upgrade-start")
-		              /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		                  -u normal \
-		                  -i "nix-snowflake" \
-			          "Updating System" \
-			          "Downloading and installing system updates. Performance may be impaired for the duration."
+                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
+                                  -u normal \
+                                  -i "nix-snowflake" \
+                                  "Updating System" \
+                                  "Downloading and installing system updates. Performance may be impaired for the duration."
                               ;;
-			  "nixos-upgrade-success")
+                          "nixos-upgrade-success")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		                  -u normal \
-			          -i "nix-snowflake" \
-			          "Update Successful" \
-			          "In place upgrade complete. No action required."
-			      ;;
-			  "nixos-upgrade-reboot")
+                                  -u normal \
+                                  -i "nix-snowflake" \
+                                  "Update Successful" \
+                                  "In place upgrade complete. No action required."
+                              ;;
+                          "nixos-upgrade-reboot")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		                  -u critical \
-			          -i "nix-snowflake" \
-			          "Reboot Required" \
-			          "Please restart the system to finalize remaining changes."
-			      ;;
-			  "nixos-upgrade-failure")
+                                  -u critical \
+                                  -i "nix-snowflake" \
+                                  "Reboot Required" \
+                                  "Please restart the system to finalize remaining changes."
+                              ;;
+                          "nixos-upgrade-failure")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		                  -u critical \
-			          -i "nix-snowflake" \
-			          "Update Failed" \
-			          "An error occured. Please run 'journalctl -eu nixos-upgrade' for details."
-			      ;;
-			  "nixos-upgrade-network")
+                                  -u critical \
+                                  -i "nix-snowflake" \
+                                  "Update Failed" \
+                                  "An error occured. Please run 'journalctl -eu nixos-upgrade' for details."
+                              ;;
+                          "nixos-upgrade-network")
                               /run/current-system/sw/bin/notify-send -a "NixOS System" \
-		                  -u normal \
-			          -i "nix-snowflake" \
-			          "Network Connection Failed" \
-			          "Could not check for system updates. Please check the network connection."
-		              ;;
-		      esac
+                                  -u normal \
+                                  -i "nix-snowflake" \
+                                  "Network Connection Failed" \
+                                  "Could not check for system updates. Please check the network connection."
+                              ;;
+                      esac
 
-		      status_last="$status_current"
-	          fi
-	      done < <(/run/current-system/sw/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status)
+                      status_last="$status_current"
+                  fi
+              done < <(/run/current-system/sw/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status)
             '';
             Restart = "always";
           };
@@ -360,87 +360,87 @@
           };
         };
 
-	"sunshine-virtual-display" = {
-	  Install.WantedBy = [ "graphical-session-pre-lock.target" ];
-	  Service = {
-	    Type = "simple";
-	    ExecStart = pkgs.writeShellScript "sunshine-virtual-display.sh" ''
-	      while read -r line; do
-	          displayState="on"
-	          for p in /sys/class/drm/*/status; do
-		      con=''${p%/status}
-		      displayOut=''${con#*/card?-}
-		      if [[ "$displayOut" == "${config.aviary.virtualDisplay}" ]]; then
-		          continue
-		      fi
+        "sunshine-virtual-display" = {
+          Install.WantedBy = [ "graphical-session-pre-lock.target" ];
+          Service = {
+            Type = "simple";
+            ExecStart = pkgs.writeShellScript "sunshine-virtual-display.sh" ''
+              while read -r line; do
+                  displayState="on"
+                  for p in /sys/class/drm/*/status; do
+                      con=''${p%/status}
+                      displayOut=''${con#*/card?-}
+                      if [[ "$displayOut" == "${config.aviary.virtualDisplay}" ]]; then
+                          continue
+                      fi
 
                       if [[ "$(cat $p)" == "connected" ]]; then
-		          displayState="off"
-		      fi
-	          done
-		  echo "DRM event detected, turning virtual display $displayState"
-		  /run/current-system/sw/bin/niri msg output "${config.aviary.virtualDisplay}" $displayState
-	      done < <(/run/current-system/sw/bin/udevadm monitor --kernel --subsystem=drm)
-	    '';
-	    Restart = "always";
-	    RestartSec = 5;
-	  };
-	  Unit = {
-	    Description = "Dynamically enable/disable virtual display for sunshine";
-	    After = [ "graphical-session-pre-lock.target" ];
-	  };
-	};
+                          displayState="off"
+                      fi
+                  done
+                  echo "DRM event detected, turning virtual display $displayState"
+                  /run/current-system/sw/bin/niri msg output "${config.aviary.virtualDisplay}" $displayState
+              done < <(/run/current-system/sw/bin/udevadm monitor --kernel --subsystem=drm)
+            '';
+            Restart = "always";
+            RestartSec = 5;
+          };
+          Unit = {
+            Description = "Dynamically enable/disable virtual display for sunshine";
+            After = [ "graphical-session-pre-lock.target" ];
+          };
+        };
       };
 
       systemd.user.tmpfiles =
 
       let
         moonlightConfig = lib.strings.escapeC [ " " "\n" ] (lib.generators.toINI {} {
-	  General = {
-	    audiocfg = 0;
-	    capturesyskeys = 1;
-	    connwarnings = false;
-	    gameopts = true;
-	    gamepadmouse = true;
-	    hostaudio = true;
-	    keepawake = true;
-	    quitAppAfter = true;
+          General = {
+            audiocfg = 0;
+            capturesyskeys = 1;
+            connwarnings = false;
+            gameopts = true;
+            gamepadmouse = true;
+            hostaudio = true;
+            keepawake = true;
+            quitAppAfter = true;
             uidisplaymode = 0;
-	    vsync = false;
-	    windowmode = 0;
-	  };
-	});
+            vsync = false;
+            windowmode = 0;
+          };
+        });
 
       in {
-	rules = [
-	  "d /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project 0755 ${config.users.users."1000".name} users - -"
+        rules = [
+          "d /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project 0755 ${config.users.users."1000".name} users - -"
           "f /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project/Moonlight.conf 0755 ${config.users.users."1000".name} users - ${ moonlightConfig }"
         ];
       };
 
       programs = {
         ghostty = {
-	  enable = true;
-	  package = null;
-	  systemd.enable = false;
-	  settings.theme = "dark:Adwaita Dark,light:Adwaita";
+          enable = true;
+          package = null;
+          systemd.enable = false;
+          settings.theme = "dark:Adwaita Dark,light:Adwaita";
         };
 
         librewolf = {
           enable = true;
-	  package = null;
+          package = null;
 
-	  profiles."default" = {
-	    userChrome = ''
-	      @import "firefox-gnome-theme/userChrome.css";
-	    '';
+          profiles."default" = {
+            userChrome = ''
+              @import "firefox-gnome-theme/userChrome.css";
+            '';
 
-	    userContent = ''
-	      @import "firefox-gnome-theme/userContent.css";
-	    '';
+            userContent = ''
+              @import "firefox-gnome-theme/userContent.css";
+            '';
 
-	    search = {
-	      force = true;
+            search = {
+              force = true;
               default = "ddg";
               privateDefault = "ddg";
 
@@ -480,8 +480,8 @@
                   definedAliases = [ "@nw" ];
                 };
               };
-	    };
-	  };
+            };
+          };
 
           settings = {
             "browser.download.useDownloadDir" = true;
@@ -497,8 +497,8 @@
             #"browser.search.suggest.enabled" = true;
             "browser.uidensity" = 2;
             #"browser.urlbar.suggest.searches" = true;
-	    "ui.key.menuAccessKey" = 0;
-	    "sidebar.verticalTabs.dragToPinPromo.dismissed" = true;
+            "ui.key.menuAccessKey" = 0;
+            "sidebar.verticalTabs.dragToPinPromo.dismissed" = true;
             "browser.toolbarbuttons.introduced.sidebar-button" = true;
             #"browser.link.open_newwindow" = 1; # Open links for 'new windows' in same tab
             #"browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
@@ -520,7 +520,7 @@
                     "urlbar-container",
                     "new-window-button",
                     "privatebrowsing-button",
-		    "reset-pbm-toolbar-button",
+                    "reset-pbm-toolbar-button",
                     "customizableui-special-spring8",
                     "vertical-spacer",
                     "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action",
@@ -559,8 +559,8 @@
                 "currentVersion": 24,
                 "newElementCount": 17
               }
-	    '';
-	  };
+            '';
+          };
         };
       };
     };

@@ -26,12 +26,12 @@
       kernelModules = [ "kvm-intel" ];
       initrd.availableKernelModules = [
         "ahci"
-	"e1000e"
-	"iwlmvm"
-	"iwlwifi"
+        "e1000e"
+        "iwlmvm"
+        "iwlwifi"
         "sd_mod"
-	"sr_mod"
-	"usbhid"
+        "sr_mod"
+        "usbhid"
         "usb_storage"
         "xhci_pci"
       ];

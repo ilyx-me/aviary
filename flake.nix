@@ -58,6 +58,10 @@
       url = "github:nixos/nixpkgs/nixos-26.05";
     };
 
+    nixvim = {
+      url = "github:nix-community/nixvim/nixos-26.05";
+    };
+
     secrets = {
       url = "git+ssh://git@github.com/ilyx-me/aviarySecrets.git";
       flake = false;
@@ -232,7 +236,7 @@
           default = { ... }: {
             #_module.args = { inherit inputs; }; # Can be used for diskoLib tests, can also be put in their extraInstallerConfig/extraSystemConfig
             imports = [
-	      ({ ... }: { system.configurationRevision = self.rev or self.dirtyRev or null; })
+              ({ ... }: { system.configurationRevision = self.rev or self.dirtyRev or null; })
               inputs.home-manager.nixosModules.default
               inputs.impermanence.nixosModules.impermanence
               inputs.sops-nix.nixosModules.sops
@@ -243,7 +247,7 @@
 
           bootstrap = { ... }: {
             imports = [
-	      self.nixosModules.default
+              self.nixosModules.default
               inputs.disko.nixosModules.default
               inputs.lanzaboote.nixosModules.lanzaboote
               ./environment/module/bootstrap.nix
@@ -259,8 +263,8 @@
         };
 
         nixosConfigurations = {
-	  /*
-	  deploy-test = nixpkgs.lib.nixosSystem {
+          /*
+          deploy-test = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.recovery
@@ -273,12 +277,12 @@
                 boot.initrd.network.ssh.authorizedKeys = [ "none" ];
                 sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
                 aviary.uID = "test-a";
-		nixpkgs.config.allowUnfree = true;
-		aviary.drive.primary = "/dev/vdb";
+                nixpkgs.config.allowUnfree = true;
+                aviary.drive.primary = "/dev/vdb";
               })
             ];
           };
-	  */
+          */
 
           egg = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
@@ -294,31 +298,31 @@
             ];
           };
 
-	  cardinal = nixpkgs.lib.nixosSystem {
-	    specialArgs = { inherit inputs; };
-	    modules = [
-	      self.nixosModules.bootstrap
-	      ./environment/module/graphical.nix
-	      ./environment/module/niri.nix
-	      ./system/module/part/default.nix
-	      ./system/module/part/double.nix
-	      ./system/cardinal.nix
-	      ./user/00.nix
-	      ./service/update.nix
-	    ];
-	  };
+          cardinal = nixpkgs.lib.nixosSystem {
+            specialArgs = { inherit inputs; };
+            modules = [
+              self.nixosModules.bootstrap
+              ./environment/module/graphical.nix
+              ./environment/module/niri.nix
+              ./system/module/part/default.nix
+              ./system/module/part/double.nix
+              ./system/cardinal.nix
+              ./user/00.nix
+              ./service/update.nix
+            ];
+          };
 
           chicken = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.bootstrap
-	      ./environment/module/graphical.nix
-	      ./environment/module/niri.nix
+              ./environment/module/graphical.nix
+              ./environment/module/niri.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/chicken.nix
               ./user/00.nix
-	      ./service/update.nix
+              ./service/update.nix
             ];
           };
 
@@ -326,12 +330,12 @@
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.bootstrap
-	      ./environment/module/graphical.nix
-	      ./environment/module/niri.nix
-	      ./environment/module/waydroid.nix
+              ./environment/module/graphical.nix
+              ./environment/module/niri.nix
+              ./environment/module/waydroid.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
-	      ./system/module/part/quota.nix
+              ./system/module/part/quota.nix
               ./system/ibis.nix
               ./user/00.nix
               ./service/update.nix
@@ -342,13 +346,13 @@
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.bootstrap
-	      ./environment/module/graphical.nix
-	      ./environment/module/niri.nix
+              ./environment/module/graphical.nix
+              ./environment/module/niri.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/quail.nix
               ./user/03.nix
-	      ./service/update.nix
+              ./service/update.nix
             ];
           };
         };

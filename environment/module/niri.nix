@@ -29,12 +29,12 @@
       settings = {
         initial_session = {
           command = "niri-session > /dev/null 2>&1";
-	  user = config.users.users."1000".name;
+          user = config.users.users."1000".name;
         };
         default_session = {
-	  command = "${pkgs.greetd}/bin/agreety --cmd 'niri-session > /dev/null 2>&1'";
-	  user = "greeter";
-	};
+          command = "${pkgs.greetd}/bin/agreety --cmd 'niri-session > /dev/null 2>&1'";
+          user = "greeter";
+        };
       };
     };
 
@@ -42,13 +42,13 @@
 
       tmpfiles.rules = [
         "C /var/lib/AccountsService/icons/${config.users.users."1000".name} - - - - ${builtins.path { path = "${inputs.secrets}/recovery/wallpaper.png"; }}"
-	"d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
-	"d /home/1000/.config/niri 0755 ${config.users.users."1000".name} users -"
-	"L /home/1000/.config/niri/config.kdl - - - - ${builtins.path { path = ../../config/niri.kdl; }}"
-	"f /home/1000/.config/niri/aviaryUserOverrides.kdl 0644 ${config.users.users."1000".name} users - -"
-	"d /home/1000/.config/DankMaterialShell 0755 ${config.users.users."1000".name} users -"
-	"C /home/1000/.config/DankMaterialShell/clsettings.json - - - - ${builtins.path { path = ../../config/dms/clsettings.json; }}"
-	"C /home/1000/.config/DankMaterialShell/plugin_settings.json - - - - ${builtins.path { path = ../../config/dms/plugin_settings.json; }}"
+        "d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
+        "d /home/1000/.config/niri 0755 ${config.users.users."1000".name} users -"
+        "L /home/1000/.config/niri/config.kdl - - - - ${builtins.path { path = ../../config/niri.kdl; }}"
+        "f /home/1000/.config/niri/aviaryUserOverrides.kdl 0644 ${config.users.users."1000".name} users - -"
+        "d /home/1000/.config/DankMaterialShell 0755 ${config.users.users."1000".name} users -"
+        "C /home/1000/.config/DankMaterialShell/clsettings.json - - - - ${builtins.path { path = ../../config/dms/clsettings.json; }}"
+        "C /home/1000/.config/DankMaterialShell/plugin_settings.json - - - - ${builtins.path { path = ../../config/dms/plugin_settings.json; }}"
         "C /home/1000/.config/DankMaterialShell/settings.json - - - - ${builtins.path { path = ../../config/dms/settings.json; }}"
         "d /home/1000/.local 0700 ${config.users.users."1000".name} users -"
         "d /home/1000/.local/state 0700 ${config.users.users."1000".name} users -"
@@ -58,13 +58,13 @@
 
       services.systemd-tmpfiles-setup.postStart = ''
         chown ${config.users.users."1000".name}:users \
-	    /home/1000/.config/DankMaterialShell/clsettings.json \
+            /home/1000/.config/DankMaterialShell/clsettings.json \
             /home/1000/.config/DankMaterialShell/plugin_settings.json \
             /home/1000/.config/DankMaterialShell/settings.json \
             /home/1000/.local/state/DankMaterialShell/session.json
 
-	chmod 0644 \
-	    /home/1000/.config/DankMaterialShell/clsettings.json \
+        chmod 0644 \
+            /home/1000/.config/DankMaterialShell/clsettings.json \
             /home/1000/.config/DankMaterialShell/plugin_settings.json \
             /home/1000/.config/DankMaterialShell/settings.json \
             /home/1000/.local/state/DankMaterialShell/session.json
@@ -75,26 +75,26 @@
       user.targets.graphical-session-pre = {
         overrideStrategy = "asDropin";
         before = [
-	  "graphical-session-pre-lock.target"
-	];
+          "graphical-session-pre-lock.target"
+        ];
       };
 
       user.targets."graphical-session-pre-lock" = {
         description = "Initial user session lock for authentication";
-	requires = [ "basic.target" ];
-	before = [ "graphical-session.target" ];
-	unitConfig = {
-	  RefuseManualStart = "yes";
-	  StopWhenUnneeded = "yes";
-	};
+        requires = [ "basic.target" ];
+        before = [ "graphical-session.target" ];
+        unitConfig = {
+          RefuseManualStart = "yes";
+          StopWhenUnneeded = "yes";
+        };
       };
     };
 
     environment = {
       systemPackages = with pkgs; [
         xcursor-pro
-	xwayland-satellite
-	wvkbd
+        xwayland-satellite
+        wvkbd
 
         flatpak-xdg-utils
         kando
@@ -106,13 +106,13 @@
 
       imports = [
         inputs.dms.homeModules.dank-material-shell
-	inputs.dms-plugin-registry.modules.default
-	inputs.danksearch.homeModules.default
+        inputs.dms-plugin-registry.homeModules.default
+        inputs.danksearch.homeModules.default
       ];
 
       home.file."wallpaper.png" = {
-	source = "${inputs.secrets}/recovery/wallpaper.png";
-	target = "/home/1000/.config/DankMaterialShell/wallpaper.png";
+        source = "${inputs.secrets}/recovery/wallpaper.png";
+        target = "/home/1000/.config/DankMaterialShell/wallpaper.png";
       };
 
       home.packages = [ pkgs.nerd-fonts.adwaita-mono ];
@@ -123,103 +123,117 @@
         "org/gnome/desktop/interface" = {
           monospace-font-name = "Adwaita Mono Font 10";
         };
+
+        "osrg/gnome/nautilus/preferences" = {
+          default-folder-viewer = "list-view";
+        };
+
+        "org/gnome/nautilus/list-view" = {
+          default-visible-columns = [
+            "name"
+            "size"
+            "owner"
+            "permissions"
+            "date_modified"
+          ];
+        };
       };
 
       # Used by DMS but we don't want the app to show up in the launcher
       xdg.desktopEntries.khal = {
         name = "ikhal";
-	exec = "ikhal";
+        exec = "ikhal";
         noDisplay = true;
       };
 
       programs.dank-material-shell = {
         enable = true;
-	enableSystemMonitoring = true;
-	dgop.package = inputs.dgop.packages.${pkgs.stdenv.hostPlatform.system}.default;
-	systemd.enable = true;
-	plugins = {
-	  dankActions.enable = true;
-	  dankBatteryAlerts.enable = true;
-	};
+        enableSystemMonitoring = true;
+        dgop.package = inputs.dgop.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        systemd.enable = true;
+        plugins = {
+          dankActions.enable = true;
+          dankBatteryAlerts.enable = true;
+        };
       };
 
       systemd.user.services.dms = {
         Install.WantedBy = lib.mkForce [ "graphical-session-pre-lock.target" ];
-	Unit = {
-	  After = lib.mkForce [ "graphical-session-pre-lock.target" ];
-	  PartOf = lib.mkForce [ "graphical-session-pre-lock.target" ];
-	};
+        Unit = {
+          After = lib.mkForce [ "graphical-session-pre-lock.target" ];
+          PartOf = lib.mkForce [ "graphical-session-pre-lock.target" ];
+        };
         Service = {
           Type = "dbus";
-	  BusName = "org.freedesktop.Notifications";
-	  Environment = [
-	    "TZ=America/Los_Angeles"
+          BusName = "org.freedesktop.Notifications";
+          Environment = [
+            "TZ=America/Los_Angeles"
             "_JAVA_AWT_WM_NONREPARENTING=1"
-	    "ELECTRON_OZONE_PLATFORM_HINT=auto"
+            "ELECTRON_OZONE_PLATFORM_HINT=auto"
             "QT_STYLE_OVERRIDE=adwaita"
-	    "QT_WAYLAND_DECORATION=adwaita"
-	  ];
-	  ExecStartPre = "/run/current-system/sw/bin/niri msg action do-screen-transition --delay-ms 5000";
-	};
+            "QT_WAYLAND_DECORATION=adwaita"
+          ];
+          ExecStartPre = "/run/current-system/sw/bin/niri msg action do-screen-transition --delay-ms 5000";
+        };
       };
 
       systemd.user.services."dms-initial-lock" = {
         Install.WantedBy = [ "dms.service" ];
-	Unit = {
-	  After = [ "dms.service" ];
-	  BindsTo = [ "graphical-session.target" ];
-	  Before = [ "graphical-session.target" "xdg-desktop-autostart.target" ];
-	  Wants = [ "xdg-desktop-autostart.target" ];
-	};
-	Service = {
-	  Type = "oneshot";
-	  TimeoutSec = "infinity";
-	  RemainAfterExit = "yes";
-	  ExecStart = pkgs.writeShellScript "dms-initial-lock" ''
-	    /home/1000/.nix-profile/bin/dms ipc lock lock
-	    /run/current-system/sw/bin/gnome-keyring-daemon --replace
-	    /home/1000/.nix-profile/bin/dms ipc profile setImage /var/lib/AccountsService/icons/${config.users.users."1000".name}
-	    while IFS= read -r line; do
+        Unit = {
+          After = [ "dms.service" ];
+          BindsTo = [ "graphical-session.target" ];
+          Before = [ "graphical-session.target" "xdg-desktop-autostart.target" ];
+          Wants = [ "xdg-desktop-autostart.target" ];
+        };
+        Service = {
+          Type = "oneshot";
+          TimeoutSec = "infinity";
+          RemainAfterExit = "yes";
+          ExecStart = pkgs.writeShellScript "dms-initial-lock" ''
+            /home/1000/.nix-profile/bin/dms ipc lock lock
+            /run/current-system/sw/bin/gnome-keyring-daemon --replace
+            /home/1000/.nix-profile/bin/dms ipc profile setImage /var/lib/AccountsService/icons/${config.users.users."1000".name}
+            while IFS= read -r line; do
                 if [[ "$line" =~ "org.freedesktop.login1.Session.Unlock" ]]; then
                     break
                 fi
             done < <(/home/1000/.nix-profile/bin/gdbus monitor -y -d org.freedesktop.login1)
-	  '';
-	};
+          '';
+        };
       };
 
       systemd.user.services.niri = {
         Service = {
-	  Slice = "session.slice";
-	  Type = "notify";
-	  ExecStart = "/run/current-system/sw/bin/niri --session";
-	};
-	Unit = {
-	  Description = "A scrollale-tiling Wayland compositor";
-	  BindsTo = [ "graphical-session-pre-lock.target" ];
-	  Before = [ "graphical-session-pre-lock.target" ];
-	  Wants = [ "graphical-session-pre.target" ];
-	  After = [ "graphical-session-pre.target" ];
-	};
+          Slice = "session.slice";
+          Type = "notify";
+          ExecStart = "/run/current-system/sw/bin/niri --session";
+        };
+        Unit = {
+          Description = "A scrollale-tiling Wayland compositor";
+          BindsTo = [ "graphical-session-pre-lock.target" ];
+          Before = [ "graphical-session-pre-lock.target" ];
+          Wants = [ "graphical-session-pre.target" ];
+          After = [ "graphical-session-pre.target" ];
+        };
       };
 
       systemd.user.services.osk = {
         Install.WantedBy = [ "graphical-session.target" ];
         Service = {
-	  Type = "forking";
-	  ExecStart = pkgs.writeShellScript "osk.sh" ''
-	    resolution=$(/run/current-system/sw/bin/niri msg outputs | /run/current-system/sw/bin/grep "Logical size:" | /run/current-system/sw/bin/awk -F'[ ]' '{print $5}')
-	    portrait=$(echo "$resolution" | /run/current-system/sw/bin/awk -F'[x]' '{print $1}')
-	    landscape=$(echo "$resolution" | /run/current-system/sw/bin/awk -F'[x]' '{print $2}')
-	    /run/current-system/sw/bin/wvkbd-mobintl -L $(( "$landscape"/3 )) -H $(( "$portrait"/3 )) --hidden &
-	  '';
-	  Restart = "always";
-	  RestartSec = 5;
-	};
-	Unit = {
-	  Description = "On-Screen Keyboard";
-	  After = [ "graphical-session.target" ];
-	};
+          Type = "forking";
+          ExecStart = pkgs.writeShellScript "osk.sh" ''
+            resolution=$(/run/current-system/sw/bin/niri msg outputs | /run/current-system/sw/bin/grep "Logical size:" | /run/current-system/sw/bin/awk -F'[ ]' '{print $5}')
+            portrait=$(echo "$resolution" | /run/current-system/sw/bin/awk -F'[x]' '{print $1}')
+            landscape=$(echo "$resolution" | /run/current-system/sw/bin/awk -F'[x]' '{print $2}')
+            /run/current-system/sw/bin/wvkbd-mobintl -L $(( "$landscape"/3 )) -H $(( "$portrait"/3 )) --hidden &
+          '';
+          Restart = "always";
+          RestartSec = 5;
+        };
+        Unit = {
+          Description = "On-Screen Keyboard";
+          After = [ "graphical-session.target" ];
+        };
       };
     };
   };

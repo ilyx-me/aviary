@@ -24,9 +24,9 @@ in {
       /*
       secrets."test-a-ssh-root" = {
         mode = "0400";
-	owner = "root";
-	group = "root";
-	path = "/root/.ssh/id_ed25519";
+        owner = "root";
+        group = "root";
+        path = "/root/.ssh/id_ed25519";
       };
       */
     };

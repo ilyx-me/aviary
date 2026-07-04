@@ -47,7 +47,7 @@ in {
 
       virtualisation = {
         rootDevice = "/dev/mapper/cryptroot";
-	fileSystems."/".fsType = lib.mkForce "btrfs";
+        fileSystems."/".fsType = lib.mkForce "btrfs";
       };
 
       boot.initrd = {

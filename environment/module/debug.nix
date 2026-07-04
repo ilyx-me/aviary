@@ -51,18 +51,18 @@ in {
 
       users = {
 
-	root.hashedPassword = mkForce "";
+        root.hashedPassword = mkForce "";
 
-	"999" = {
+        "999" = {
           isSystemUser = true;
           hashedPassword = mkForce "";
-	  group = "admins";
+          group = "admins";
         };
 
         "1000" = {
-	  isNormalUser = true;
-	  hashedPassword = mkForce "";
-	};
+          isNormalUser = true;
+          hashedPassword = mkForce "";
+        };
       };
 
       groups."admins" = { };
