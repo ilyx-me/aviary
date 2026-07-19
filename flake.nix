@@ -345,10 +345,10 @@
           lark = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
-              self.nixosModules.bootstrap
+              self.nixosModules.default
+              inputs.disko.nixosModules.default
               ./system/module/part/default.nix
               ./system/module/part/single.nix
-              ./system/module/part/quota.nix
               ./system/swallow.nix
               ./user/00.nix
               ./service/update.nix
@@ -358,10 +358,10 @@
           swallow = nixpkgs.lib.nixosSystem {
             specialArgs = { inherit inputs; };
             modules = [
-              self.nixosModules.bootstrap
+              self.nixosModules.default
+              inputs.disko.nixosModules.default
               ./system/module/part/default.nix
               ./system/module/part/single.nix
-              ./system/module/part/quota.nix
               ./system/swallow.nix
               ./user/00.nix
               ./service/update.nix
