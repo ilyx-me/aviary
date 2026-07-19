@@ -349,7 +349,7 @@
               inputs.disko.nixosModules.default
               ./system/module/part/default.nix
               ./system/module/part/single.nix
-              ./system/swallow.nix
+              ./system/lark.nix
               ./user/00.nix
               ./service/update.nix
             ];

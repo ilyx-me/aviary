@@ -22,6 +22,7 @@
     };
 
     boot = {
+      binfmt.emulatedSystems = [ "aarch64-linux" ];
       kernelModules = [ "kvm-intel" ];
       initrd.availableKernelModules = [
         "e1000e"

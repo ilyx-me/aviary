@@ -1,4 +1,9 @@
 {
+  lib,
+  ...
+}:
+
+{
 
   config = {
 
@@ -7,16 +12,34 @@
 
     nixpkgs.hostPlatform = "aarch64-linux";
 
-    aviary.drive.primary = "/dev/disk/by-id/wwn-0x603d0d13988e4be6bda8c3b699d08de9";
+    aviary.drive.primary = "/dev/disk/by-id/wwn-0x60e788a1e0b647f19b4562a634dd790d";
 
-    boot.initrd.availableKernelModules = [
-      "usbhid"
-      "virtio_net"
-      "virtio_pci"
-      "virtio_scsi"
-      "xhci_pci"
-    ];
+    boot = {
+      loader.systemd-boot = {
+        enable = true;
+        editor = false;
+      };
+
+      kernelParams = [
+        "nvme.shutdown_timeout=10"
+        "nvme_core.shutdown_timeout=10"
+        "libiscsi.debug_libiscsi_eh=1"
+        "crash_kexec_post_notifiers"
+        "console=ttyAMA0"
+      ];
+
+      initrd.availableKernelModules = [
+        "usbhid"
+        "virtio_net"
+        "virtio_pci"
+        "virtio_scsi"
+        "xhci_pci"
+      ];
+    };
 
     services.cloud-init.enable = true;
+
+    users.users."999".hashedPasswordFile = lib.mkForce null;
+    users.users."1000".hashedPasswordFile = lib.mkForce null;
   };
 }
