@@ -402,22 +402,23 @@ in {
 
     networking.useNetworkd = true;
 
-    environment.systemPackages = with pkgs; [
-      age
-      disko
-      # doas-sudo-shim
-      efitools
-      jq
-      linux-firmware
-      nixos-anywhere
-      rsync
-      sbctl
-      sbsigntool
-      shpool
-      sops
-      # ssh-to-age
-      tio
-    ];
+    environment = {
+      enableAllTerminfo = true;
+      systemPackages = with pkgs; [
+        age
+        disko
+        efitools
+        jq
+        linux-firmware
+        nixos-anywhere
+        rsync
+        sbctl
+        sbsigntool
+        shpool
+        sops
+        tio
+      ];
+    };
 
     programs = {
       git = {

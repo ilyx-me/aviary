@@ -37,7 +37,28 @@
       ];
     };
 
-    services.cloud-init.enable = true;
+    services = {
+      cloud-init.enable = true;
+      fwupd.enable = lib.mkForce false;
+    };
+
+    systemd.network.networks."05-enp1s0" = {
+      address = [ "10.0.0.5/29" ];
+      gateway = [ "10.0.0.1" ];
+      linkConfig.MTUBytes = 9000;
+      matchConfig.Name = "enp1s0";
+      networkConfig.DHCP = "no";
+      routes = [{
+        Destination = "0.0.0.0/0";
+        Gateway = "10.0.0.1";
+        Table = "200";
+      }];
+      routingPolicyRules = [{
+        Priority = 100;
+        Table = "200";
+        From = "10.0.0.5/32";
+      }];
+    };
 
     users.users."999".hashedPasswordFile = lib.mkForce null;
     users.users."1000".hashedPasswordFile = lib.mkForce null;

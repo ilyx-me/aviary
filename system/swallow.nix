@@ -38,7 +38,10 @@
       ];
     };
 
-    services.cloud-init.enable = true;
+    services = {
+      cloud-init.enable = true;
+      fwupd.enable = lib.mkForce false;
+    };
 
     users.users."999".hashedPasswordFile = lib.mkForce null;
     users.users."1000".hashedPasswordFile = lib.mkForce null;
