@@ -42,6 +42,9 @@
       fwupd.enable = lib.mkForce false;
     };
 
+    users.users."999".hashedPasswordFile = lib.mkForce null;
+    users.users."1000".hashedPasswordFile = lib.mkForce null;
+
     systemd.network.networks."05-enp1s0" = {
       address = [ "10.0.0.5/29" ];
       gateway = [ "10.0.0.1" ];
@@ -59,8 +62,5 @@
         From = "10.0.0.5/32";
       }];
     };
-
-    users.users."999".hashedPasswordFile = lib.mkForce null;
-    users.users."1000".hashedPasswordFile = lib.mkForce null;
   };
 }
