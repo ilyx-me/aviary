@@ -83,6 +83,7 @@ in {
             scopeMaps."users" = [ "openid" "email" "profile" ];
           };
           groups."users".overwriteMembers = false;
+          groups."admins".overwriteMembers = false;
         };
 
         server = {
@@ -103,9 +104,13 @@ in {
         environmentFile = secrets."vaultwarden-env".path; #SSO_CLIENT_SECRET
         config = {
           DOMAIN = "https://${config.security.acme.certs.vaultwarden.domain}:8443";
+          EMAIL_CHANGE_ALLOWED = false;
+          INVITATIONS_ALLOWED = false;
+          PASSWORD_HINTS_ALLOWED = false;
           ROCKET_ADDRESS = "0.0.0.0";
           ROCKET_PORT = 8443;
           ROCKET_TLS = ''{certs="/var/lib/acme/vaultwarden/fullchain.pem",key="/var/lib/acme/vaultwarden/key.pem"}'';
+          SENDS_ALLOWED = true;
           SSO_ENABLED = true;
           SSO_CLIENT_ID = "vaultwarden";
           SSO_ONLY = true;

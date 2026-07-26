@@ -233,6 +233,7 @@ in {
       directories = [
         "/etc/nixos"
         "/var/log"
+        "/var/lib/kanidm-unixd"
         "/var/lib/nixos"
         "/var/lib/systemd/coredump"
       ];
@@ -479,11 +480,37 @@ in {
       timesyncd.enable = false;
 
       kanidm = {
+
         package = pkgs.kanidmWithSecretProvisioning_1_10;
+
         client = {
           enable = true;
           settings.uri = if config.system.nixos.variant_id == "test" then "https://idm.example.invalid"
             else "https://${ readFile "${inputs.secrets}/00/kanidm-cert-domain" }";
+        };
+
+        unix = {
+          enable = true;
+          settings = {
+            default_shell = "/run/current-system/sw/bin/bash";
+            kanidm = {
+              pam_allowed_login_groups = [ "users" ];
+              map_group = [
+                {
+                  local = "wheel";
+                  "with" = "admins";
+                }
+                {
+                  local = "networkmanager";
+                  "with" = "users";
+                }
+                {
+                  local = "uinput";
+                  "with" = "users";
+                }
+              ];
+            };
+          };
         };
       };
 

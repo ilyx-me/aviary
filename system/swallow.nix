@@ -45,31 +45,5 @@
 
     users.users."999".hashedPasswordFile = lib.mkForce null;
     users.users."1000".hashedPasswordFile = lib.mkForce null;
-
-    /*
-    security.acme = {
-      acceptTerms = true;
-      defaults = {
-        email = "name@example.com"; # email for Let's Encrypt
-        dnsResolver = "1.1.1.1:53";
-      };
-      certs."example.com" = {
-        group = ""; # group with access to cert at /var/lib/acme
-        domain = "example.com";
-        dnsProvider = "cloudflare";
-        environmentFile = "/run/secrets/..."; # Use SOPs to set "CLOUDFLARE_DNS_API_TOKEN=xxxxxxxx"
-      };
-    };
-    */
-
-    services.vaultwarden = {
-      enable = true;
-      #environmentFile = "";
-      #config = {
-      #  ROCKET_TLS = "";
-      #};
-    };
-
-    services.kanidm.server.enable = true;
   };
 }

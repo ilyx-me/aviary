@@ -52,6 +52,16 @@
 
     hardware.bluetooth.enable = true;
 
+    # Prevent niri bug which causes suspend immediate after wake
+    # https://github.com/niri-wm/niri/issues/2233
+    # Also set this in niri config:
+    # input {
+    #     disable-power-key-handling
+    # }
+    services.logind.settings.Login = {
+      HandlePowerKey = "suspend";
+    };
+
     environment = {
       systemPackages = with pkgs; [
         iptsd
