@@ -218,7 +218,7 @@ in {
       };
     };
 
-    nixpkgs.config = lib.mkIf (config.system.nixos.variant_id != "test") {
+    nixpkgs.config = mkIf (config.system.nixos.variant_id != "test") {
       allowUnfree = true;
     };
 
@@ -474,8 +474,19 @@ in {
     };
 
     services = {
+
       fwupd.enable = true;
       timesyncd.enable = false;
+
+      kanidm = {
+        package = pkgs.kanidmWithSecretProvisioning_1_10;
+        client = {
+          enable = true;
+          settings.uri = if config.system.nixos.variant_id == "test" then "https://idm.example.invalid"
+            else "https://${ readFile "${inputs.secrets}/00/kanidm-cert-domain" }";
+        };
+      };
+
       ntpd-rs = {
         enable = true;
         settings.observability.log-level = "warn";

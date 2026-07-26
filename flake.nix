@@ -360,6 +360,7 @@
             modules = [
               self.nixosModules.default
               inputs.disko.nixosModules.default
+              ./environment/module/vaultidm.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/swallow.nix
