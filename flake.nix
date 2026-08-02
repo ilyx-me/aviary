@@ -62,6 +62,10 @@
       url = "github:nix-community/nixvim/nixos-26.05";
     };
 
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+    };
+
     secrets = {
       url = "git+ssh://git@github.com/ilyx-me/aviarySecrets.git";
       flake = false;

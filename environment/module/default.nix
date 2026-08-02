@@ -8,13 +8,12 @@
 }:
 
 let
-  inherit ( builtins )
-    head
+  inherit (builtins)
     readFile
     pathExists
   ;
 
-  inherit ( lib )
+  inherit (lib)
     foldl'
     listToAttrs
     mkDefault
@@ -26,33 +25,43 @@ let
     sortOn
   ;
 
-  inherit ( lib.attrsets )
+  inherit (lib.attrsets)
     attrsToList
   ;
 
-  inherit ( lib.types )
+  inherit (lib.types)
     bool
     nullOr
     str
   ;
 
-  inherit ( pkgs )
+  inherit (pkgs)
     writeShellScript
   ;
 
-  inherit ( utils )
+  inherit (utils)
     escapeSystemdPath
   ;
 
   host = config.networking.hostName;
+
+  # UID keys for user map lookups and sops secret references
+  adminUid = "999";
+  primaryUid = "1000";
 
   pcr15 = config.aviary.pcr15;
 
   secrets = config.sops.secrets;
   secretsName = config.aviary.secrets;
 
-  deviceDiskPrimary = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-primary-luks-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-primary-luks-${host}";
-  deviceMapperPrimary = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
+  # Drive name resolved once, reused for both luks device paths
+  driveSuffix =
+    if pathExists /tmp/aviaryInstall/egg-drive-name
+    then readFile /tmp/aviaryInstall/egg-drive-name
+    else host;
+
+  deviceDiskPrimary = "disk-primary-luks-${driveSuffix}";
+  deviceMapperPrimary = "disk-primary-luks-btrfs-${driveSuffix}";
 
   cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early" (
     readFile ../../script/systemd/cryptsetupEarly.sh
@@ -90,12 +99,12 @@ in {
       example = "6214de8c3d861c4b451acc8c4e24294c95d55bcec516bbf15c077ca3bffb6547";
       description = ''
         The expected value of PCR 15 after all luks partitions have been unlocked
-        Should be a 64 character hex string as ouput by the sha256 field of
+        Should be a 64 character hex string as output by the sha256 field of
         'systemd-analyze pcrs 15 --json=short'
         If set to null (the default) it will not check the value.
         If the check fails the boot will abort and you will be dropped into an
         emergency shell, if enabled.
-        In ermergency shell type:
+        In emergency shell type:
         'systemctl disable check-pcrs'
         'systemctl default'
         to continue booting
@@ -175,36 +184,30 @@ in {
     hardware.enableAllFirmware = true;
     nix.channel.enable = false;
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    nix.settings.trusted-users = [ "root" "${config.users.users."999".name}" "@wheel" ];
+    nix.settings.trusted-users = [ "root" "${config.users.users.${adminUid}.name}" "@wheel" ];
 
     sops = {
 
-      # validateSopsFiles = false;
-      age = {
-        # sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
-        keyFile = "/persist/var/keys/age_host_key";
-        # generateKey = true;
-      };
+      age.keyFile = "/persist/var/keys/age_host_key";
 
       secrets = {
 
         ${secretsName.sshAdmin} = mkForce {
           mode = "0400";
-          owner = config.users.users."999".name;
+          owner = config.users.users.${adminUid}.name;
           group = "admins";
-          path = "/home/999/.ssh/id_ed25519";
+          path = "/home/${adminUid}/.ssh/id_ed25519";
         };
 
         ${secretsName.sshUser} = mkForce {
-          mode = "0400";
-          owner = config.users.users."1000".name;
+          mode = "0400";                                                                                                                                                                         owner = config.users.users.${primaryUid}.name;
           group = "admins";
-          path = "/home/1000/.ssh/id_ed25519";
+          path = "/home/${primaryUid}/.ssh/id_ed25519";
         };
 
         ${secretsName.luksRecovery} = {
           mode = "0440";
-          owner = config.users.users."1000".name;
+          owner = config.users.users.${primaryUid}.name;
           group = "admins";
           restartUnits = [ "syncluksrecovery.service" ];
         };
@@ -212,7 +215,7 @@ in {
         ${secretsName.passwordHash} = {
           neededForUsers = true;
           mode = "0440";
-          owner = config.users.users."1000".name;
+          owner = config.users.users.${primaryUid}.name;
           group = "admins";
         };
       };
@@ -251,12 +254,9 @@ in {
 
       services = {
 
-        # Attempt to fix /sysroot dir not being created in time
-        # create-needed-for-boot-dirs.wantedBy = [ "sysroot.mount" ];
-
         systemd-ask-password-console.wantedBy = [ "cryptsetup.target" ];
 
-        "check-pcrs" = mkIf ( pcr15 != null ) {
+        "check-pcrs" = mkIf (pcr15 != null) {
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
@@ -303,7 +303,7 @@ in {
             "systemd-udevd-kernel.socket"
             "dev-disk-${escapeSystemdPath "by-partlabel"}-${escapeSystemdPath deviceDiskPrimary}.device"
           ]
-          ++ ( optional config.boot.initrd.systemd.tpm2.enable "systemd-tpm2-setup-early.service" );
+          ++ (optional config.boot.initrd.systemd.tpm2.enable "systemd-tpm2-setup-early.service");
           before = [
             "blockdev@dev-mapper-${deviceMapperPrimary}.target"
             "cryptsetup.target"
@@ -314,16 +314,16 @@ in {
           requiredBy = [ "sysroot.mount" "wpa_supplicant-initrd.service" ];
         };
       }
-      // ( listToAttrs (
+      // (listToAttrs (
         foldl' (
           acc: attrs:
           [
-            ( nameValuePair "systemd-cryptsetup@${escapeSystemdPath attrs.name}" {
+            (nameValuePair "systemd-cryptsetup@${escapeSystemdPath attrs.name}" {
                 overrideStrategy = "asDropin";
 
                 after = [
                   "wpa_supplicant-initrd.service"
-                ] ++ optional ( acc != [ ] ) "${( head acc ).name}.service";
+                ] ++ optional (acc != [ ]) "${(builtins.head acc).name}.service";
 
                 before = [ "impermanence.service" ];
 
@@ -335,7 +335,7 @@ in {
             )
           ]
           ++ acc
-        ) [ ] ( sortOn ( x: x.name ) ( attrsToList config.boot.initrd.luks.devices ) )
+        ) [ ] (sortOn (x: x.name) (attrsToList config.boot.initrd.luks.devices))
       ));
 
       storePaths = [
@@ -345,30 +345,9 @@ in {
       ];
     };
 
-    /*
-    security.sudo = {
-
-      extraConfig = "Defaults lecture=never";
-
-      extraRules = [
-
-        {
-          users = [ "${config.users.users."999".name}" ];
-          commands = [
-
-            {
-              command = "ALL";
-              options = [ "NOPASSWD" ];
-            }
-          ];
-        }
-      ];
-    };
-    */
-
     security = {
       sudo.enable = false;
-      doas ={
+      doas = {
         enable = true;
         extraRules = [
           {
@@ -378,7 +357,7 @@ in {
           }
 
           {
-            users = [ config.users.users."999".name ];
+            users = [ config.users.users.${adminUid}.name ];
             keepEnv = true;
             noPass = true;
           }
@@ -389,15 +368,8 @@ in {
     i18n = {
       defaultLocale = "en_US.UTF-8";
       extraLocaleSettings = {
-        LC_ADDRESS = "en_US.UTF-8";
-        LC_IDENTIFICATION = "en_US.UTF-8";
+        # LC_MEASUREMENT does not follow defaultLocale for US-style units
         LC_MEASUREMENT = "en_US.UTF-8";
-        LC_MONETARY = "en_US.UTF-8";
-        LC_NAME = "en_US.UTF-8";
-        LC_NUMERIC = "en_US.UTF-8";
-        LC_PAPER = "en_US.UTF-8";
-        LC_TELEPHONE = "en_US.UTF-8";
-        LC_TIME = "en_US.UTF-8";
       };
     };
 
@@ -425,8 +397,8 @@ in {
       git = {
         enable = true;
         config.safe.directory = [
-          "/home/999/aviary"
-          "/home/1000/aviary"
+          "/home/${adminUid}/aviary"
+          "/home/${primaryUid}/aviary"
         ];
       };
       nano.enable = false;
@@ -441,15 +413,14 @@ in {
     systemd = {
       enableEmergencyMode = false;
       tmpfiles.rules = [
-        "d /home/1000/.ssh 0700 ${config.users.users."1000".name} users -"
-        "L /home/${config.users.users."1000".name} 0777 root root - /home/1000"
-        "d /home/999 0700 ${config.users.users."999".name} admins -"
-        "d /home/999/.ssh 0700 ${config.users.users."999".name} admins -"
-        "L /home/${config.users.users."999".name} 0777 root root - /home/999"
+        "d /home/${primaryUid}/.ssh 0700 ${config.users.users.${primaryUid}.name} users -"
+        "L /home/${config.users.users.${primaryUid}.name} 0777 root root - /home/${primaryUid}"
+        "d /home/${adminUid} 0700 ${config.users.users.${adminUid}.name} admins -"
+        "d /home/${adminUid}/.ssh 0700 ${config.users.users.${adminUid}.name} admins -"
+        "L /home/${config.users.users.${adminUid}.name} 0777 root root - /home/${adminUid}"
       ];
 
       services = {
-        #generate-sb-keys.after = [ "tpm-auto-enroll.service" ];
 
         "tpm-auto-enroll" = {
           after = [ "multi-user.target" ];
@@ -486,7 +457,7 @@ in {
         client = {
           enable = true;
           settings.uri = if config.system.nixos.variant_id == "test" then "https://idm.example.invalid"
-            else "https://${ readFile "${inputs.secrets}/00/kanidm-cert-domain" }";
+            else "https://${readFile "${inputs.secrets}/00/kanidm-cert-domain"}";
         };
 
         unix = {
@@ -529,11 +500,9 @@ in {
 
         root = {
           description = mkForce "root";
-          #openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
-          #  else [ (readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.sshAdminPub}") ];
         };
 
-        "999" = {
+        ${adminUid} = {
           isSystemUser = true;
           name = "admin";
           description = "Admin";
@@ -541,20 +510,26 @@ in {
           group = "admins";
           useDefaultShell = true;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
-          openssh.authorizedKeys.keys = if config.system.nixos.variant_id == "test" then [ "none" ]
+          openssh.authorizedKeys.keys =
+            if config.system.nixos.variant_id == "test"
+            then [ "none" ]
             else [ u00-chicken u00-ibis ];
-          home = "/home/999";
+          home = "/home/${adminUid}";
         };
 
-        "1000" = {
+        ${primaryUid} = {
           isNormalUser = true;
-          name = if config.system.nixos.variant_id == "test" then "user"
+          name =
+            if config.system.nixos.variant_id == "test"
+            then "user"
             else readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.username}";
-          description = if config.system.nixos.variant_id == "test" then "User"
+          description =
+            if config.system.nixos.variant_id == "test"
+            then "User"
             else readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.description}";
           uid = 1000;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
-          home = "/home/1000";
+          home = "/home/${primaryUid}";
         };
       };
     };
@@ -563,12 +538,12 @@ in {
 
       extraSpecialArgs = { inherit inputs; };
 
-      users."1000" = {
+      users.${primaryUid} = {
 
         home = {
-          homeDirectory = config.users.users."1000".home;
+          homeDirectory = "/home/${primaryUid}";
           stateVersion = config.system.stateVersion;
-          username = config.users.users."1000".name;
+          username = config.users.users.${primaryUid}.name;
         };
 
         programs.home-manager.enable = true;
