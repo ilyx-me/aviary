@@ -4,18 +4,29 @@ on:
   schedule:
     - cron: '15 1 * * *'
 
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31
       - name: configure ssh
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AVIARY_SECRETS_TEST_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.AVIARY_FLAKE_UPDATE_PAT }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/knownhosts
+      - name: create branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git push origin --delete ci/update-flake || true
+          git checkout -b ci/update-flake
       - name: update flake lock
         run: |
           nix flake update \
@@ -34,11 +45,16 @@ jobs:
             nixvim \
             nix-minecraft \
             sops-nix
+      - name: commit changes
+        run: |
+          git add .
+          git commit -m "ci: update flake lock"
+          git push -u origin ci/update-flake
       - name: Create Pull Request
         run: |
           gh pr create --title "[CI] Daily Update" --body "Update flake lock, exclude secrets" --base main
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.AVIARY_FLAKE_UPDATE_PAT }}
 
       ### TO AUTOMERGE
       #- name: Merge
