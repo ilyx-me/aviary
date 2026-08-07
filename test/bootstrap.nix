@@ -7,9 +7,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "bootstrap";
 

@@ -7,14 +7,14 @@
 }:
 
 let
-  inherit ( builtins )
+  inherit (builtins)
     readFile
     toString
-  ;
+    ;
 
-  inherit ( lib )
+  inherit (lib)
     mkIf
-  ;
+    ;
 
   secrets = toString inputs.secrets;
 
@@ -26,7 +26,8 @@ let
 
   u00-chicken = readFile "${secrets}/00/chicken-ssh-user-pub";
 
-in {
+in
+{
 
   config = {
 
@@ -98,7 +99,7 @@ in {
         librewolf = {
           profiles."default".userChrome = lib.mkForce ''
             @import "firefox-gnome-theme/userChrome.css";
-            
+
             /* Hide tabs entirely */
             #TabsToolbar {
                 visibility: collapse !important;
@@ -106,17 +107,19 @@ in {
           '';
 
           /*
-          settings = {
-            "browser.link.open_newwindow" = 1;                   # Open links for 'new windows' in same tab
-            "browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
-          };
+            settings = {
+              "browser.link.open_newwindow" = 1;                   # Open links for 'new windows' in same tab
+              "browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
+            };
           */
         };
       };
 
-      home.packages = with pkgs; mkIf config.aviary.graphical [
-        #davinci-resolve-studio
-      ];
+      home.packages =
+        with pkgs;
+        mkIf config.aviary.graphical [
+          #davinci-resolve-studio
+        ];
     };
   };
 }

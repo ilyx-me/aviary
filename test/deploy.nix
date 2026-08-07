@@ -3,18 +3,20 @@
   lib,
   self',
   ...
-}: let
+}:
+let
   inherit (builtins)
     readFile
     ;
 
   config = self'.checks.deploy.nodes.machine1;
-in {
+in
+{
   name = "deploy-test";
 
   meta.timeout = 600;
 
-  node.specialArgs = {inherit inputs;};
+  node.specialArgs = { inherit inputs; };
   nodes = {
     machine1 = { ... }: {
       imports = [
@@ -33,7 +35,7 @@ in {
 
       virtualisation.memorySize = 7168; # 3072;
       virtualisation.diskSize = 4096; # 32768; # In case kernel needs to be built
-      virtualisation.emptyDiskImages = [16384]; # [49152];
+      virtualisation.emptyDiskImages = [ 16384 ]; # [49152];
       #virtualisation.useEFIBoot = true;
 
       sops = {
@@ -52,9 +54,11 @@ in {
         mode = "0400";
       };
 
-      systemd.tmpfiles.rules = ["d /root/.ssh 0700 root root -"];
+      systemd.tmpfiles.rules = [ "d /root/.ssh 0700 root root -" ];
 
-      users.users.root.openssh.authorizedKeys.keys = [ (readFile "${inputs.secrets-test}/test-a/test-a-ssh-user-pub") ];
+      users.users.root.openssh.authorizedKeys.keys = [
+        (readFile "${inputs.secrets-test}/test-a/test-a-ssh-user-pub")
+      ];
 
       networking.hostName = "test-a";
 

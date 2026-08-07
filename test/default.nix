@@ -8,9 +8,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "default";
 
@@ -19,7 +20,7 @@ in {
     imports = [
       self.nixosModules.default
 
-      (import ./user/testA.nix {inherit inputs lib;})
+      (import ./user/testA.nix { inherit inputs lib; })
     ];
   };
 

@@ -1,7 +1,8 @@
 {
   pkgs,
   ...
-}: {
+}:
+{
   config = {
     home.packages = with pkgs; [
       ripgrep
@@ -37,7 +38,10 @@
         {
           action.__raw = "vim.lsp.buf.code_action";
           key = "<leader>ca";
-          mode = ["n" "v"];
+          mode = [
+            "n"
+            "v"
+          ];
           options = {
             desc = "LSP Code Actions";
           };
@@ -82,10 +86,10 @@
               "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
             };
             sources = [
-              {name = "nvim_lsp";}
-              {name = "luasnip";}
-              {name = "path";}
-              {name = "buffer";}
+              { name = "nvim_lsp"; }
+              { name = "luasnip"; }
+              { name = "path"; }
+              { name = "buffer"; }
             ];
             window = {
               completion.border = [
@@ -136,7 +140,7 @@
 
         luasnip = {
           enable = true;
-          fromVscode = [{}];
+          fromVscode = [ { } ];
         };
 
         neo-tree.enable = true;
@@ -177,7 +181,7 @@
             ensure_installed = "all";
             highlight = {
               additional_vim_regex_highlighting = true;
-              custom_captures = {};
+              custom_captures = { };
               enable = true;
             };
             indent.enable = true;

@@ -15,7 +15,8 @@ let
     bool
     ;
 
-in {
+in
+{
 
   options.aviary = {
 

@@ -9,7 +9,8 @@ let
     mkForce
     ;
 
-in {
+in
+{
 
   config = {
 
@@ -44,7 +45,7 @@ in {
     services.getty = {
       loginProgram = mkForce "${pkgs.shadow}/bin/login";
       loginOptions = mkForce null;
-      extraArgs = mkForce [];
+      extraArgs = mkForce [ ];
     };
 
     users = {

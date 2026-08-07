@@ -4,7 +4,8 @@
   pkgs,
   self',
   ...
-}: let
+}:
+let
 
   inherit (builtins)
     readFile
@@ -14,11 +15,14 @@
     recursiveUpdate
     ;
 
-  config = { networking.hostName = "test-a"; };
+  config = {
+    networking.hostName = "test-a";
+  };
   default = (import ../system/module/part/default.nix { inherit config lib; }).config;
   single = (import ../system/module/part/single.nix { }).config;
   diskoConfig = recursiveUpdate default single;
-in {
+in
+{
   pkgs = pkgs;
   name = "deploy-test";
   enableOCR = true;
@@ -70,9 +74,11 @@ in {
       mode = "0400";
     };
 
-    systemd.tmpfiles.rules = ["d /root/.ssh 0700 root root -"];
+    systemd.tmpfiles.rules = [ "d /root/.ssh 0700 root root -" ];
 
-    users.users.root.openssh.authorizedKeys.keys = [ (readFile "${inputs.secrets-test}/test-a/test-a-ssh-user-pub") ];
+    users.users.root.openssh.authorizedKeys.keys = [
+      (readFile "${inputs.secrets-test}/test-a/test-a-ssh-user-pub")
+    ];
 
     networking.hostName = "test-a";
 

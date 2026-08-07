@@ -41,19 +41,29 @@
     systemd = {
 
       tmpfiles.rules = [
-        "C /var/lib/AccountsService/icons/${config.users.users."1000".name} - - - - ${builtins.path { path = "${inputs.secrets}/recovery/wallpaper.png"; }}"
+        "C /var/lib/AccountsService/icons/${config.users.users."1000".name} - - - - ${
+          builtins.path { path = "${inputs.secrets}/recovery/wallpaper.png"; }
+        }"
         "d /home/1000/.config 0700 ${config.users.users."1000".name} users -"
         "d /home/1000/.config/niri 0755 ${config.users.users."1000".name} users -"
         "L /home/1000/.config/niri/config.kdl - - - - ${builtins.path { path = ../../config/niri.kdl; }}"
         "f /home/1000/.config/niri/aviaryUserOverrides.kdl 0644 ${config.users.users."1000".name} users - -"
         "d /home/1000/.config/DankMaterialShell 0755 ${config.users.users."1000".name} users -"
-        "C /home/1000/.config/DankMaterialShell/clsettings.json - - - - ${builtins.path { path = ../../config/dms/clsettings.json; }}"
-        "C /home/1000/.config/DankMaterialShell/plugin_settings.json - - - - ${builtins.path { path = ../../config/dms/plugin_settings.json; }}"
-        "C /home/1000/.config/DankMaterialShell/settings.json - - - - ${builtins.path { path = ../../config/dms/settings.json; }}"
+        "C /home/1000/.config/DankMaterialShell/clsettings.json - - - - ${
+          builtins.path { path = ../../config/dms/clsettings.json; }
+        }"
+        "C /home/1000/.config/DankMaterialShell/plugin_settings.json - - - - ${
+          builtins.path { path = ../../config/dms/plugin_settings.json; }
+        }"
+        "C /home/1000/.config/DankMaterialShell/settings.json - - - - ${
+          builtins.path { path = ../../config/dms/settings.json; }
+        }"
         "d /home/1000/.local 0700 ${config.users.users."1000".name} users -"
         "d /home/1000/.local/state 0700 ${config.users.users."1000".name} users -"
         "d /home/1000/.local/state/DankMaterialShell 0755 ${config.users.users."1000".name} users -"
-        "C /home/1000/.local/state/DankMaterialShell/session.json - - - - ${builtins.path { path = ../../config/dms/session.json; }}"
+        "C /home/1000/.local/state/DankMaterialShell/session.json - - - - ${
+          builtins.path { path = ../../config/dms/session.json; }
+        }"
       ];
 
       services.systemd-tmpfiles-setup.postStart = ''
@@ -182,7 +192,10 @@
         Unit = {
           After = [ "dms.service" ];
           BindsTo = [ "graphical-session.target" ];
-          Before = [ "graphical-session.target" "xdg-desktop-autostart.target" ];
+          Before = [
+            "graphical-session.target"
+            "xdg-desktop-autostart.target"
+          ];
           Wants = [ "xdg-desktop-autostart.target" ];
         };
         Service = {

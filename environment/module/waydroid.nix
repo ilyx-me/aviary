@@ -1,6 +1,11 @@
 # Copy pastad from:
 #https://github.com/pioner14/Waydroid_on_NixOS/blob/main/Waydroid_Setup_Guide.md#9-critical-production-ready-configuration-updated-2026-01-27
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # IMPORTANT: Find your Intel GPU path with: ls -l /dev/dri/by-path/ | grep pci-.*-render
@@ -33,24 +38,24 @@ in
         (pkgs.writeShellScript "waydroid-gpu-fix-pre" ''
           set -e
           PROP_FILE="/var/lib/waydroid/waydroid.prop"
-          
+
           mkdir -p /var/lib/waydroid
           touch "$PROP_FILE"
           chown root:root "$PROP_FILE"
           chmod 644 "$PROP_FILE"
-          
+
           # Function to set properties (removes old, adds new)
           set_prop() {
             ${pkgs.gnused}/bin/sed -i "/^$1=/d" "$PROP_FILE"
             echo "$1=$2" >> "$PROP_FILE"
           }
-          
+
           # Force Intel GPU (GBM/Mesa)
           set_prop ro.hardware.gralloc gbm
           set_prop ro.hardware.egl mesa
           set_prop gralloc.gbm.device ${intelRenderNode}
           set_prop ro.hardware.vulkan intel
-          
+
           # Clean empty lines
           ${pkgs.gnused}/bin/sed -i '/^$/d' "$PROP_FILE"
         '')

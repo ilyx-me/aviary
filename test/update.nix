@@ -9,9 +9,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "update";
 
@@ -36,7 +37,9 @@ in {
       lanzaboote.enable = lib.mkVMOverride false;
       loader.systemd-boot.enable = lib.mkVMOverride true;
       initrd = {
-        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
+        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [
+          "dev-vdb.device"
+        ];
       };
     };
 

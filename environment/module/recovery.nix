@@ -6,14 +6,15 @@
 }:
 
 let
-  inherit ( lib )
+  inherit (lib)
     mkDefault
     mkForce
-  ;
+    ;
 
   host = config.networking.hostName;
 
-in {
+in
+{
 
   config = {
 
@@ -135,7 +136,7 @@ in {
     nixpkgs.overlays = mkDefault [
       (_: prev: {
         mbrola-voices = prev.mbrola-voices.override {
-          languages = ["*1"];
+          languages = [ "*1" ];
         };
       })
     ];

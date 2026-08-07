@@ -8,7 +8,8 @@
     };
 
     disko = {
-      url = "github:nix-community/disko"; #/5ae05d98d2bebc0a9521c9fc89bd2e5cffa05926"; # 1-20-2026 last working version for nixos 25.11
+      # May need to keep pinned to a specific commit to pass CI
+      url = "github:nix-community/disko"; # /5ae05d98d2bebc0a9521c9fc89bd2e5cffa05926";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -83,7 +84,12 @@
   };
 
   outputs =
-    inputs@{ flake-parts, nixpkgs, self, ... }:
+    inputs@{
+      flake-parts,
+      nixpkgs,
+      self,
+      ...
+    }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       # flake-parts modules go here
       imports = [ ];
@@ -125,7 +131,14 @@
               eval-config = import (pkgs.path + "/nixos/lib/eval-config.nix");
               qemu-common = import (pkgs.path + "/nixos/lib/qemu-common.nix");
               makeTest = import (pkgs.path + "/nixos/tests/make-test-python.nix");
-              diskoLib = import (inputs.disko + "/lib") { inherit lib eval-config makeTest qemu-common; };
+              diskoLib = import (inputs.disko + "/lib") {
+                inherit
+                  lib
+                  eval-config
+                  makeTest
+                  qemu-common
+                  ;
+              };
             in
             {
               bootstrap = pkgs.testers.runNixOSTest (
@@ -140,13 +153,16 @@
                 }
               );
 
-              debugInitrd = pkgs.testers.runNixOSTest (
-                import ./test/debugInitrd.nix { }
-              );
+              debugInitrd = pkgs.testers.runNixOSTest (import ./test/debugInitrd.nix { });
 
               decrypt = pkgs.testers.runNixOSTest (
                 import ./test/decrypt.nix {
-                  inherit inputs lib pkgs self;
+                  inherit
+                    inputs
+                    lib
+                    pkgs
+                    self
+                    ;
                 }
               );
 
@@ -157,17 +173,21 @@
               );
 
               /*
-              deploy = pkgs.testers.runNixOSTest ( #TODO FINISH
-                import ./test/deploy.nix {
-                  inherit inputs lib pkgs self;
-                }
-              );
+                TODO FINISH
+                deploy = pkgs.testers.runNixOSTest (
+                  import ./test/deploy.nix {
+                    inherit inputs lib pkgs self;
+                  }
+                );
+              */
 
-              deployDisko = diskoLib.testLib.makeDiskoTest ( #TODO FINISH
-                import ./test/deployDisko.nix {
-                  inherit inputs lib pkgs self';
-                }
-              );
+              /*
+                TODO FINISH
+                deployDisko = diskoLib.testLib.makeDiskoTest (
+                  import ./test/deployDisko.nix {
+                    inherit inputs lib pkgs self';
+                  }
+                );
               */
 
               network = pkgs.testers.runNixOSTest (
@@ -178,7 +198,12 @@
 
               networkInitrd = pkgs.testers.runNixOSTest (
                 import ./test/networkInitrd.nix {
-                  inherit inputs lib pkgs self;
+                  inherit
+                    inputs
+                    lib
+                    pkgs
+                    self
+                    ;
                 }
               );
 
@@ -196,7 +221,12 @@
 
               persist = pkgs.testers.runNixOSTest (
                 import ./test/persist.nix {
-                  inherit inputs lib pkgs self;
+                  inherit
+                    inputs
+                    lib
+                    pkgs
+                    self
+                    ;
                 }
               );
 
@@ -214,31 +244,31 @@
 
               tpm = pkgs.testers.runNixOSTest (
                 import ./test/tpm.nix {
-                  inherit inputs lib pkgs self;
+                  inherit
+                    inputs
+                    lib
+                    pkgs
+                    self
+                    ;
                 }
               );
 
               /*
-              update = pkgs.testers.runNixOSTest ( #TODO FINISH
-                import ./test/update.nix {
-                  inherit inputs lib self pkgs;
-                }
-              );
-
-              wifi = pkgs.testers.runNixOSTest ( #TODO FINISH
-                import ./test/wifi.nix {
-                  inherit inputs lib;
-                }
-              );
+                TODO FINISH
+                update = pkgs.testers.runNixOSTest (
+                  import ./test/update.nix {
+                    inherit inputs lib self pkgs;
+                  }
+                );
               */
-
             };
         };
 
       flake = {
         nixosModules = {
           default = { ... }: {
-            #_module.args = { inherit inputs; }; # Can be used for diskoLib tests, can also be put in their extraInstallerConfig/extraSystemConfig
+            # Can be used for diskoLib tests, can also be put in their extraInstallerConfig/extraSystemConfig
+            #_module.args = { inherit inputs; };
             imports = [
               ({ ... }: { system.configurationRevision = self.rev or self.dirtyRev or null; })
               inputs.home-manager.nixosModules.default
@@ -268,24 +298,24 @@
 
         nixosConfigurations = {
           /*
-          deploy-test = nixpkgs.lib.nixosSystem {
-            specialArgs = { inherit inputs; };
-            modules = [
-              self.nixosModules.recovery
-              ./system/module/part/default.nix
-              ./system/module/part/recovery.nix
-              ({ ... }: {
-                nixpkgs.hostPlatform = "x86_64-linux";
-                networking.hostName = "test-a";
-                system.nixos.variant_id = "test";
-                boot.initrd.network.ssh.authorizedKeys = [ "none" ];
-                sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
-                aviary.uID = "test-a";
-                nixpkgs.config.allowUnfree = true;
-                aviary.drive.primary = "/dev/vdb";
-              })
-            ];
-          };
+            deploy-test = nixpkgs.lib.nixosSystem {
+              specialArgs = { inherit inputs; };
+              modules = [
+                self.nixosModules.recovery
+                ./system/module/part/default.nix
+                ./system/module/part/recovery.nix
+                ({ ... }: {
+                  nixpkgs.hostPlatform = "x86_64-linux";
+                  networking.hostName = "test-a";
+                  system.nixos.variant_id = "test";
+                  boot.initrd.network.ssh.authorizedKeys = [ "none" ];
+                  sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
+                  aviary.uID = "test-a";
+                  nixpkgs.config.allowUnfree = true;
+                  aviary.drive.primary = "/dev/vdb";
+                })
+              ];
+            };
           */
 
           egg = nixpkgs.lib.nixosSystem {
@@ -351,11 +381,13 @@
             modules = [
               self.nixosModules.default
               inputs.disko.nixosModules.default
+              ./environment/module/oci.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/lark.nix
               ./user/00.nix
               ./service/update.nix
+              ./service/minecraft.nix
             ];
           };
 
@@ -364,12 +396,13 @@
             modules = [
               self.nixosModules.default
               inputs.disko.nixosModules.default
-              ./environment/module/vaultidm.nix
+              ./environment/module/oci.nix
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/swallow.nix
               ./user/00.nix
               ./service/update.nix
+              ./service/vaultidm.nix
             ];
           };
 

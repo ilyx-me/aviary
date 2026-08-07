@@ -6,12 +6,13 @@
 
 let
 
-  inherit ( builtins )
+  inherit (builtins)
     readFile
-  ;
+    ;
 
   secrets = config.sops.secrets;
-in {
+in
+{
 
   config = {
 
@@ -80,7 +81,11 @@ in {
             basicSecretFile = secrets."vaultwarden-sso".path;
             originLanding = "https://${config.security.acme.certs.vaultwarden.domain}:8443";
             originUrl = "https://${config.security.acme.certs.vaultwarden.domain}:8443/identity/connect/oidc-signin";
-            scopeMaps."users" = [ "openid" "email" "profile" ];
+            scopeMaps."users" = [
+              "openid"
+              "email"
+              "profile"
+            ];
           };
           groups."users".overwriteMembers = false;
           groups."admins".overwriteMembers = false;
@@ -101,7 +106,7 @@ in {
       vaultwarden = {
 
         enable = true;
-        environmentFile = secrets."vaultwarden-env".path; #SSO_CLIENT_SECRET
+        environmentFile = secrets."vaultwarden-env".path; # SSO_CLIENT_SECRET
         config = {
           DOMAIN = "https://${config.security.acme.certs.vaultwarden.domain}:8443";
           EMAIL_CHANGE_ALLOWED = false;

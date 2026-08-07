@@ -9,7 +9,10 @@
     disko.devices.disk.primary.content.partitions.root.content.content.subvolumes = {
 
       "root" = {
-        mountOptions = [ "compress=zstd" "noatime" ];
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
         mountpoint = "/";
       };
 
@@ -19,7 +22,10 @@
       };
 
       "home" = {
-        mountOptions = [ "compress=zstd" "noatime" ];
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
         mountpoint = "/home";
       };
     };

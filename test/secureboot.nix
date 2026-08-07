@@ -8,9 +8,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "secureboot";
 
@@ -19,7 +20,7 @@ in {
     _module.args = { inherit inputs; };
     imports = [
       self.nixosModules.bootstrap
-      (import ./user/testA.nix {inherit inputs lib;})
+      (import ./user/testA.nix { inherit inputs lib; })
     ];
 
     virtualisation = {

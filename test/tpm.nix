@@ -9,9 +9,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "default";
 
@@ -20,7 +21,7 @@ in {
     _module.args = { inherit inputs; };
     imports = [
       self.nixosModules.default
-      (import ./user/testA.nix {inherit inputs lib;})
+      (import ./user/testA.nix { inherit inputs lib; })
     ];
 
     virtualisation = {
@@ -37,7 +38,9 @@ in {
       supportedFilesystems = [ "btrfs" ];
       initrd = {
         availableKernelModules = [ "tpm_tis" ];
-        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
+        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [
+          "dev-vdb.device"
+        ];
       };
     };
 

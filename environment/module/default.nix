@@ -11,7 +11,7 @@ let
   inherit (builtins)
     readFile
     pathExists
-  ;
+    ;
 
   inherit (lib)
     foldl'
@@ -23,25 +23,25 @@ let
     nameValuePair
     optional
     sortOn
-  ;
+    ;
 
   inherit (lib.attrsets)
     attrsToList
-  ;
+    ;
 
   inherit (lib.types)
     bool
     nullOr
     str
-  ;
+    ;
 
   inherit (pkgs)
     writeShellScript
-  ;
+    ;
 
   inherit (utils)
     escapeSystemdPath
-  ;
+    ;
 
   host = config.networking.hostName;
 
@@ -56,9 +56,10 @@ let
 
   # Drive name resolved once, reused for both luks device paths
   driveSuffix =
-    if pathExists /tmp/aviaryInstall/egg-drive-name
-    then readFile /tmp/aviaryInstall/egg-drive-name
-    else host;
+    if pathExists /tmp/aviaryInstall/egg-drive-name then
+      readFile /tmp/aviaryInstall/egg-drive-name
+    else
+      host;
 
   deviceDiskPrimary = "disk-primary-luks-${driveSuffix}";
   deviceMapperPrimary = "disk-primary-luks-btrfs-${driveSuffix}";
@@ -71,16 +72,15 @@ let
     readFile ../../script/systemd/impermanence.sh
   );
 
-  pcrExecStart = writeShellScript "pcr15Check" (
-    readFile ../../script/systemd/pcr15Check.sh
-  );
+  pcrExecStart = writeShellScript "pcr15Check" (readFile ../../script/systemd/pcr15Check.sh);
 
   systemdPath = config.boot.initrd.systemd.package;
 
   u00-chicken = readFile "${inputs.secrets}/00/chicken-ssh-user-pub";
   u00-ibis = readFile "${inputs.secrets}/00/ibis-ssh-user-pub";
 
-in {
+in
+{
 
   options.aviary = {
 
@@ -183,8 +183,15 @@ in {
     documentation.doc.enable = false;
     hardware.enableAllFirmware = true;
     nix.channel.enable = false;
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
-    nix.settings.trusted-users = [ "root" "${config.users.users.${adminUid}.name}" "@wheel" ];
+    nix.settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    nix.settings.trusted-users = [
+      "root"
+      "${config.users.users.${adminUid}.name}"
+      "@wheel"
+    ];
 
     sops = {
 
@@ -200,7 +207,8 @@ in {
         };
 
         ${secretsName.sshUser} = mkForce {
-          mode = "0400";                                                                                                                                                                         owner = config.users.users.${primaryUid}.name;
+          mode = "0400";
+          owner = config.users.users.${primaryUid}.name;
           group = "admins";
           path = "/home/${primaryUid}/.ssh/id_ed25519";
         };
@@ -287,7 +295,9 @@ in {
             DefaultDependencies = "no";
             IgnoreOnIsolate = true;
             Conflicts = [ "umount.target" ];
-            BindsTo = [ "dev-disk-${escapeSystemdPath "by-partlabel"}-${escapeSystemdPath deviceDiskPrimary}.device" ];
+            BindsTo = [
+              "dev-disk-${escapeSystemdPath "by-partlabel"}-${escapeSystemdPath deviceDiskPrimary}.device"
+            ];
           };
           serviceConfig = {
             Type = "oneshot";
@@ -311,7 +321,10 @@ in {
             "wpa_supplicant-initrd.service"
           ];
           wants = [ "blockdev@dev-mapper-${deviceMapperPrimary}.target" ];
-          requiredBy = [ "sysroot.mount" "wpa_supplicant-initrd.service" ];
+          requiredBy = [
+            "sysroot.mount"
+            "wpa_supplicant-initrd.service"
+          ];
         };
       }
       // (listToAttrs (
@@ -319,20 +332,20 @@ in {
           acc: attrs:
           [
             (nameValuePair "systemd-cryptsetup@${escapeSystemdPath attrs.name}" {
-                overrideStrategy = "asDropin";
+              overrideStrategy = "asDropin";
 
-                after = [
-                  "wpa_supplicant-initrd.service"
-                ] ++ optional (acc != [ ]) "${(builtins.head acc).name}.service";
+              after = [
+                "wpa_supplicant-initrd.service"
+              ]
+              ++ optional (acc != [ ]) "${(builtins.head acc).name}.service";
 
-                before = [ "impermanence.service" ];
+              before = [ "impermanence.service" ];
 
-                requiredBy = [ "impermanence.service" ];
-                requires = [ "wpa_supplicant-initrd.service" ];
+              requiredBy = [ "impermanence.service" ];
+              requires = [ "wpa_supplicant-initrd.service" ];
 
-                wants = [ "network-online.target" ];
-              }
-            )
+              wants = [ "network-online.target" ];
+            })
           ]
           ++ acc
         ) [ ] (sortOn (x: x.name) (attrsToList config.boot.initrd.luks.devices))
@@ -379,6 +392,7 @@ in {
       enableAllTerminfo = true;
       systemPackages = with pkgs; [
         age
+        btop
         disko
         efitools
         jq
@@ -456,8 +470,11 @@ in {
 
         client = {
           enable = true;
-          settings.uri = if config.system.nixos.variant_id == "test" then "https://idm.example.invalid"
-            else "https://${readFile "${inputs.secrets}/00/kanidm-cert-domain"}";
+          settings.uri =
+            if config.system.nixos.variant_id == "test" then
+              "https://idm.example.invalid"
+            else
+              "https://${readFile "${inputs.secrets}/00/kanidm-cert-domain"}";
         };
 
         unix = {
@@ -511,22 +528,28 @@ in {
           useDefaultShell = true;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
           openssh.authorizedKeys.keys =
-            if config.system.nixos.variant_id == "test"
-            then [ "none" ]
-            else [ u00-chicken u00-ibis ];
+            if config.system.nixos.variant_id == "test" then
+              [ "none" ]
+            else
+              [
+                u00-chicken
+                u00-ibis
+              ];
           home = "/home/${adminUid}";
         };
 
         ${primaryUid} = {
           isNormalUser = true;
           name =
-            if config.system.nixos.variant_id == "test"
-            then "user"
-            else readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.username}";
+            if config.system.nixos.variant_id == "test" then
+              "user"
+            else
+              readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.username}";
           description =
-            if config.system.nixos.variant_id == "test"
-            then "User"
-            else readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.description}";
+            if config.system.nixos.variant_id == "test" then
+              "User"
+            else
+              readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.description}";
           uid = 1000;
           hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
           home = "/home/${primaryUid}";

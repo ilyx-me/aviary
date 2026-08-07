@@ -6,9 +6,9 @@
 
 let
 
-  inherit ( builtins )
+  inherit (builtins)
     readFile
-  ;
+    ;
 
   host = config.networking.hostName;
 
@@ -20,15 +20,16 @@ in
 
     disko.devices.disk.primary.content.partitions.root.content.content =
 
-    let
+      let
 
-      hook = pkgs.writeShellScript "diskquota" ( readFile ../../../script/diskQuota.sh );
+        hook = pkgs.writeShellScript "diskquota" (readFile ../../../script/diskQuota.sh);
 
-      mapperDevice = "/dev/mapper/disk-primary-luks-btrfs-${host}";
+        mapperDevice = "/dev/mapper/disk-primary-luks-btrfs-${host}";
 
-    in {
+      in
+      {
 
-      postCreateHook = "${hook} ${mapperDevice}";
-    };
+        postCreateHook = "${hook} ${mapperDevice}";
+      };
   };
 }

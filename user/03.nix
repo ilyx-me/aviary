@@ -4,13 +4,14 @@
 }:
 
 let
-  inherit ( builtins )
+  inherit (builtins)
     toString
-  ;
+    ;
 
   secrets = toString inputs.secrets;
 
-in {
+in
+{
 
   config = {
 

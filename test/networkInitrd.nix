@@ -9,9 +9,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "networkInitrd";
   enableOCR = true;
@@ -38,7 +39,9 @@ in {
       supportedFilesystems = [ "btrfs" ];
       initrd = {
         availableKernelModules = [ "e1000" ];
-        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
+        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [
+          "dev-vdb.device"
+        ];
       };
     };
 

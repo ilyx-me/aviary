@@ -45,7 +45,11 @@ in
           esp = {
             size = "4096M";
             type = "EF00";
-            name = if pathExists /tmp/aviaryInstall/egg-drive-name then "esp-${readFile /tmp/aviaryInstall/egg-drive-name}" else "esp-${host}";
+            name =
+              if pathExists /tmp/aviaryInstall/egg-drive-name then
+                "esp-${readFile /tmp/aviaryInstall/egg-drive-name}"
+              else
+                "esp-${host}";
             content = {
               type = "filesystem";
               format = "vfat";
@@ -59,10 +63,18 @@ in
 
           root = {
             size = "100%";
-            name = if pathExists /tmp/aviaryInstall/egg-drive-name then "luks-${readFile /tmp/aviaryInstall/egg-drive-name}" else "luks-${host}";
+            name =
+              if pathExists /tmp/aviaryInstall/egg-drive-name then
+                "luks-${readFile /tmp/aviaryInstall/egg-drive-name}"
+              else
+                "luks-${host}";
             content = {
               type = "luks";
-              name = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-primary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-primary-luks-btrfs-${host}";
+              name =
+                if pathExists /tmp/aviaryInstall/egg-drive-name then
+                  "disk-primary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}"
+                else
+                  "disk-primary-luks-btrfs-${host}";
               settings.allowDiscards = true;
               passwordFile = "/tmp/aviaryInstall/luks-password-recovery";
               content = {

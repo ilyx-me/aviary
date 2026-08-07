@@ -1,9 +1,9 @@
 {
-   config,
-   inputs,
-   lib,
-   pkgs,
-   ...
+  config,
+  inputs,
+  lib,
+  pkgs,
+  ...
 }:
 
 {
@@ -58,7 +58,10 @@
 
       initrd.systemd.network.networks = {
         "99-ethernet-default-dhcp" = {
-          matchConfig.Name = [ "en*" "eth*" ];
+          matchConfig.Name = [
+            "en*"
+            "eth*"
+          ];
 
           networkConfig = {
             DHCP = "yes";
@@ -129,7 +132,8 @@
       uinput.enable = true; # Required for Sunshine remote inputs
       display = {
         outputs."${config.aviary.virtualDisplay}".edid = "virtual-display.bin";
-        edid.packages = [ # from https://edid.build
+        edid.packages = [
+          # from https://edid.build
           (pkgs.runCommand "edid-virtual-display" { } ''
             mkdir -p $out/lib/firmware/edid
             echo -n 'AP///////wAx2AAAAAAAAAEkAQOAAAB4Au6Ro1RMmSYPUFQAAAABAQEBAQEBAQEBAQEBAQEBGjaAoHA4H0AwIDUAAAAAAAAUAAAA/QAeeB//dwAKICAgICAgAAAA/ABWaXJ0dWFsIERpc3AKAAAAEAAAAAAAAAAAAAAAAAAAAeYCAymxRhAiP19hduIAymcDDAAAABhEathdxAF4gGAAHnjjBcAA4wYEARo2gKBwOB9AMCA1AAAAAAAAFJUuAKCgoBVQMCA1AAAAAAAAFG9eAKCgoClQMCA1AAAAAAAAFFbCAKCgoFVQMCA1AAAAAAAAFAAAAAAAAAAAAAAAAAAAKA==' | base64 -d > "$out/lib/firmware/edid/virtual-display.bin"
@@ -164,7 +168,7 @@
           fec_percentage = 50;
         };
         applications = {
-          env = {};
+          env = { };
           apps = [
             {
               name = "Desktop";
@@ -173,19 +177,23 @@
             {
               name = "Desktop 2x";
               image-path = "desktop.png";
-              prep-cmd = [{
-                do = "niri msg output eDP-1 scale 2.0";
-                undo = "niri msg output eDP-1 scale 1.5";
-              }];
+              prep-cmd = [
+                {
+                  do = "niri msg output eDP-1 scale 2.0";
+                  undo = "niri msg output eDP-1 scale 1.5";
+                }
+              ];
             }
             {
               name = "Steam Big Picture";
               image-path = "steam.png";
               detached = [ "setsid steam steam://open/bigpicture" ];
-              prep-cmd = [{
-                do = "";
-                undo = "setsid steam steam://close/bigpicture";
-              }];
+              prep-cmd = [
+                {
+                  do = "";
+                  undo = "setsid steam steam://close/bigpicture";
+                }
+              ];
             }
           ];
         };
@@ -196,7 +204,10 @@
 
     users.users = {
       "999".extraGroups = [ "networkmanager" ];
-      "1000".extraGroups = [ "networkmanager" "uinput" ];
+      "1000".extraGroups = [
+        "networkmanager"
+        "uinput"
+      ];
     };
 
     # Prevent last second debug console messages after plymouth
@@ -278,7 +289,8 @@
         };
       };
 
-      home.file.".config/librewolf/librewolf/default/chrome/firefox-gnome-theme".source = inputs.firefox-gnome-theme;
+      home.file.".config/librewolf/librewolf/default/chrome/firefox-gnome-theme".source =
+        inputs.firefox-gnome-theme;
 
       systemd.user.services = {
         "flathub" = {
@@ -394,29 +406,32 @@
 
       systemd.user.tmpfiles =
 
-      let
-        moonlightConfig = lib.strings.escapeC [ " " "\n" ] (lib.generators.toINI {} {
-          General = {
-            audiocfg = 0;
-            capturesyskeys = 1;
-            connwarnings = false;
-            gameopts = true;
-            gamepadmouse = true;
-            hostaudio = true;
-            keepawake = true;
-            quitAppAfter = true;
-            uidisplaymode = 0;
-            vsync = false;
-            windowmode = 0;
-          };
-        });
+        let
+          moonlightConfig = lib.strings.escapeC [ " " "\n" ] (
+            lib.generators.toINI { } {
+              General = {
+                audiocfg = 0;
+                capturesyskeys = 1;
+                connwarnings = false;
+                gameopts = true;
+                gamepadmouse = true;
+                hostaudio = true;
+                keepawake = true;
+                quitAppAfter = true;
+                uidisplaymode = 0;
+                vsync = false;
+                windowmode = 0;
+              };
+            }
+          );
 
-      in {
-        rules = [
-          "d /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project 0755 ${config.users.users."1000".name} users - -"
-          "f /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project/Moonlight.conf 0755 ${config.users.users."1000".name} users - ${ moonlightConfig }"
-        ];
-      };
+        in
+        {
+          rules = [
+            "d /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project 0755 ${config.users.users."1000".name} users - -"
+            "f /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project/Moonlight.conf 0755 ${config.users.users."1000".name} users - ${moonlightConfig}"
+          ];
+        };
 
       programs = {
         ghostty = {
@@ -446,36 +461,57 @@
 
               engines = {
                 "Nix Packages" = {
-                  urls = [{
-                    template = "https://search.nixos.org/packages";
-                    params = [
-                      { name = "channel"; value = "unstable"; }
-                      { name = "query";   value = "{searchTerms}"; }
-                    ];
-                  }];
+                  urls = [
+                    {
+                      template = "https://search.nixos.org/packages";
+                      params = [
+                        {
+                          name = "channel";
+                          value = "unstable";
+                        }
+                        {
+                          name = "query";
+                          value = "{searchTerms}";
+                        }
+                      ];
+                    }
+                  ];
                   icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
                   definedAliases = [ "@np" ];
                 };
 
                 "Nix Options" = {
-                  urls = [{
-                    template = "https://search.nixos.org/options";
-                    params = [
-                      { name = "channel"; value = "unstable"; }
-                      { name = "query";   value = "{searchTerms}"; }
-                    ];
-                  }];
+                  urls = [
+                    {
+                      template = "https://search.nixos.org/options";
+                      params = [
+                        {
+                          name = "channel";
+                          value = "unstable";
+                        }
+                        {
+                          name = "query";
+                          value = "{searchTerms}";
+                        }
+                      ];
+                    }
+                  ];
                   icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
                   definedAliases = [ "@no" ];
                 };
 
                 "NixOS Wiki" = {
-                  urls = [{
-                    template = "https://wiki.nixos.org/w/index.php";
-                    params = [
-                      { name = "search"; value = "{searchTerms}"; }
-                    ];
-                  }];
+                  urls = [
+                    {
+                      template = "https://wiki.nixos.org/w/index.php";
+                      params = [
+                        {
+                          name = "search";
+                          value = "{searchTerms}";
+                        }
+                      ];
+                    }
+                  ];
                   icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
                   definedAliases = [ "@nw" ];
                 };

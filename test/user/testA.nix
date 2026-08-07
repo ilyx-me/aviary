@@ -7,9 +7,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   config = {
 
@@ -22,12 +23,12 @@ in {
       age.keyFile = lib.mkVMOverride "/etc/age_host_key";
       defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
       /*
-      secrets."test-a-ssh-root" = {
-        mode = "0400";
-        owner = "root";
-        group = "root";
-        path = "/root/.ssh/id_ed25519";
-      };
+        secrets."test-a-ssh-root" = {
+          mode = "0400";
+          owner = "root";
+          group = "root";
+          path = "/root/.ssh/id_ed25519";
+        };
       */
     };
 

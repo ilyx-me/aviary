@@ -78,17 +78,17 @@ in
         }
       ];
       /*
-      networking.wireless = {
-        # No, really, we want it enabled!
-        enable = lib.mkOverride 0 true;
-        interfaces = [ "wlan0" ];
-        networks = {
-          "NixOS Test Wi-Fi Network" = {
-            psk = "supersecret";
-            authProtocols = [ "SAE" ];
+        networking.wireless = {
+          # No, really, we want it enabled!
+          enable = lib.mkOverride 0 true;
+          interfaces = [ "wlan0" ];
+          networks = {
+            "NixOS Test Wi-Fi Network" = {
+              psk = "supersecret";
+              authProtocols = [ "SAE" ];
+            };
           };
         };
-      };
       */
       networking.networkmanager.enable = true;
       services.vwifi = {

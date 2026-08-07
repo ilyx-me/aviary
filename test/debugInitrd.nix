@@ -5,9 +5,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "debugInitrd";
   enableOCR = true;
@@ -21,7 +22,7 @@ in {
 
     boot.initrd.systemd.enable = true;
 
-    users.groups."admins" = {};
+    users.groups."admins" = { };
     users.users."999".group = "admins";
     users.users."999".isSystemUser = true;
     users.users."1000".isNormalUser = true;

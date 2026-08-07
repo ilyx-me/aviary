@@ -38,7 +38,10 @@ in
       primary.content.partitions.root.content.content.subvolumes = {
 
         "root" = {
-          mountOptions = [ "compress=zstd" "noatime" ];
+          mountOptions = [
+            "compress=zstd"
+            "noatime"
+          ];
           mountpoint = "/";
         };
 
@@ -58,10 +61,18 @@ in
           partitions = {
             home = {
               size = "100%";
-              name = if pathExists /tmp/aviaryInstall/egg-drive-name then "luks-${readFile /tmp/aviaryInstall/egg-drive-name}" else "luks-${host}";
+              name =
+                if pathExists /tmp/aviaryInstall/egg-drive-name then
+                  "luks-${readFile /tmp/aviaryInstall/egg-drive-name}"
+                else
+                  "luks-${host}";
               content = {
                 type = "luks";
-                name = if pathExists /tmp/aviaryInstall/egg-drive-name then "disk-secondary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}" else "disk-secondary-luks-btrfs-${host}";
+                name =
+                  if pathExists /tmp/aviaryInstall/egg-drive-name then
+                    "disk-secondary-luks-btrfs-${readFile /tmp/aviaryInstall/egg-drive-name}"
+                  else
+                    "disk-secondary-luks-btrfs-${host}";
                 settings.allowDiscards = true;
                 passwordFile = "/tmp/aviaryInstall/luks-password-recovery";
                 content = {
@@ -69,7 +80,10 @@ in
                   extraArgs = [ "-f" ];
                   subvolumes = {
                     "home" = {
-                      mountOptions = [ "compress=zstd" "noatime" ];
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
                       mountpoint = "/home";
                     };
                   };

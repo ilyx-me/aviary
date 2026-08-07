@@ -9,9 +9,10 @@
 let
   inherit (builtins)
     readFile
-  ;
+    ;
 
-in {
+in
+{
 
   name = "persist";
   enableOCR = true;
@@ -36,7 +37,9 @@ in {
       supportedFilesystems = [ "btrfs" ];
       initrd = {
         availableKernelModules = [ "e1000" ];
-        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [ "dev-vdb.device" ];
+        systemd.services."systemd-cryptsetup-early".unitConfig.BindsTo = lib.mkVMOverride [
+          "dev-vdb.device"
+        ];
       };
     };
 
@@ -49,12 +52,20 @@ in {
         fileSystems = {
           "/" = {
             fsType = lib.mkVMOverride "btrfs";
-            options = [ "subvol=root" "compress=zstd" "noatime" ];
+            options = [
+              "subvol=root"
+              "compress=zstd"
+              "noatime"
+            ];
           };
           "/persist" = {
             fsType = "btrfs";
             device = "/dev/mapper/disk-primary-luks-btrfs-test-a";
-            options = [ "subvol=persist" "compress=zstd" "noatime" ];
+            options = [
+              "subvol=persist"
+              "compress=zstd"
+              "noatime"
+            ];
             neededForBoot = true;
           };
         };

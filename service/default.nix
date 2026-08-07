@@ -7,22 +7,22 @@
 }:
 
 let
-  inherit ( builtins )
+  inherit (builtins)
     readFile
     pathExists
-  ;
+    ;
 
-  inherit ( lib )
+  inherit (lib)
     mkOption
-  ;
+    ;
 
-  inherit ( lib.types )
+  inherit (lib.types)
     str
-  ;
+    ;
 
-  inherit ( pkgs )
+  inherit (pkgs)
     writeShellScript
-  ;
+    ;
 
   host = config.networking.hostName;
   secrets = config.sops.secrets;
@@ -33,9 +33,10 @@ let
     group = "admins";
   };
 
-  wpaExecStart = writeShellScript "initrdwificonnect" ( readFile ../script/systemd/initrdwifi.sh );
+  wpaExecStart = writeShellScript "initrdwificonnect" (readFile ../script/systemd/initrdwifi.sh);
 
-in {
+in
+{
 
   options.aviary = {
 
@@ -67,7 +68,12 @@ in {
 
     boot.initrd = {
 
-      availableKernelModules = [ "ccm" "ctr" "tun" "nft_chain_nat" ];
+      availableKernelModules = [
+        "ccm"
+        "ctr"
+        "tun"
+        "nft_chain_nat"
+      ];
 
       network = {
         enable = true;
@@ -97,13 +103,24 @@ in {
             group = "root";
             mode = "0400";
             user = "root";
-            argument = if config.system.nixos.variant_id == "test" then readFile "${inputs.secrets-test}/${config.aviary.uID}/${host}-ts-initrd"
-              else readFile "${inputs.secrets}/${config.aviary.uID}/${host}-ts-initrd";
+            argument =
+              if config.system.nixos.variant_id == "test" then
+                readFile "${inputs.secrets-test}/${config.aviary.uID}/${host}-ts-initrd"
+              else
+                readFile "${inputs.secrets}/${config.aviary.uID}/${host}-ts-initrd";
           };
         };
 
-        packages = [ pkgs.wpa_supplicant pkgs.tailscale pkgs.openssh ];
-        initrdBin = [ pkgs.wpa_supplicant pkgs.tailscale pkgs.openssh ];
+        packages = [
+          pkgs.wpa_supplicant
+          pkgs.tailscale
+          pkgs.openssh
+        ];
+        initrdBin = [
+          pkgs.wpa_supplicant
+          pkgs.tailscale
+          pkgs.openssh
+        ];
 
         users.root.shell = "/bin/systemd-tty-ask-password-agent";
 
@@ -140,7 +157,11 @@ in {
             wantedBy = [ "multi-user.target" ];
 
             serviceConfig = {
-              ExecStart = if pathExists /tmp/egg-drive-name then "${wpaExecStart} disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}" else "${wpaExecStart} disk-primary-luks-btrfs-${host}";
+              ExecStart =
+                if pathExists /tmp/egg-drive-name then
+                  "${wpaExecStart} disk-primary-luks-btrfs-${readFile /tmp/egg-drive-name}"
+                else
+                  "${wpaExecStart} disk-primary-luks-btrfs-${host}";
               TimeoutStartSec = 0;
               Type = "notify";
               NotifyAccess = "main";
@@ -177,7 +198,10 @@ in {
     ];
 
     systemd.services.tailscaled = {
-      after = [ "systemd-networkd.service" "multi-user.target" ];
+      after = [
+        "systemd-networkd.service"
+        "multi-user.target"
+      ];
       serviceConfig.LogLevelMax = "notice";
     };
 
