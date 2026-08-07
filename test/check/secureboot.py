@@ -1,0 +1,5 @@
+machine.wait_for_unit("prepare-sb-auto-enroll.service")
+machine.shutdown()
+machine.start(True)
+machine.wait_for_unit("default.target")
+assert "Secure Boot: enabled (user)" in machine.succeed("bootctl -q --no-pager")

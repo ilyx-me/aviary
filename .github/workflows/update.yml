@@ -1,0 +1,48 @@
+name: update
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 1 * * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+      - name: configure ssh
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AVIARY_SECRETS_TEST_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/knownhosts
+      - name: update flake lock
+        run: |
+          nix flake update \
+            danksearch \
+            disko \
+            dms \
+            dms-plugins-registry \
+            dgop \
+            firefox-gnome-theme \
+            flake-parts \
+            hardware \
+            home-manager \
+            impermanence \
+            lanzaboote \
+            nixpkgs \
+            nixvim \
+            nix-minecraft \
+            sops-nix
+      - name: Create Pull Request
+        run: |
+          gh pr create --title "[CI] Daily Update" --body "Update flake lock, exclude secrets" --base dev-core-systems
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      ### TO AUTOMERGE
+      #- name: Merge
+      #  run: gh pr merge --auto "${{ steps.update.outputs.pull-request-number }}" --rebase
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  if: ${{ steps.update.outputs.pull-request-number != '' }}

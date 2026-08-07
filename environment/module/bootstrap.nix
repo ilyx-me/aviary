@@ -15,11 +15,12 @@ let
     bool
     ;
 
-in {
+in
+{
 
-  options.bootstrap = {
+  options.aviary = {
 
-    enable = mkOption {
+    bootstrap = mkOption {
       type = bool;
       default = true;
       example = false;
@@ -27,15 +28,14 @@ in {
     };
   };
 
-  config = mkIf config.bootstrap.enable {
+  config = mkIf config.aviary.bootstrap {
 
     boot = {
       loader = {
         timeout = 5;
         systemd-boot = {
-          enable = mkForce false; # Using Lanzaboote
-          consoleMode = "max";
-          editor = false;
+          enable = mkForce false; # Using Lanzaboote for secureboot
+          editor = false; # Prevent passing Kernel parameters at boot
         };
 
         efi.canTouchEfiVariables = true;
@@ -44,11 +44,16 @@ in {
       lanzaboote = {
         enable = true;
         pkiBundle = "/var/lib/sbctl";
+        autoGenerateKeys.enable = true;
+        autoEnrollKeys = {
+          enable = true;
+          autoReboot = true;
+        };
       };
-
-      initrd.systemd.enable = true;
     };
 
-    systemd.enableEmergencyMode = false;
+    environment.persistence."/persist".directories = [
+      "/var/lib/sbctl"
+    ];
   };
 }

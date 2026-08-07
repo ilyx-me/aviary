@@ -1,0 +1,6 @@
+machine.wait_for_unit("multi-user.target")
+machine.succeed("echo -n password | cryptsetup luksFormat -q --iter-time=1 /dev/vdb -")
+machine.succeed("bootctl set-default nixos-generation-1-specialisation-boot-luks.conf")
+machine.succeed("sync")
+machine.crash()
+machine.wait_for_unit("multi-user.target")

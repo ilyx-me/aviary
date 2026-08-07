@@ -1,10 +1,10 @@
 {
   lib,
-  self',
+  pkgs,
   ...
 }:
-let
 
+let
   inherit (builtins)
     readFile
     ;
@@ -13,19 +13,27 @@ let
     recursiveUpdate
     ;
 
-  config = self'.checks.partRecovery.nodes.machine;
+  config = {
+    networking.hostName = "test-a";
+  };
   default = (import ../system/module/part/default.nix { inherit config lib; }).config;
   recovery = (import ../system/module/part/recovery.nix { }).config;
   diskoConfig = recursiveUpdate default recovery;
+
 in
 {
+
+  pkgs = pkgs;
   name = "partRecovery";
   enableOCR = true;
 
   disko-config = diskoConfig;
 
   extraInstallerConfig = {
-    systemd.tmpfiles.settings."10-luks-pwd"."/luks-password-recovery".f.argument = "password";
+    systemd.tmpfiles.settings."10-luks-pwd"."/tmp/aviaryInstall/luks-password-recovery".f.argument =
+      "password";
+
+    virtualisation.emptyDiskImages = lib.mkForce [ 8192 ];
   };
 
   extraSystemConfig = { };

@@ -1,0 +1,240 @@
+include "dms/alttab.kdl"
+include "dms/colors.kdl"
+include "dms/layout.kdl"
+include "dms/outputs.kdl"
+include "dms/wpblur.kdl"
+
+input {
+    keyboard {
+        numlock
+        xkb {
+            // If this section is empty, niri will fetch xkb settings
+            // from org.freedesktop.locale1. You can control these using
+            // localectl set-x11-keymap.
+        }
+    }
+
+    touchpad {
+        tap
+        dwt
+        natural-scroll
+        accel-speed 0.5
+        accel-profile "flat"
+        click-method "clickfinger"
+    }
+
+    mouse {
+        accel-profile "flat"
+    }
+
+    trackpoint {
+        accel-profile "flat"
+    }
+
+    //tablet {
+    //    map-to-output "eDP-1"
+    //    calibration-matrix 2.0 0.0 0.0 0.0 2.0 0.0
+    //}
+
+    //touch {
+    //    map-to-output "eDP-1"
+    //    calibration-matrix 2.0 0.0 0.0 0.0 2.0 0.0
+    //}
+}
+
+layout {
+    always-center-single-column
+    empty-workspace-above-first
+    center-focused-column "never"
+    default-column-width {
+        proportion 0.5
+    }
+    preset-column-widths {
+        proportion 0.33
+        proportion 0.5
+        proportion 0.66
+        proportion 1.0
+    }
+    preset-window-heights {
+        proportion 0.33
+        proportion 0.5
+        proportion 0.66
+        proportion 1.0
+    }
+    struts {
+        left 32
+        right 32
+    }
+}
+
+overview {
+    backdrop-color "transparent"
+}
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+// The path is formatted with strftime(3) to give you the screenshot date and time.
+// You can also set this to null to disable saving screenshots to disk.
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+gestures {
+    hot-corners {
+        off
+    }
+}
+
+cursor {
+    xcursor-theme "XCursor-Pro-Dark"
+    xcursor-size 24
+}
+
+// DMS wants to set this to true but this makes GTK4 windoes non-resizable at the edges
+window-rule {
+    tiled-state false
+}
+
+window-rule {
+    match app-id="librewolf$" title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="^Bitwarden$"
+    block-out-from "screen-capture"
+}
+
+window-rule {
+    match app-id="^org.keepassxc.KeePassXC$"
+    block-out-from "screen-capture"
+}
+
+window-rule {
+    match app-id="^org.gnome.World.Secrets"
+    block-out-from "screen-capture"
+}
+
+window-rule {
+    match title="Kando Menu"
+    open-floating true
+    focus-ring { off; }
+    border { off; }
+    shadow { off; }
+}
+
+window-rule {
+    match app-id="^[Ww]aydroid"
+    open-maximized-to-edges false
+    default-window-height { proportion 1.0; }
+    default-column-width { proportion 1.0; }
+}
+
+binds {
+    Mod+Y { spawn "kando" "--menu" "Example Menu" "--enable-features=UseOzonePlatform" "--ozone-platform=wayland"; }
+
+    Mod+U                hotkey-overlay-title="Focus Previous Worksapce" { focus-workspace-up; }
+    Mod+G                hotkey-overlay-title="Focus Start"              { focus-column-first; }
+    Mod+H                hotkey-overlay-title="Focus Left"               { focus-column-left; }
+    Mod+J                hotkey-overlay-title="Focus Down"               { focus-window-down; }
+    Mod+K                hotkey-overlay-title="Focus Up"                 { focus-window-up; }
+    Mod+L                hotkey-overlay-title="Focus Right"              { focus-column-right; }
+    Mod+Semicolon        hotkey-overlay-title="Focus End"                { focus-column-last; }
+    Mod+M                hotkey-overlay-title="Focus Next Workspace"     { focus-workspace-down; }
+
+    Mod+Shift+U         hotkey-overlay-title="Move Previous Workspace" { move-column-to-workspace-up; }
+    Mod+Shift+G         hotkey-overlay-title="Move Start"              { move-column-to-first; }
+    Mod+Shift+H         hotkey-overlay-title="Move Left"                  { move-column-left; }
+    Mod+Shift+J         hotkey-overlay-title="Move Down"                  { move-window-down; }
+    Mod+Shift+K         hotkey-overlay-title="Move Up"                    { move-window-up; }
+    Mod+Shift+L         hotkey-overlay-title="Move Right"                 { move-column-right; }
+    Mod+Shift+Semicolon hotkey-overlay-title="Move End"                { move-column-to-last; }
+    Mod+Shift+M         hotkey-overlay-title="Move Next Workspace"     { move-column-to-workspace-down; }
+
+    // Mod+Ctrl+H           { set-column-width "-10%"; }
+    // Mod+Ctrl+J           { set-window-height "+10%"; }
+    // Mod+Ctrl+K           { set-window-height "-10%"; }
+    // Mod+Ctrl+L           { set-column-width "+10%"; }
+
+    Mod+Shift+Ctrl+H     hotkey-overlay-title="Move Left Monitor"  { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+J     hotkey-overlay-title="Move Below Monitor" { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+K     hotkey-overlay-title="Move Above Monitor" { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+L     hotkey-overlay-title="Move Right Monitor" { move-column-to-monitor-right; }
+
+    Mod+I                hotkey-overlay-title="Merge or Expel Left"  { consume-or-expel-window-left; }
+    Mod+O                hotkey-overlay-title="Merge or Expel Right" { consume-or-expel-window-right; }
+
+    Mod+Shift+I          hotkey-overlay-title="Consume" { consume-window-into-column; }
+    Mod+Shift+O          hotkey-overlay-title="Expel"   { expel-window-from-column; }
+
+    Mod+F                hotkey-overlay-title="Expand Preset Width"  { switch-preset-column-width; }
+    Mod+Shift+F          hotkey-overlay-title="Expand Preset Height" { switch-preset-window-height; }
+    Mod+D                hotkey-overlay-title="Shrink Preset Width"  { switch-preset-column-width-back; }
+    Mod+Shift+D          hotkey-overlay-title="Shrink Preset Height" { switch-preset-window-height-back; }
+    Mod+Ctrl+F           hotkey-overlay-title="Maximize"             { maximize-window-to-edges; }
+    Mod+Q repeat=false   hotkey-overlay-title="Close"                { close-window; }
+
+    Mod+C                hotkey-overlay-title="Center"         { center-column; }
+    Mod+Shift+C          hotkey-overlay-title="Center Visible" { center-visible-columns; }
+
+    Mod+V                hotkey-overlay-title="Float"          { toggle-window-floating; }
+    Mod+Shift+V          hotkey-overlay-title="Focus Floating" { switch-focus-between-floating-and-tiling; }
+
+    Mod+W                hotkey-overlay-title="Tabbed View" { toggle-column-tabbed-display; }
+
+    Mod+Minus            hotkey-overlay-title="Shrink Width"  { set-column-width "-10%"; }
+    Mod+Equal            hotkey-overlay-title="Expand Width"  { set-column-width "+10%"; }
+    Mod+Shift+Minus      hotkey-overlay-title="Shrink Height" { set-window-height "-10%"; }
+    Mod+Shift+Equal      hotkey-overlay-title="Expand Height" { set-window-height "+10%"; }
+
+    Mod+Shift+S repeat=false hotkey-overlay-title="Screenshot"        { screenshot; }
+    Mod+Ctrl+S repeat=false  hotkey-overlay-title="Screenshot Window" { screenshot-window; }
+
+    Super+Shift+Slash repeat=false hotkey-overlay-title="Keybinds"    { spawn "dms" "ipc" "call" "keybinds" "toggle" "niri"; }
+    Super+N repeat=false           hotkey-overlay-title="Launcher"    { spawn "dms" "ipc" "call" "spotlight" "toggle"; }
+    Super+Space repeat=false       hotkey-overlay-title="Overview"    { toggle-overview; }
+    Super+Alt+L repeat=false       hotkey-overlay-title="Lock"        { spawn "dms" "ipc" "call" "lock" "lock"; }
+
+    Mod+Escape allow-inhibiting=false hotkey-overlay-title="Force Enable Shortcuts" { toggle-keyboard-shortcuts-inhibit; }
+
+    XF86AudioRaiseVolume allow-when-locked=true hotkey-overlay-title="Volume Up"   { spawn "dms" "ipc" "call" "audio" "increment" "5"; }
+    XF86AudioLowerVolume allow-when-locked=true hotkey-overlay-title="Volume Down" { spawn "dms" "ipc" "call" "audio" "decrement" "5"; }
+    XF86AudioMute        allow-when-locked=true hotkey-overlay-title="Volume Mute" { spawn "dms" "ipc" "call" "audio" "mute"; }
+    XF86AudioMicMute     allow-when-locked=true hotkey-overlay-title="Mic Mute"    { spawn "dms" "ipc" "call" "audio" "micmute"; }
+
+    XF86AudioPlay        allow-when-locked=true hotkey-overlay-title="Media Play" { spawn "dms" "ipc" "call" "mpris" "playPause"; }
+    XF86AudioStop        allow-when-locked=true hotkey-overlay-title="Media Stop" { spawn "dms" "ipc" "call" "mpris" "stop"; }
+    XF86AudioPrev        allow-when-locked=true hotkey-overlay-title="Media Prev" { spawn "dms" "ipc" "call" "mpris" "previous"; }
+    XF86AudioNext        allow-when-locked=true hotkey-overlay-title="Media Next" { spawn "dms" "ipc" "call" "mpris" "next"; }
+
+    XF86MonBrightnessUp   allow-when-locked=true hotkey-overlay-title="Brightness Up"   { spawn "dms" "ipc" "call" "brightness" "increment" "5" ""; }
+    XF86MonBrightnessDown allow-when-locked=true hotkey-overlay-title="Brightness Down" { spawn "dms" "ipc" "call" "brightness" "decrement" "5" ""; }
+
+    // You can bind mouse wheel scroll ticks using the following syntax.
+    // These binds will change direction based on the natural-scroll setting.
+    //
+    // To avoid scrolling through workspaces really fast, you can use
+    // the cooldown-ms property. The bind will be rate-limited to this value.
+    // You can set a cooldown on any bind, but it's most useful for the wheel.
+    Mod+WheelScrollDown      cooldown-ms=150 hotkey-overlay-title="Focus Next Worksapce" { focus-workspace-down; }
+    Mod+WheelScrollUp        cooldown-ms=150 hotkey-overlay-title="Focus Previous Worksapce" { focus-workspace-up; }
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 hotkey-overlay-title="Move Next Workspace" { move-column-to-workspace-down; }
+    Mod+Ctrl+WheelScrollUp   cooldown-ms=150 hotkey-overlay-title="Move Previous Workspace" { move-column-to-workspace-up; }
+
+    Mod+WheelScrollRight      hotkey-overlay-title="Focus Right" { focus-column-right; }
+    Mod+WheelScrollLeft       hotkey-overlay-title="Focus Left" { focus-column-left; }
+    Mod+Ctrl+WheelScrollRight hotkey-overlay-title="Move Right" { move-column-right; }
+    Mod+Ctrl+WheelScrollLeft  hotkey-overlay-title="Move Left" { move-column-left; }
+
+    // Usually scrolling up and down with Shift in applications results in
+    // horizontal scrolling; these binds replicate that.
+    Mod+Shift+WheelScrollDown      hotkey-overlay-title="Focus Right" { focus-column-right; }
+    Mod+Shift+WheelScrollUp        hotkey-overlay-title="Focus Left" { focus-column-left; }
+    Mod+Ctrl+Shift+WheelScrollDown hotkey-overlay-title="Move Right" { move-column-right; }
+    Mod+Ctrl+Shift+WheelScrollUp   hotkey-overlay-title="Move Left" { move-column-left; }
+}
+
+include "dms/cursor.kdl"
+include "dms/binds.kdl"
+include "dms/windowrules.kdl"
+include "aviaryUserOverrides.kdl"

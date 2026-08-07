@@ -1,0 +1,5 @@
+machine.wait_for_unit("default.target")
+machine.succeed("ls /run/secrets/test-a-luks")
+machine.succeed("ls /run/secrets/test-a-ssh-admin")
+machine.succeed("ls /run/secrets/test-a-ssh-user")
+machine.succeed("ls /run/secrets/test-a-ts")

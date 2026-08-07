@@ -1,13 +1,21 @@
 {
-  config,
   lib,
   pkgs,
   ...
-}: {
+}:
+
+let
+  inherit (lib)
+    mkForce
+    ;
+
+in
+{
+
   config = {
+
     boot = {
       initrd.systemd = {
-        #emergencyAccess = true; # allow unauthenticated initrd access
         packages = with pkgs; [
           coreutils
           curl
@@ -29,13 +37,36 @@
       };
 
       kernelParams = [
-        #"rd.systemd.unit=rescue.target" # force initrd into rescue mode
         "rd.systemd.debug_shell" # open initrd debug shell on tty9
       ];
     };
 
-    users.users.root.hashedPassword = lib.mkForce "";
-    users.users.admin.hashedPassword = lib.mkForce "";
-    users.users."1000".hashedPassword = lib.mkForce "";
+    # getty login is disabled for recovery so make sure it's enabled
+    services.getty = {
+      loginProgram = mkForce "${pkgs.shadow}/bin/login";
+      loginOptions = mkForce null;
+      extraArgs = mkForce [ ];
+    };
+
+    users = {
+
+      users = {
+
+        root.hashedPassword = mkForce "";
+
+        "999" = {
+          isSystemUser = true;
+          hashedPassword = mkForce "";
+          group = "admins";
+        };
+
+        "1000" = {
+          isNormalUser = true;
+          hashedPassword = mkForce "";
+        };
+      };
+
+      groups."admins" = { };
+    };
   };
 }

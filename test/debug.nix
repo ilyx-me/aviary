@@ -1,4 +1,10 @@
-{ ... }:
+{
+  inputs,
+  lib,
+  self,
+  ...
+}:
+
 let
   inherit (builtins)
     readFile
@@ -9,16 +15,13 @@ in
   enableOCR = true;
 
   nodes.machine = { ... }: {
+    _module.args = { inherit inputs; };
     imports = [
+      self.nixosModules.default
       ../environment/module/debug.nix
-    ];
 
-    users.groups.admin = {};
-    users.users.admin.group = "admin";
-    users.users.admin.isSystemUser = true;
-    users.users."1000".group = "users";
-    users.users."1000".isNormalUser = true;
-    users.users."1000".name = "user";
+      (import ./user/testA.nix { inherit inputs lib; })
+    ];
   };
 
   testScript = readFile ./check/debug.py;
