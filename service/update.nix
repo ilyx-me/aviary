@@ -17,7 +17,7 @@
 
     system.autoUpgrade = {
       enable = true;
-      flake = "github:ilyx-me/aviary/dev-core-systems";
+      flake = "github:ilyx-me/aviary/main";
       flags = [ "--no-write-lock-file" ];
       dates = "hourly";
       #randomizedDelaySec = "5min";
@@ -43,7 +43,7 @@
           revision_system=$(/run/current-system/sw/bin/nixos-version --configuration-revision)
 
           set -o pipefail
-          revision_repo=$(/run/current-system/sw/bin/git ls-remote https://github.com/ilyx-me/aviary dev-core-systems | /run/current-system/sw/bin/cut -f1) || {
+          revision_repo=$(/run/current-system/sw/bin/git ls-remote https://github.com/ilyx-me/aviary main | /run/current-system/sw/bin/cut -f1) || {
               echo "Unable to get repository revision, exiting..."
               echo -n "nixos-upgrade-network" > /run/nixos-upgrade/status
               exit 1
