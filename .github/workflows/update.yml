@@ -4,25 +4,44 @@ on:
   schedule:
     - cron: '15 1 * * *'
 
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31
       - name: configure ssh
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AVIARY_SECRETS_TEST_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          umask 077
+          echo "${{ secrets.AVIARY_SECRETS_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/knownhosts
-      - name: update flake lock
+      - name: create branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          PR=$(gh pr list --json number --search "in:title \"[CI] Flake Update\"" | jq -r '.[0].number')
+          if (( $PR > 0 )); then
+              if [[ "$(gh pr view "$PR" --json mergeStateStatus | jq -r '.mergeStateStatus')" == "CLEAN" ]]; then
+                  gh pr merge --auto "$PR" --rebase
+              fi
+          fi
+          git push origin --delete ci/update-flake || true
+          git checkout -b ci/update-flake
+        env:
+          GH_TOKEN: ${{ secrets.AVIARY_FLAKE_UPDATE_PAT }}
+      - name: update flake lock 
         run: |
           nix flake update \
             danksearch \
             disko \
             dms \
-            dms-plugins-registry \
+            dms-plugin-registry \
             dgop \
             firefox-gnome-theme \
             flake-parts \
@@ -33,16 +52,15 @@ jobs:
             nixpkgs \
             nixvim \
             nix-minecraft \
+            secrets \
             sops-nix
+      - name: commit changes
+        run: |
+          git add .
+          git commit -m "ci: update flake lock"
+          git push -u origin ci/update-flake
       - name: Create Pull Request
         run: |
-          gh pr create --title "[CI] Daily Update" --body "Update flake lock, exclude secrets" --base main
+          gh pr create --title "[CI] Flake Update" --body "Update flake lock" --base main
         env:
-          GH_TOKEN: ${{ github.token }}
-
-      ### TO AUTOMERGE
-      #- name: Merge
-      #  run: gh pr merge --auto "${{ steps.update.outputs.pull-request-number }}" --rebase
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  if: ${{ steps.update.outputs.pull-request-number != '' }}
+          GH_TOKEN: ${{ secrets.AVIARY_FLAKE_UPDATE_PAT }}

@@ -1,7 +1,9 @@
 name: test-default
 on:
   push:
-    branches: []
+    branches-ignore:
+      - main
+      - 'ci/**'
   pull_request:
   workflow_dispatch:
 
@@ -14,8 +16,8 @@ jobs:
       - name: configure ssh key
         run: |
           mkdir -p ~/.ssh
+          umask 077
           echo "${{ secrets.AVIARY_SECRETS_TEST_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
-          chmod 0600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/knownhosts
       - name: run test default
         run: nix run -L .#checks.x86_64-linux.default.driver
