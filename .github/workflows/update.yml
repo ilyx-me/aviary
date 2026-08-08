@@ -29,6 +29,7 @@ jobs:
           if (( $PR > 0 )); then
               if [[ "$(gh pr view "$PR" --json mergeStateStatus | jq -r '.mergeStateStatus')" == "CLEAN" ]]; then
                   gh pr merge --auto "$PR" --rebase
+                  git pull origin main
               fi
           fi
           git push origin --delete ci/update-flake || true
