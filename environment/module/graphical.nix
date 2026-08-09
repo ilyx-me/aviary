@@ -279,6 +279,10 @@
     home-manager.users."1000" = {
 
       xdg.desktopEntries = {
+        "btop" = {
+          name = "btop++";
+          noDisplay = true;
+        };
         "cups" = {
           name = "cups";
           noDisplay = true;
