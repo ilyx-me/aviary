@@ -183,7 +183,7 @@
             "QT_STYLE_OVERRIDE=adwaita"
             "QT_WAYLAND_DECORATION=adwaita"
           ];
-          ExecStartPre = "/run/current-system/sw/bin/niri msg action do-screen-transition --delay-ms 5000";
+          ExecStartPre = "/run/current-system/sw/bin/niri msg action do-screen-transition --delay-ms 8000";
         };
       };
 
@@ -203,7 +203,12 @@
           TimeoutSec = "infinity";
           RemainAfterExit = "yes";
           ExecStart = pkgs.writeShellScript "dms-initial-lock" ''
-            /home/1000/.nix-profile/bin/dms ipc lock lock
+            while /run/current-system/sw/bin/true; do
+                if [[ "$(/home/1000/.nix-profile/bin/dms ipc lock isLocked)" == "true" ]]; then
+                    break
+                fi
+                /home/1000/.nix-profile/bin/dms ipc lock lock
+            done
             /run/current-system/sw/bin/gnome-keyring-daemon --replace
             /home/1000/.nix-profile/bin/dms ipc profile setImage /var/lib/AccountsService/icons/${config.users.users."1000".name}
             while IFS= read -r line; do
