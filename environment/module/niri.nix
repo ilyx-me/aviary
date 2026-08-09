@@ -19,10 +19,7 @@
     services.accounts-daemon.enable = true;
     services.gvfs.enable = true;
     services.iio-niri.enable = true;
-    services.input-remapper = {
-      enable = true;
-      enableUdevRules = true;
-    };
+    services.inputplumber.enable = true;
 
     services.greetd = {
       enable = true;
