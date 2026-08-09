@@ -587,6 +587,9 @@
     },
     "dms_settings": {
       "enabled": true
+    },
+    "dms_colorpicker": {
+      "enabled": false
     }
   },
   "clipboardEnterToPaste": false,
