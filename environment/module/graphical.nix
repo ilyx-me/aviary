@@ -287,6 +287,10 @@
           name = "cups";
           noDisplay = true;
         };
+        "dev.lizardbyte.app.Sunshine" = {
+          name = "Sunshine";
+          noDisplay = true;
+        };
         "nvim" = {
           name = "nvim";
           noDisplay = true;
