@@ -421,6 +421,10 @@
           "enabled": true
         },
         {
+          "id": "dankActions:variant_1786257999905",
+          "enabled": true
+        },
+        {
           "id": "workspaceSwitcher",
           "enabled": true
         }

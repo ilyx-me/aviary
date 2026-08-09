@@ -46,6 +46,21 @@
         "visibilityInterval": 0,
         "id": "variant_1771964673752",
         "name": "OSK"
+      },
+      {
+        "icon": "update",
+        "displayText": "",
+        "displayCommand": "nixos-version --configuration-revision | cut -c1-7",
+        "clickCommand": "",
+        "middleClickCommand": "",
+        "rightClickCommand": "",
+        "updateInterval": 15,
+        "showIcon": true,
+        "showText": true,
+        "visibilityCommand": "",
+        "visibilityInterval": 0,
+        "id": "variant_1786257999905",
+        "name": "NixOS Configuration Revision"
       }
     ]
   },
