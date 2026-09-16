@@ -121,11 +121,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789439590,
-        "narHash": "sha256-X0R9AVlCavuFAvGcFIIrNdeHD2ypFf8MGpAEXOzPgiE=",
+        "lastModified": 1789523047,
+        "narHash": "sha256-smZGsBOftB3V7U+DqkqIjYTqGEM7jEWCDUV0C6c6nrM=",
         "owner": "AvengeMedia",
         "repo": "dms-plugin-registry",
-        "rev": "d5bb0d6d1c74278840e1bc92bac8add1b34d31bc",
+        "rev": "ece51d49af1344ec05e090449faf9c7d890f1219",
         "type": "github"
       },
       "original": {
@@ -346,11 +346,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1789446796,
-        "narHash": "sha256-dsgZ/cC/ZcbvAM4ZZK2USpS5e34AVo0OlBkuBvzJufQ=",
+        "lastModified": 1789532962,
+        "narHash": "sha256-xc1GH+U1LK25cM855bIlcm7kC3t76xbyg3z/D2P1sNM=",
         "owner": "Infinidoge",
         "repo": "nix-minecraft",
-        "rev": "9552774a584b6fb0e3981f8b73372d65f36e68cf",
+        "rev": "10266e67466a000a276ee585dd0dc8c5729dd3bd",
         "type": "github"
       },
       "original": {
