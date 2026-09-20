@@ -121,11 +121,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789789500,
-        "narHash": "sha256-rBndooJeUIgPQewnYn31dx1yrk/fhAsKN8A3q4KcbGs=",
+        "lastModified": 1789875020,
+        "narHash": "sha256-zp+MZqy+oRdtRLbr5jziuqpYhKANxvlnrJZ84jgVm6Y=",
         "owner": "AvengeMedia",
         "repo": "dms-plugin-registry",
-        "rev": "f50a3779a1e20b80e9148181f5f9f053664c4b74",
+        "rev": "7eb867e3c3352ef9a9e8da80a7c8140fbf2c4353",
         "type": "github"
       },
       "original": {
@@ -346,11 +346,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1789791385,
-        "narHash": "sha256-APMzDJxpg+I0Z0hBzeyub8DFyqaaPX2sGutxySwto+0=",
+        "lastModified": 1789878941,
+        "narHash": "sha256-jCo4qYaCxGvNSnIfCIPzEt2r06GWsTRqYOmzLPUvKko=",
         "owner": "Infinidoge",
         "repo": "nix-minecraft",
-        "rev": "dac71c437efaf01ecc3a1635915fdae39ae85edb",
+        "rev": "66b5884f21f8f1c6461b58464ebde0540d8c3492",
         "type": "github"
       },
       "original": {
@@ -575,11 +575,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789691124,
-        "narHash": "sha256-k+I+R6uwHX3VcJ7326qLV6vCahZUgsVl+i8sSU/Stxk=",
+        "lastModified": 1789815532,
+        "narHash": "sha256-/Ql9UE21iDwOU/JdPV20yZtaMpGf+iD2EhIA1aAi540=",
         "owner": "mic92",
         "repo": "sops-nix",
-        "rev": "1e73e8f7176d65e1b55e324de099bbfff4b2c574",
+        "rev": "166fc0d3f4fcd0dfc9af102ba8e85fa5dd04e5f7",
         "type": "github"
       },
       "original": {
