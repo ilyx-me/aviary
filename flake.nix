@@ -22,7 +22,7 @@
     };
 
     hjem = {
-      url = "github:ilyx-me/hjem/support-kanidm-external-users";
+      url = "github:ilyx-me/hjem/support-external-user-management";
     };
 
     impermanence = {
