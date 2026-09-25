@@ -6,7 +6,29 @@
   ...
 }:
 
-{
+let
+
+  inherit (builtins)
+    readFile
+    ;
+
+  inherit (lib)
+    mkForce
+    ;
+
+  inherit (pkgs)
+    writeShellScript
+    ;
+
+  addFlathubRemoteExecStart = writeShellScript "add-flathub-remote.sh" (
+    readFile ../../script/systemd/addFlathubRemote.sh
+  );
+
+  nixosUpgradeNotifyExecStart = writeShellScript "nixos-upgrade-notify.sh" (
+    readFile ../../script/systemd/nixosUpgradeNotify.sh
+  );
+
+in {
   options.aviary = {
 
     virtualDisplay = lib.mkOption {
@@ -21,9 +43,9 @@
 
     sops.secrets."sunshine-creds" = {
       mode = "0400";
-      owner = config.users.users."1000".name;
-      group = "users";
-      path = "/home/1000/.config/sunshine/login.json";
+      #owner = 1984693245; #${config.aviary.primaryGid};
+      #group = 1984693245; #${config.aviary.primaryGid};
+      #path = "/home/${config.aviary.primaryUuid}/.config/sunshine/login.json";
     };
 
     boot = {
@@ -43,7 +65,7 @@
         "net.core.netdev_budget_usecs" = 8000;
         "net.core.netdev_max_backlog" = 10000;
       };
-      loader.timeout = lib.mkForce 0;
+      loader.timeout = mkForce 0;
       initrd.verbose = false;
 
       plymouth = {
@@ -84,7 +106,7 @@
     };
 
     networking = {
-      useNetworkd = lib.mkForce false;
+      useNetworkd = mkForce false;
       wireless.enable = true;
       networkmanager = {
         enable = true;
@@ -119,7 +141,7 @@
       ];
 
       pathsToLink = [ "/share/nautilus-python/extensions" ];
-      sessionVariables.NAUTILUS_4_EXTENSION_DIR = lib.mkForce "${pkgs.nautilus-python}/lib/nautilus/extensions-4";
+      sessionVariables.NAUTILUS_4_EXTENSION_DIR = mkForce "${pkgs.nautilus-python}/lib/nautilus/extensions-4";
 
       persistence."/persist".directories = [
         "/etc/NetworkManager/system-connections"
@@ -202,30 +224,39 @@
 
     security.rtkit.enable = true;
 
-    users.users = {
-      "999".extraGroups = [ "networkmanager" ];
-      "1000".extraGroups = [
-        "networkmanager"
-        "uinput"
-      ];
-    };
+    users.users."999".extraGroups = [ "networkmanager" ];
 
     # Prevent last second debug console messages after plymouth
     systemd.shutdownRamfs.enable = false;
 
-    systemd.tmpfiles.rules = [
-      "d /home/1000/.config 0700 ${config.users.users."1000".name} users - -"
-      "d /home/1000/.config/sunshine 0755 ${config.users.users."1000".name} users - -"
-      "d /home/1000/.config/librewolf 0700 ${config.users.users."1000".name} users - -"
-      "d /home/1000/.config/librewolf/librewolf 0700 ${config.users.users."1000".name} users - -"
-      "L /home/1000/.librewolf - - - - /home/1000/.config/librewolf/librewolf"
-    ];
-
-    systemd.user.services.sunshine = {
-      after = lib.mkForce [ "graphical-session-pre-lock.target" ];
-      partOf = lib.mkForce [ "graphical-session-pre-lock.target" ];
-      wants = lib.mkForce [ "graphical-session-pre-lock.target" ];
-      wantedBy = lib.mkForce [ "graphical-session-pre-lock.target" ];
+    systemd.user.services = {
+      "add-flathub-remote" = {
+        description = "Add Flathub remote if not present";
+        after = [ "network-online.target" ];
+        wantedBy = [ "default.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          Restart = "on-failure";
+          RestartSec = 30;
+          ExecStart = "${addFlathubRemoteExecStart} ${pkgs.flatpak}";
+        };
+      };
+      "nixos-upgrade-notify" = {
+        description = "nixos-upgrade notifications";
+        after = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
+        serviceConfig = {
+          Type = "simple";
+          Restart = "always";
+          ExecStart = "${nixosUpgradeNotifyExecStart} ${pkgs.libnotify} ${pkgs.inotify-tools}";
+        };
+      };
+      sunshine = {
+        after = mkForce [ "graphical-session-pre-lock.target" ];
+        partOf = mkForce [ "graphical-session-pre-lock.target" ];
+        wants = mkForce [ "graphical-session-pre-lock.target" ];
+        wantedBy = mkForce [ "graphical-session-pre-lock.target" ];
+      };
     };
 
     programs.firefox = {
@@ -274,149 +305,49 @@
       "audio/x-vorbis" = "io.bassi.Amberol.desktop";
       "audio/x-vorbis+ogg" = "io.bassi.Amberol.desktop";
       "audio/x-wavpack" = "io.bassi.Amberol.desktop";
+      "x-scheme-handler/http" = "librewolf.desktop";
+      "x-scheme-handler/https" = "librewolf.desktop";
     };
 
-    home-manager.users."1000" = {
-
-      xdg.desktopEntries = {
-        "btop" = {
-          name = "btop++";
-          noDisplay = true;
-        };
-        "cups" = {
-          name = "cups";
-          noDisplay = true;
-        };
-        "dev.lizardbyte.app.Sunshine" = {
-          name = "Sunshine";
-          noDisplay = true;
-        };
-        "nvim" = {
-          name = "nvim";
-          noDisplay = true;
-        };
+    hjem.users.${config.aviary.primaryGid} = {
+      files = {
+        ".local/share".type = "directory";
       };
-
-      home.file.".config/librewolf/librewolf/default/chrome/firefox-gnome-theme".source =
-        inputs.firefox-gnome-theme;
-
-      systemd.user.services = {
-        "flathub" = {
-          Unit = {
-            After = [ "network-online.target" ];
-            Description = "Add Flathub repo if not present";
+      xdg = {
+        config.files = {
+          "ghostty/config.ghostty" = {
+            generator = lib.generators.toKeyValue { mkKeyValue = lib.generators.mkKeyValueDefault {} " = "; };
+            value = {
+              gtk-tabs-location = "hidden";
+              theme = "dark:Adwaita Dark,light:Adwaita";
+            };
           };
-          Service = {
-            Type = "oneshot";
-            Restart = "on-failure";
-            RestartSec = 30;
-            ExecStart = "/run/current-system/sw/bin/flatpak -u remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo";
+          "librewolf/librewolf/default/chrome/firefox-gnome-theme".source = inputs.firefox-gnome-theme;
+          "librewolf/librewolf/default/chrome/userChrome.css".text = ''@import "firefox-gnome-theme/userChrome.css'';
+          "librewolf/librewolf/default/chrome/userContent.css".text = ''@import "firefox-gnome-theme/userContent.css'';
+          "librewolf/librewolf/librewolf.overrides.cfg" = {
+            clobber = false;
+            source = ../../config/firefox/librewolf.overrides.cfg;
+            type = "copy";
           };
-          Install = {
-            WantedBy = [ "default.target" ];
+          "librewolf/librewolf/profiles.ini" = {
+            generator = lib.generators.toINI {};
+            value = {
+              Profile0 = {
+                Name = "default";
+                IsRelative = 1;
+                Path = "default";
+                Default = 1;
+              };
+              General = {
+                StartWithLastProfile = 1;
+                Version = 2;
+              };
+            };
           };
-        };
-
-        "nixos-upgrade-notify" = {
-          Install.WantedBy = [ "graphical-session.target" ];
-          Service = {
-            Type = "simple";
-            ExecStart = pkgs.writeShellScript "nixos-upgrade-notify.sh" ''
-              status_last=""
-
-              while read file; do
-                  sleep 0.5
-
-                  status_current=$(cat "$file" 2>/dev/null || echo -n "")
-
-                  if [[ "$status_current" != "$status_last" ]]; then
-                      case "$status_current" in
-                          "nixos-upgrade-start")
-                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
-                                  -u normal \
-                                  -i "nix-snowflake" \
-                                  "Updating System" \
-                                  "Downloading and installing system updates. Performance may be impaired for the duration."
-                              ;;
-                          "nixos-upgrade-success")
-                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
-                                  -u normal \
-                                  -i "nix-snowflake" \
-                                  "Update Successful" \
-                                  "In place upgrade complete. No action required."
-                              ;;
-                          "nixos-upgrade-reboot")
-                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
-                                  -u critical \
-                                  -i "nix-snowflake" \
-                                  "Reboot Required" \
-                                  "Please restart the system to finalize remaining changes."
-                              ;;
-                          "nixos-upgrade-failure")
-                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
-                                  -u critical \
-                                  -i "nix-snowflake" \
-                                  "Update Failed" \
-                                  "An error occured. Please run 'journalctl -eu nixos-upgrade' for details."
-                              ;;
-                          "nixos-upgrade-network")
-                              /run/current-system/sw/bin/notify-send -a "NixOS System" \
-                                  -u normal \
-                                  -i "nix-snowflake" \
-                                  "Network Connection Failed" \
-                                  "Could not check for system updates. Please check the network connection."
-                              ;;
-                      esac
-
-                      status_last="$status_current"
-                  fi
-              done < <(/run/current-system/sw/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status)
-            '';
-            Restart = "always";
-          };
-          Unit = {
-            Description = "nixos-upgrade notifications";
-            After = [ "graphical-session.target" ];
-          };
-        };
-
-        "sunshine-virtual-display" = {
-          Install.WantedBy = [ "graphical-session-pre-lock.target" ];
-          Service = {
-            Type = "simple";
-            ExecStart = pkgs.writeShellScript "sunshine-virtual-display.sh" ''
-              while read -r line; do
-                  displayState="on"
-                  for p in /sys/class/drm/*/status; do
-                      con=''${p%/status}
-                      displayOut=''${con#*/card?-}
-                      if [[ "$displayOut" == "${config.aviary.virtualDisplay}" ]]; then
-                          continue
-                      fi
-
-                      if [[ "$(cat $p)" == "connected" ]]; then
-                          displayState="off"
-                      fi
-                  done
-                  echo "DRM event detected, turning virtual display $displayState"
-                  /run/current-system/sw/bin/niri msg output "${config.aviary.virtualDisplay}" $displayState
-              done < <(/run/current-system/sw/bin/udevadm monitor --kernel --subsystem=drm)
-            '';
-            Restart = "always";
-            RestartSec = 5;
-          };
-          Unit = {
-            Description = "Dynamically enable/disable virtual display for sunshine";
-            After = [ "graphical-session-pre-lock.target" ];
-          };
-        };
-      };
-
-      systemd.user.tmpfiles =
-
-        let
-          moonlightConfig = lib.strings.escapeC [ " " "\n" ] (
-            lib.generators.toINI { } {
+          "Moonlight Game Streaming Project/Moonlight.conf" = {
+            generator = lib.generators.toINI {};
+            value = {
               General = {
                 audiocfg = 0;
                 capturesyskeys = 1;
@@ -430,180 +361,25 @@
                 vsync = false;
                 windowmode = 0;
               };
-            }
-          );
-
-        in
-        {
-          rules = [
-            "d /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project 0755 ${config.users.users."1000".name} users - -"
-            "f /home/1000/.config/Moonlight\\x20Game\\x20Streaming\\x20Project/Moonlight.conf 0755 ${config.users.users."1000".name} users - ${moonlightConfig}"
-          ];
-        };
-
-      programs = {
-        ghostty = {
-          enable = true;
-          package = null;
-          systemd.enable = false;
-          settings.theme = "dark:Adwaita Dark,light:Adwaita";
-        };
-
-        librewolf = {
-          enable = true;
-          package = null;
-
-          profiles."default" = {
-            userChrome = ''
-              @import "firefox-gnome-theme/userChrome.css";
-            '';
-
-            userContent = ''
-              @import "firefox-gnome-theme/userContent.css";
-            '';
-
-            search = {
-              force = true;
-              default = "ddg";
-              privateDefault = "ddg";
-
-              engines = {
-                "Nix Packages" = {
-                  urls = [
-                    {
-                      template = "https://search.nixos.org/packages";
-                      params = [
-                        {
-                          name = "channel";
-                          value = "unstable";
-                        }
-                        {
-                          name = "query";
-                          value = "{searchTerms}";
-                        }
-                      ];
-                    }
-                  ];
-                  icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                  definedAliases = [ "@np" ];
-                };
-
-                "Nix Options" = {
-                  urls = [
-                    {
-                      template = "https://search.nixos.org/options";
-                      params = [
-                        {
-                          name = "channel";
-                          value = "unstable";
-                        }
-                        {
-                          name = "query";
-                          value = "{searchTerms}";
-                        }
-                      ];
-                    }
-                  ];
-                  icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                  definedAliases = [ "@no" ];
-                };
-
-                "NixOS Wiki" = {
-                  urls = [
-                    {
-                      template = "https://wiki.nixos.org/w/index.php";
-                      params = [
-                        {
-                          name = "search";
-                          value = "{searchTerms}";
-                        }
-                      ];
-                    }
-                  ];
-                  icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-                  definedAliases = [ "@nw" ];
-                };
-              };
             };
           };
-
-          settings = {
-            "browser.download.useDownloadDir" = true;
-            "browser.download.autohideButton" = false;
-            "webgl.disabled" = false;
-            "privacy.resistFingerprinting" = false; # Required for auto themeing
-            "privacy.clearOnShutdown.history" = false;
-            "privacy.clearOnShutdown.cookies" = false;
-            "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
-            "browser.toolbars.bookmarks.visibility" = "never";
-            "browser.startup.page" = 3;
-            #"extensions.pictureinpicture.enable_picture_in_picture_overrides" = true;
-            #"browser.search.suggest.enabled" = true;
-            "browser.uidensity" = 2;
-            #"browser.urlbar.suggest.searches" = true;
-            "ui.key.menuAccessKey" = 0;
-            "sidebar.verticalTabs.dragToPinPromo.dismissed" = true;
-            "browser.toolbarbuttons.introduced.sidebar-button" = true;
-            #"browser.link.open_newwindow" = 1; # Open links for 'new windows' in same tab
-            #"browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
-            "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-            "svg.context-properties.content.enabled" = true;
-            "browser.uiCustomization.state" = ''
-              {
-                "placements": {
-                  "widget-overflow-fixed-list": [],
-                  "unified-extensions-area": [
-                    "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action",
-                    "ublock0_raymondhill_net-browser-action",
-                    "myallychou_gmail_com-browser-action"
-                  ],
-                  "nav-bar": [
-                    "back-button",
-                    "forward-button",
-                    "stop-reload-button",
-                    "urlbar-container",
-                    "new-window-button",
-                    "privatebrowsing-button",
-                    "reset-pbm-toolbar-button",
-                    "customizableui-special-spring8",
-                    "vertical-spacer",
-                    "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action",
-                    "unified-extensions-button",
-                    "downloads-button"
-                  ],
-                  "toolbar-menubar": [
-                    "menubar-items"
-                  ],
-                  "TabsToolbar": [
-                    "tabbrowser-tabs"
-                  ],
-                  "vertical-tabs": [],
-                  "PersonalToolbar": [
-                    "personal-bookmarks"
-                  ]
-                },
-                "seen": [
-                  "developer-button",
-                  "screenshot-button",
-                  "ublock0_raymondhill_net-browser-action",
-                  "_d7742d87-e61d-4b78-b8a1-b469842139fa_-browser-action",
-                  "myallychou_gmail_com-browser-action",
-                  "_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action",
-                  "reset-pbm-toolbar-button"
-                ],
-                "dirtyAreaCache": [
-                  "unified-extensions-area",
-                  "nav-bar",
-                  "toolbar-menubar",
-                  "TabsToolbar",
-                  "vertical-tabs",
-                  "PersonalToolbar",
-                  "widget-overflow-fixed-list"
-                ],
-                "currentVersion": 24,
-                "newElementCount": 17
-              }
-            '';
+        };
+        data.files = {
+          "applications/btop.desktop" = {
+            generator = lib.generators.toINI {};
+            value."Desktop Entry".NoDisplay = true;
+          };
+          "applications/cups.desktop" = {
+            generator = lib.generators.toINI {};
+            value."Desktop Entry".NoDisplay = true;
+          };
+          "applications/dev.lizardbyte.app.Sunshine.desktop" = {
+            generator = lib.generators.toINI {};
+            value."Desktop Entry".NoDisplay = true;
+          };
+          "applications/nvim.desktop" = {
+            generator = lib.generators.toINI {};
+            value."Desktop Entry".NoDisplay = true;
           };
         };
       };

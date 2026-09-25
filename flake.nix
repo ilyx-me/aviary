@@ -2,29 +2,9 @@
   description = "Aviary by ilyx";
   inputs = {
 
-    danksearch = {
-      url = "github:AvengeMedia/danksearch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     disko = {
       # May need to keep pinned to a specific commit to pass CI
       url = "github:nix-community/disko"; # /5ae05d98d2bebc0a9521c9fc89bd2e5cffa05926";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    dms = {
-      url = "github:AvengeMedia/DankMaterialShell/stable";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    dms-plugin-registry = {
-      url = "github:AvengeMedia/dms-plugin-registry";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    dgop = {
-      url = "github:AvengeMedia/dgop";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -41,9 +21,8 @@
       url = "github:nixos/nixos-hardware";
     };
 
-    home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+    hjem = {
+      url = "github:ilyx-me/hjem/support-kanidm-external-users";
     };
 
     impermanence = {
@@ -59,12 +38,23 @@
       url = "github:nixos/nixpkgs/nixos-26.05";
     };
 
-    nixvim = {
-      url = "github:nix-community/nixvim/nixos-26.05";
-    };
-
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
+    };
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nvf = {
+      url = "github:NotAShelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    plasma-workspace-wallpapers = {
+      url = "github:KDE/plasma-workspace-wallpapers";
+      flake = false;
     };
 
     secrets = {
@@ -271,8 +261,9 @@
             #_module.args = { inherit inputs; };
             imports = [
               ({ ... }: { system.configurationRevision = self.rev or self.dirtyRev or null; })
-              inputs.home-manager.nixosModules.default
+              inputs.hjem.nixosModules.default
               inputs.impermanence.nixosModules.impermanence
+              inputs.nvf.nixosModules.default
               inputs.sops-nix.nixosModules.sops
               ./environment/module/default.nix
               ./service/default.nix
@@ -356,6 +347,7 @@
               ./system/module/part/single.nix
               ./system/chicken.nix
               ./user/00.nix
+              ./user/module/nvim-nvf.nix
               ./service/update.nix
             ];
           };

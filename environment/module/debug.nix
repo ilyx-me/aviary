@@ -59,11 +59,6 @@ in
           hashedPassword = mkForce "";
           group = "admins";
         };
-
-        "1000" = {
-          isNormalUser = true;
-          hashedPassword = mkForce "";
-        };
       };
 
       groups."admins" = { };

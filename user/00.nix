@@ -18,38 +18,16 @@ let
 
   secrets = toString inputs.secrets;
 
-  defaultPermissions = {
-    mode = "0440";
-    owner = config.users.users."1000".name;
-    group = "admins";
-  };
-
-  u00-chicken = readFile "${secrets}/00/chicken-ssh-user-pub";
-
 in
 {
 
   config = {
 
-    sops = {
-      defaultSopsFile = "${secrets}/00.yaml";
+    sops.defaultSopsFile = "${secrets}/00.yaml";
 
-      # <hostname>-age and <hostname>-luks must exist on the machine that deploys hostname
-      secrets = {
-        "egg-age" = defaultPermissions;
-        "egg-luks" = defaultPermissions;
-
-        "ibis-age" = defaultPermissions;
-        "ibis-luks" = defaultPermissions;
-      };
-    };
-
+    aviary.primaryUuid = "ae8a2a01-92a6-42a2-a0db-03ab51874ffd";
+    aviary.primaryGid = "1904693245";
     aviary.uID = "00";
-
-    users.users."1000" = {
-      extraGroups = [ "wheel" ];
-      openssh.authorizedKeys.keys = [ u00-chicken ];
-    };
 
     programs.firefox.policies.ExtensionSettings = {
 
@@ -78,6 +56,7 @@ in
       };
     };
 
+    /*
     home-manager.users."1000" = {
 
       imports = [
@@ -100,18 +79,15 @@ in
           profiles."default".userChrome = lib.mkForce ''
             @import "firefox-gnome-theme/userChrome.css";
 
-            /* Hide tabs entirely */
             #TabsToolbar {
                 visibility: collapse !important;
             }
           '';
 
-          /*
-            settings = {
-              "browser.link.open_newwindow" = 1;                   # Open links for 'new windows' in same tab
-              "browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
-            };
-          */
+          settings = {
+            "browser.link.open_newwindow" = 1;                   # Open links for 'new windows' in same tab
+            "browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
+          };
         };
       };
 
@@ -121,5 +97,6 @@ in
           #davinci-resolve-studio
         ];
     };
+    */
   };
 }
