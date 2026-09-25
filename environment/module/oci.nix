@@ -34,6 +34,5 @@
     };
 
     users.users."999".hashedPasswordFile = lib.mkForce null;
-    users.users."1000".hashedPasswordFile = lib.mkForce null;
   };
 }

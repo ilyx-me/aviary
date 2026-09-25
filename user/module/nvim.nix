@@ -1,208 +1,114 @@
 {
+  lib,
   pkgs,
   ...
 }:
 {
   config = {
-    home.packages = with pkgs; [
-      ripgrep
-      gcc
-    ];
-
-    programs.nixvim = {
+    programs.nvf = {
       enable = true;
-      viAlias = true;
-      vimAlias = true;
-      colorschemes.catppuccin = {
-        enable = true;
-        settings.flavour = "mocha";
-      };
-      globals.mapleader = " ";
-      keymaps = [
-        {
-          action.__raw = "vim.lsp.buf.hover";
-          key = "<K>";
-          mode = "n";
-          options = {
-            desc = "LSP Hover";
-          };
-        }
-        {
-          action.__raw = "vim.lsp.buf.definition";
-          key = "<gd>";
-          mode = "n";
-          options = {
-            desc = "LSP Go To Definition";
-          };
-        }
-        {
-          action.__raw = "vim.lsp.buf.code_action";
-          key = "<leader>ca";
-          mode = [
-            "n"
-            "v"
+      settings = {
+        vim = {
+          viAlias = true;
+          vimAlias = true;
+          keymaps = [
+            {
+              desc = "LSP Hover";
+              key = "<K>";
+              mode = "n";
+              action = "vim.lsp.buf.hover";
+              lua = true;
+            }
+            {
+              desc = "LSP Go To Definition";
+              key = "<gd>";
+              mode = "n";
+              action = "vim.lsp.buf.definition";
+              lua = true;
+            }
+            {
+              desc = "LSP Code Actions";
+              key = "<leader>ca";
+              mode = [ "n" "v" ];
+              action = "vim.lsp.buf.code_action";
+              lua = true;
+            }
+            {
+              desc = "LSP Format";
+              key = "<leader>gf";
+              mode = "n";
+              action = "vim.lsp.buf.format";
+              lua = true;
+            }
           ];
-          options = {
-            desc = "LSP Code Actions";
+          opts = {
+            expandtab = true;
+            list = true;
+            listchars = "tab:» ,lead:•,trail:•";
+            relativenumber = true;
+            shiftwidth = 2;
+            softtabstop = 2;
+            tabstop = 2;
           };
-        }
-        {
-          action.__raw = "vim.lsp.buf.format";
-          key = "<leader>gf";
-          mode = "n";
-          options = {
-            desc = "LSP Format";
-          };
-        }
-      ];
 
-      opts = {
-        expandtab = true;
-        list = true;
-        listchars = "tab:» ,lead:•,trail:•";
-        relativenumber = true;
-        shiftwidth = 2;
-        softtabstop = 2;
-        tabstop = 2;
-      };
-      plugins = {
-
-        cmp = {
-          enable = true;
-          autoEnableSources = true;
-          settings = {
-            expand = ''
+          /*
+          autocomplete.nvim-cmp = {
+            enable = true;
+            format = lib.mkLuaInline ''
               function(args)
                 require('luasnip').lsp_expand(args.body)
               end
             '';
-            mapping = {
-              "<C-Space>" = "cmp.mapping.complete()";
-              "<C-d>" = "cmp.mapping.scroll_docs(-4)";
-              "<C-e>" = "cmp.mapping.close()";
-              "<C-f>" = "cmp.mapping.scroll_docs(4)";
-              "<CR>" = "cmp.mapping.confirm({ select = true })";
-              "<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
-              "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
-            };
-            sources = [
-              { name = "nvim_lsp"; }
-              { name = "luasnip"; }
-              { name = "path"; }
-              { name = "buffer"; }
-            ];
-            window = {
-              completion.border = [
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-              ];
-              documentation.border = [
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-                ""
-              ];
+            sources = {
+              nvim_lsp = null;
+              luasnip = null;
+              path = "[Path]";
+              buffer = "[Buffer]";
             };
           };
-        };
+          */
 
-        cmp_luasnip.enable = true;
-
-        friendly-snippets.enable = true;
-
-        lsp = {
-          enable = true;
-          inlayHints = true;
-          servers = {
-            lua_ls.enable = true;
-            nixd = {
+          autocomplete.blink-cmp.enable = true;
+          #snippets.luasnip = {
+          #  enable = true;
+          #  providers = [ "friendly-snippets" ];
+          #};
+          languages = {
+            enableFormat = true;
+            enableTreesitter = true;
+            bash.enable = true;
+            nix = {
               enable = true;
-              settings.nixpkgs.expr = "import (builtins.getFlake \"/home/1000/aviary\").inputs.nixpkgs { }";
+              format.type = [ "nixfmt-rs" ];
             };
-            ts_ls.enable = true;
+            lua.enable = true;
+            typescript.enable = true;
           };
-        };
-
-        lualine = {
-          enable = true;
-          settings.options.theme = "catppuccin-mocha";
-        };
-
-        luasnip = {
-          enable = true;
-          fromVscode = [ { } ];
-        };
-
-        neo-tree.enable = true;
-
-        none-ls = {
-          enable = true;
-          sources.formatting = {
-            alejandra.enable = true;
-            stylua.enable = true;
+          lsp = {
+            enable = true;
+            inlayHints.enable = true;
+            lspconfig.enable = true;
+            trouble.enable = true;
           };
-        };
-
-        telescope = {
-          enable = true;
-          extensions.ui-select.enable = true;
-          keymaps = {
-            "<C-p>" = {
-              action = "find_files";
-              mode = "n";
-              options = {
-                desc = "Telescope Files";
-              };
-            };
-            "<leader>fg" = {
-              action = "live_grep";
-              mode = "n";
-              options = {
-                desc = "Telescope Live Grep";
-              };
+          statusline.lualine.enable = true;
+          #filetree.neo-tree.enable = true;
+          /*
+          telescope = {
+            enable = true;
+            mappings = {
+              findFiles = "<C-p>";
+              liveGrep = "<leader>fg";
             };
           };
-        };
-
-        treesitter = {
-          enable = true;
-          settings = {
-            auto_install = false;
-            ensure_installed = "all";
-            highlight = {
-              additional_vim_regex_highlighting = true;
-              custom_captures = { };
-              enable = true;
-            };
+          */
+          treesitter = {
+            enable = true;
+            highlight.enable = true;
             indent.enable = true;
-            parser_install_dir = {
-              __raw = "vim.fs.joinpath(vim.fn.stdpath('data'), 'treesitter')";
-            };
-            sync_install = false;
           };
+          visuals.nvim-web-devicons.enable = true;
         };
-
-        web-devicons.enable = true;
       };
     };
-
-    #home.packages = [
-    #  (lib.hiPrio (pkgs.runCommand "nvim.desktop-hide" { } ''
-    #    mkdir -p "$out/share/applications"
-    #    cat "${config.programs.nixvim.finalPackage}/share/applications/nvim.desktop" \
-    #      > "$out/share/applications/nvim.desktop"
-    #    echo "Hidden=1" >> "$out/share/applications/nvim.desktop"
-    #  ''))
-    #];
   };
 }

@@ -93,7 +93,7 @@ in
           wants = [ "network.target" ];
           wantedBy = [ "multi-user.target" ];
           serviceConfig.Type = "simple";
-          script = "/run/current-system/sw/bin/wpa_supplicant -c /persist/wpa_supplicant-wifi0.conf -i wifi0";
+          script = "${pkgs.wpa_supplicant}/bin/wpa_supplicant -c /persist/wpa_supplicant-wifi0.conf -i wifi0";
         };
       };
     };
@@ -107,7 +107,7 @@ in
     services = {
       getty = {
         autologinUser = null;
-        loginProgram = "/run/current-system/sw/bin/sleep";
+        loginProgram = "${pkgs.coreutils}/bin/sleep";
         loginOptions = "infinity";
         extraArgs = [ "--skip-login" ];
         greetingLine = "DEVICE READY FOR ONBOARDING OR RECOVERY";

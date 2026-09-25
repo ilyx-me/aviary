@@ -29,7 +29,7 @@ let
   secretsName = config.aviary.secrets;
   defaultPermissions = {
     mode = "0440";
-    owner = config.users.users."1000".name;
+    owner = "admin";
     group = "admins";
   };
 
@@ -185,7 +185,7 @@ in
               authKey="$(cat /run/secretsInitrd/ts-initrd)"
               tailscale up -authkey "$authKey"
             '';
-            preStop = "/run/current-system/sw/bin/tailscale logout";
+            preStop = "${pkgs.tailscale}/bin/tailscale logout";
           };
         };
 
@@ -200,12 +200,15 @@ in
     systemd.services.tailscaled = {
       after = [
         "systemd-networkd.service"
-        "multi-user.target"
       ];
       serviceConfig.LogLevelMax = "notice";
     };
 
-    systemd.services.tailscaled-autoconnect.after = [ "multi-user.target" ];
+    systemd.services.tailscaled-autoconnect = {
+      before = [ "kanidm-unixd.service" "getty.target" "greetd.service" ];
+      wants = [ "kanidm-unixd.service" "getty.target" "greetd.service" ];
+      serviceConfig.TimeoutSec = 5;
+    };
 
     networking.firewall.allowedTCPPorts = [ 22 ];
 

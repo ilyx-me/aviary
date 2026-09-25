@@ -47,7 +47,6 @@ let
 
   # UID keys for user map lookups and sops secret references
   adminUid = "999";
-  primaryUid = "1000";
 
   pcr15 = config.aviary.pcr15;
 
@@ -64,15 +63,21 @@ let
   deviceDiskPrimary = "disk-primary-luks-${driveSuffix}";
   deviceMapperPrimary = "disk-primary-luks-btrfs-${driveSuffix}";
 
-  cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early" (
+  cryptsetupEarlyExecStart = writeShellScript "cryptsetup-early.sh" (
     readFile ../../script/systemd/cryptsetupEarly.sh
   );
 
-  impermanenceExecStart = writeShellScript "impermanence" (
+  impermanenceExecStart = writeShellScript "impermanence.sh" (
     readFile ../../script/systemd/impermanence.sh
   );
 
-  pcrExecStart = writeShellScript "pcr15Check" (readFile ../../script/systemd/pcr15Check.sh);
+  pcrExecStart = writeShellScript "pcr15-check.sh" (
+    readFile ../../script/systemd/pcr15Check.sh
+  );
+
+  tpmAutoEnrollExecStart = writeShellScript "tpm-auto-enroll.sh" (
+    readFile ../../script/systemd/tpmAutoEnroll.sh
+  );
 
   systemdPath = config.boot.initrd.systemd.package;
 
@@ -118,14 +123,21 @@ in
       description = "Aviary user ID for primary system user";
     };
 
-    secrets = {
+    primaryUuid = mkOption {
+      type = nullOr str;
+      default = null;
+      example = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX";
+      description = "Kanidm uuid for the primary system user";
+    };
 
-      description = mkOption {
-        type = str;
-        default = "description";
-        example = "Username";
-        description = "Private file storing the user description";
-      };
+    primaryGid = mkOption {
+      type = nullOr str;
+      default = null;
+      example = 1904693246;
+      description = "Kanidm gid for the primary system user";
+    };
+
+    secrets = {
 
       luksRecovery = mkOption {
         type = str;
@@ -141,13 +153,6 @@ in
         description = "SOPS-Nix secret storing the user password hash";
       };
 
-      stateVersion = mkOption {
-        type = str;
-        default = host + "-state-version";
-        example = "hostname-state-version";
-        description = "Private file storing the system stateversion";
-      };
-
       sshAdmin = mkOption {
         type = str;
         default = host + "-ssh-admin";
@@ -160,20 +165,6 @@ in
         default = host + "-ssh-admin-pub";
         example = "hostname-ssh-admin-pub";
         description = "Private file storing the admin SSH public key";
-      };
-
-      sshUser = mkOption {
-        type = str;
-        default = host + "-ssh-user";
-        example = "hostname-ssh-user";
-        description = "SOPS-Nix secret storing the user SSH private key";
-      };
-
-      username = mkOption {
-        type = str;
-        default = "username";
-        example = "user-username";
-        description = "Private file storing the user username";
       };
     };
   };
@@ -206,16 +197,9 @@ in
           path = "/home/${adminUid}/.ssh/id_ed25519";
         };
 
-        ${secretsName.sshUser} = mkForce {
-          mode = "0400";
-          owner = config.users.users.${primaryUid}.name;
-          group = "admins";
-          path = "/home/${primaryUid}/.ssh/id_ed25519";
-        };
-
         ${secretsName.luksRecovery} = {
           mode = "0440";
-          owner = config.users.users.${primaryUid}.name;
+          owner = "root";
           group = "admins";
           restartUnits = [ "syncluksrecovery.service" ];
         };
@@ -223,7 +207,7 @@ in
         ${secretsName.passwordHash} = {
           neededForUsers = true;
           mode = "0440";
-          owner = config.users.users.${primaryUid}.name;
+          owner = "root";
           group = "admins";
         };
       };
@@ -243,6 +227,7 @@ in
 
       directories = [
         "/etc/nixos"
+        "/var/cache/kanidm-unixd"
         "/var/log"
         "/var/lib/kanidm-unixd"
         "/var/lib/nixos"
@@ -408,11 +393,18 @@ in
     };
 
     programs = {
+      fish = {
+        enable = true;
+        interactiveShellInit = ''
+          set -g fish_greeting
+          cd ~
+        '';
+      };
       git = {
         enable = true;
         config.safe.directory = [
           "/home/${adminUid}/aviary"
-          "/home/${primaryUid}/aviary"
+          "/home/${config.aviary.primaryUuid}/aviary"
         ];
       };
       nano.enable = false;
@@ -427,11 +419,10 @@ in
     systemd = {
       enableEmergencyMode = false;
       tmpfiles.rules = [
-        "d /home/${primaryUid}/.ssh 0700 ${config.users.users.${primaryUid}.name} users -"
-        "L /home/${config.users.users.${primaryUid}.name} 0777 root root - /home/${primaryUid}"
-        "d /home/${adminUid} 0700 ${config.users.users.${adminUid}.name} admins -"
-        "d /home/${adminUid}/.ssh 0700 ${config.users.users.${adminUid}.name} admins -"
+        "d /home/${adminUid} 0700 ${config.users.users.${adminUid}.name} admins - -"
+        "d /home/${adminUid}/.ssh 0700 ${config.users.users.${adminUid}.name} admins - -"
         "L /home/${config.users.users.${adminUid}.name} 0777 root root - /home/${adminUid}"
+        "d /home/${config.aviary.primaryUuid} 0750 ${config.aviary.primaryGid} ${config.aviary.primaryGid} - -"
       ];
 
       services = {
@@ -442,19 +433,20 @@ in
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = true;
+            ExecStart = "${tpmAutoEnrollExecStart} ${pkgs.systemd} ${host}";
           };
-
           unitConfig.ConditionPathExists = "/var/lib/sbctl/keys";
+        };
 
-          script = ''
-            if [ "$(od -An -t u1 /sys/firmware/efi/efivars/SecureBoot-* | tr -d ' ')" -eq 60001 ]; then
-                /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-primary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
+        kanidm-unixd = {
+          before = [ "getty.target" "greetd.service" ];
+          wants = [ "getty.target" "greetd.service" ];
+        };
 
-                if [ -e "/dev/disk/by-partlabel/disk-secondary-luks-${host}" ]; then
-                    /run/current-system/sw/bin/systemd-cryptenroll /dev/disk/by-partlabel/disk-secondary-luks-${host} --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 --unlock-key-file=/run/secrets/${host}-luks
-                fi
-            fi
-          '';
+        "hjem-activate@" = {
+          after = [ "kanidm-unixd.service" ];
+          before = [ "getty.target" "greetd.service" ];
+          wants = [ "kanidm-unixd.service" "getty.target" "greetd.service" ];
         };
       };
     };
@@ -480,7 +472,7 @@ in
         unix = {
           enable = true;
           settings = {
-            default_shell = "/run/current-system/sw/bin/bash";
+            default_shell = "${pkgs.fish}/bin/fish";
             kanidm = {
               pam_allowed_login_groups = [ "users" ];
               map_group = [
@@ -512,6 +504,7 @@ in
 
       groups."admins" = { };
       mutableUsers = false;
+      defaultUserShell = pkgs.fish;
 
       users = {
 
@@ -537,39 +530,14 @@ in
               ];
           home = "/home/${adminUid}";
         };
-
-        ${primaryUid} = {
-          isNormalUser = true;
-          name =
-            if config.system.nixos.variant_id == "test" then
-              "user"
-            else
-              readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.username}";
-          description =
-            if config.system.nixos.variant_id == "test" then
-              "User"
-            else
-              readFile "${inputs.secrets}/${config.aviary.uID}/${secretsName.description}";
-          uid = 1000;
-          hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
-          home = "/home/${primaryUid}";
-        };
       };
     };
 
-    home-manager = {
-
-      extraSpecialArgs = { inherit inputs; };
-
-      users.${primaryUid} = {
-
-        home = {
-          homeDirectory = "/home/${primaryUid}";
-          stateVersion = config.system.stateVersion;
-          username = config.users.users.${primaryUid}.name;
-        };
-
-        programs.home-manager.enable = true;
+    hjem = {
+      clobberByDefault = true;
+      users.${config.aviary.primaryGid} = {
+        externalIdp = true;
+        directory = "${config.users.defaultUserHome}/${config.aviary.primaryUuid}";
       };
     };
   };
