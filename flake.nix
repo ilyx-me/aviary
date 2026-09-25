@@ -347,7 +347,7 @@
               ./system/module/part/single.nix
               ./system/chicken.nix
               ./user/00.nix
-              ./user/module/nvim-nvf.nix
+              ./user/module/nvim.nix
               ./service/update.nix
             ];
           };
