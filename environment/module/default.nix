@@ -174,15 +174,20 @@ in
     documentation.doc.enable = false;
     hardware.enableAllFirmware = true;
     nix.channel.enable = false;
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    nix.settings.trusted-users = [
-      "root"
-      "${config.users.users.${adminUid}.name}"
-      "@wheel"
-    ];
+    nix = {
+      settings = {
+        accept-flake-config = true;
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        trusted-users = [
+          "root"
+          "${config.users.users.${adminUid}.name}"
+          "@wheel"
+        ];
+      };
+    };
 
     sops = {
 
