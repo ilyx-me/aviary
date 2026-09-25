@@ -535,9 +535,12 @@ in
 
     hjem = {
       clobberByDefault = true;
-      users.${config.aviary.primaryGid} = {
-        externalIdp = true;
-        directory = "${config.users.defaultUserHome}/${config.aviary.primaryUuid}";
+      users = {
+        ${adminUid}.directory = "${config.users.defaultUserHome}/${adminUid}";
+        ${config.aviary.primaryGid} = {
+          externalIdp = true;
+          directory = "${config.users.defaultUserHome}/${config.aviary.primaryUuid}";
+        };
       };
     };
   };

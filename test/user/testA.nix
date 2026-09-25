@@ -32,8 +32,18 @@ in
       */
     };
 
+    users.groups."1000" = {};
+    users.users."1000" = {
+      name = "user";
+      group = "1000";
+      hashedPassword = "";
+      isNormalUser = true;
+    };
+
     system.nixos.variant_id = "test";
     networking.hostName = "test-a";
+    aviary.primaryUuid = "test-a";
+    aviary.primaryGid = "1000";
     aviary.uID = "test-a";
 
     boot.initrd.network.ssh.authorizedKeys = [ "none" ];
