@@ -62,7 +62,6 @@ in {
     };
 
     services = {
-      accounts-daemon.enable = true;
       greetd.enable = true;
       gvfs.enable = true;
       iio-niri.enable = true;
@@ -106,7 +105,7 @@ in {
                 "QT_STYLE_OVERRIDE=adwaita"
                 "QT_WAYLAND_DECORATION=adwaita"
               ];
-              ExecStartPre = "${pkgs.niri}/bin/niri msg action do-screen-transition --delay-ms 2000";
+              ExecStartPre = "${pkgs.niri}/bin/niri msg action do-screen-transition --delay-ms 3000";
             };
           };
 
@@ -293,7 +292,7 @@ in {
                   "org.gnome.Loupe"
                   "com.github.rafostar.Clapper"
                   "org.gnome.baobab"
-                  "net.nokyan.Resources"
+                  "org.gnome.Resources"
                   "com.mitchellh.ghostty"
                 ];
                 position = "left";
@@ -327,6 +326,7 @@ in {
               };
               location.auto_locate = true;
               lockscreen_widgets.enabled = false;
+              lockscreen.transition = [ "zoom" ];
               notification = {
                 background_opacity = 0.59999998658895493;
                 border = false;
