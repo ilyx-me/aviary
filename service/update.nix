@@ -38,7 +38,7 @@ in
     };
 
     system.autoUpgrade = {
-      #enable = true;
+      enable = true;
       flake = "github:ilyx-me/aviary/main";
       flags = [ "--no-write-lock-file" ];
       dates = "hourly";
