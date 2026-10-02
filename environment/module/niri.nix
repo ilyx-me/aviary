@@ -224,7 +224,7 @@ in {
                   margin_edge = 6;
                   position = "right";
                   radius = 16;
-                  start = [ "osk" "group:g2" ];
+                  start = [ "Overview" "group:g2" ];
                   thickness = 48;
                   widget_spacing = 12;
                   capsule_group = [
@@ -235,9 +235,9 @@ in {
                       enabled = true;
                       fill = "surface_variant";
                       id = "g1";
-                      members = [ "bluetooth" "network" "volume" "battery" ];
+                      members = [ "notifications" "network" "volume" "battery" ];
                       opacity = 0.5;
-                      padding = 16.0;
+                      padding = 10.0;
                     }
                     {
                       accordion = true;
@@ -248,7 +248,7 @@ in {
                       id = "g2";
                       members = [ "workspaces" "tray" ];
                       opacity = 0.5;
-                      padding = 16.0;
+                      padding = 10.0;
                     }
                     {
                       accordion = true;
@@ -257,9 +257,9 @@ in {
                       enabled = true;
                       fill = "surface_variant";
                       id = "g3";
-                      members = [ "notifications" "brightness" ];
+                      members = [ "OSK" "brightness" "bluetooth" ];
                       opacity = 0.0;
-                      padding = 6.0;
+                      padding = 10.0;
                     }
                   ];
                 };
@@ -267,6 +267,14 @@ in {
               battery.warning_threshold = 20;
               brightness.minimum_brightness = 0.0099999997764825821;
               control_center = {
+                shortcuts = [
+                  { type = "bluetooth"; }
+                  { type = "wifi"; }
+                  { type = "power_profile"; }
+                  { type = "caffeine"; }
+                  { type = "dark_mode"; }
+                  { type = "notification"; }
+                ];
                 sidebar = "none";
                 sidebar_section = "none";
                 width = 830;
@@ -301,11 +309,11 @@ in {
               };
               hooks = {
                 started = "${lockScreen} ${config.programs.noctalia.package} ${pkgs.gnome-keyring}";
-                theme_mode_changed = "${config.programs.noctalia.package}/share/noctalia/assets/templates/gtk/apply.sh --appearance-only $NOCTALIA_THEME_MODE";
+                theme_mode_changed = "${config.programs.noctalia.package}/share/noctalia/assets/templates/gtk/apply.sh --appearance-only $NOCTALIA_THEME_MODE; sleep 0.2; noctalia msg wallpaper-random";
               };
               hot_corners.enabled = true;
               idle = {
-                behavior_order = [ "lock" "screen-off" "lock-and-suspend" ];
+                behavior_order = [ "screen-off" "lock" "lock-and-suspend" ];
                 behavior = {
                   lock = {
                     action = "lock";
@@ -418,10 +426,20 @@ in {
                 control-center.glyph = "power";
                 launcher.glyph = "menu-2";
                 network.show_label = false;
-                osk = {
-                  actions.left = "exec systemctl --user kill osk --signal=SIGRTMIN";
+                OSK = {
+                  actions = {
+                    left = "exec systemctl --user kill osk --signal=SIGRTMIN";
+                    middle = "none";
+                  };
                   glyph = "keyboard";
-                  tooltip = "Virtual Keyboard";
+                  type = "custom_button";
+                };
+                Overview = {
+                  actions = {
+                    left = "exec niri msg action toggle-overview";
+                    middle = "none";
+                  };
+                  glyph = "menu-2";
                   type = "custom_button";
                 };
                 tray.detached_panel = true;
@@ -620,7 +638,7 @@ in {
               cmd_duration = {
                 min_time = 0;
                 show_milliseconds = true;
-                style = "bg:yellow";
+                style = "fg:surface1 bg:yellow";
                 format = "[ $duration]($style)";
               };
 
