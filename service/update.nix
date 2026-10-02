@@ -1,8 +1,31 @@
 {
   config,
+  pkgs,
   ...
 }:
 
+let
+
+  inherit (builtins)
+    readFile
+    ;
+
+  inherit (pkgs)
+    writeShellScript
+    ;
+
+  nixosUpgradeChecks = writeShellScript "nixos-upgrade-checks.sh" (
+    readFile ../script/systemd/nixosUpgradeChecks.sh
+  );
+
+  nixosUpgradeFailure = writeShellScript "nixos-upgrade-failure.sh" (
+    readFile ../script/systemd/nixosUpgradeFailure.sh
+  );
+
+  nixosUpgradeSuccess = writeShellScript "nixos-upgrade-success.sh" (
+    readFile ../script/systemd/nixosUpgradeSuccess.sh
+  );
+in
 {
 
   config = {
@@ -15,7 +38,7 @@
     };
 
     system.autoUpgrade = {
-      enable = true;
+      #enable = true;
       flake = "github:ilyx-me/aviary/main";
       flags = [ "--no-write-lock-file" ];
       dates = "hourly";
@@ -35,59 +58,17 @@
     systemd.services = {
       nixos-upgrade = {
         environment = {
-          GIT_SSH_COMMAND = "/run/current-system/sw/bin/ssh -i '/run/secrets/${config.aviary.secrets.sshAdmin}' -o IdentitiesOnly=yes";
+          GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i '/run/secrets/${config.aviary.secrets.sshAdmin}' -o IdentitiesOnly=yes";
         };
-
-        preStart = ''
-          revision_system=$(/run/current-system/sw/bin/nixos-version --configuration-revision) || {
-              echo "Invalid system repository revision, updating anyway..."
-          }
-
-          set -o pipefail
-          revision_repo=$(/run/current-system/sw/bin/git ls-remote https://github.com/ilyx-me/aviary main | /run/current-system/sw/bin/cut -f1) || {
-              echo "Unable to get repository revision, exiting..."
-              echo -n "nixos-upgrade-network" > /run/nixos-upgrade/status
-              exit 1
-          }
-
-          if [[ "$revision_system" == "$revision_repo" ]]; then
-              echo "System revision matches repository revision, exiting..."
-              echo -n "nixos-upgrade-skip" > /run/nixos-upgrade/status
-              exit 1
-          fi
-
-          echo -n "nixos-upgrade-start" > /run/nixos-upgrade/status
-        '';
+        serviceConfig.ExecStartPre = "${nixosUpgradeChecks} ${pkgs.git} ${pkgs.coreutils}";
         unitConfig = {
           OnFailure = "nixos-upgrade-failure.service";
           OnSuccess = "nixos-upgrade-success.service";
         };
       };
 
-      "nixos-upgrade-failure".script = ''
-        upgrade_status=$(cat "/run/nixos-upgrade/status" 2>/dev/null || echo -n "")
-
-        if [[ "$upgrade_status" == "nixos-upgrade-skip" ]]; then
-            exit 0
-        fi
-
-        if [[ "$upgrade_status" == "nixos-upgrade-network" ]]; then
-            exit 0
-        fi
-
-        echo -n "nixos-upgrade-failure" > /run/nixos-upgrade/status
-      '';
-
-      "nixos-upgrade-success".script = ''
-        booted="$(/run/current-system/sw/bin/readlink /run/booted-system/{initrd,kernel,kernel-modules})"
-        built="$(/run/current-system/sw/bin/readlink /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-
-        if [ "''${booted}" = "''${built}" ]; then
-            echo -n "nixos-upgrade-reboot" > /run/nixos-upgrade/status
-        else
-            echo -n "nixos-upgrade-success" > /run/nixos-upgrade/status
-        fi
-      '';
+      "nixos-upgrade-failure".serviceConfig.ExecStart = "${nixosUpgradeFailure}";
+      "nixos-upgrade-success".serviceConfig.ExecStart = "${nixosUpgradeSuccess} ${pkgs.coreutils}";
     };
   };
 }

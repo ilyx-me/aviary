@@ -1,8 +1,4 @@
-include "dms/alttab.kdl"
-include "dms/colors.kdl"
-include "dms/layout.kdl"
-include "dms/outputs.kdl"
-include "dms/wpblur.kdl"
+include "noctalia.kdl"
 
 input {
     keyboard {
@@ -42,17 +38,32 @@ input {
     //}
 }
 
+output "The Linux Foundation Virtual Disp Unknown" {
+    off
+    mode "1920x1080@60.000"
+    scale 1.0
+    position x=0 y=-10800
+}
+
 layout {
     always-center-single-column
+    border {
+        off
+    }
+    focus-ring {
+        off
+        // width 5
+    }
     empty-workspace-above-first
     center-focused-column "never"
     default-column-width {
         proportion 0.5
     }
+    gaps 6
     preset-column-widths {
-        proportion 0.33
+        proportion 0.3333
         proportion 0.5
-        proportion 0.66
+        proportion 0.6666
         proportion 1.0
     }
     preset-window-heights {
@@ -62,9 +73,10 @@ layout {
         proportion 1.0
     }
     struts {
-        left 32
-        right 32
+        left 4
+        right 4
     }
+    background-color "#000000"
 }
 
 overview {
@@ -90,9 +102,20 @@ cursor {
     xcursor-size 24
 }
 
-// DMS wants to set this to true but this makes GTK4 windoes non-resizable at the edges
 window-rule {
+    background-effect {
+      blur true
+      xray true
+    }
+    clip-to-geometry true
+    draw-border-with-background false
+    geometry-corner-radius 14
     tiled-state false
+}
+
+window-rule {
+    match is-active=false
+    opacity 0.8
 }
 
 window-rule {
@@ -128,6 +151,43 @@ window-rule {
     open-maximized-to-edges false
     default-window-height { proportion 1.0; }
     default-column-width { proportion 1.0; }
+}
+
+layer-rule {
+  match namespace="^noctalia-backdrop"
+  place-within-backdrop true
+}
+
+layer-rule {
+    match namespace="^noctalia-(notification|panel|attached-panel|osd)$"
+    background-effect {
+        xray false
+        blur false
+    }
+}
+
+// Enable xray for bars and dock
+layer-rule {
+    match namespace="^noctalia-(bar-[^\"]+|dock)$"
+    background-effect {
+        xray true
+        blur false
+    }
+}
+
+layer-rule {
+    match namespace="noctalia-window-switcher"
+    background-effect {
+        blur true
+        xray true
+    }
+}
+
+blur {
+    passes 2
+    // offset 3.0
+    // noise 0.03
+    // saturation 1.0
 }
 
 binds {
@@ -190,25 +250,25 @@ binds {
     Mod+Shift+S repeat=false hotkey-overlay-title="Screenshot"        { screenshot; }
     Mod+Ctrl+S repeat=false  hotkey-overlay-title="Screenshot Window" { screenshot-window; }
 
-    Super+Shift+Slash repeat=false hotkey-overlay-title="Keybinds"    { spawn "dms" "ipc" "call" "keybinds" "toggle" "niri"; }
-    Super+N repeat=false           hotkey-overlay-title="Launcher"    { spawn "dms" "ipc" "call" "spotlight" "toggle"; }
+    Super+Shift+Slash repeat=false hotkey-overlay-title="Keybinds"    { show-hotkey-overlay; }
+    Super+N repeat=false           hotkey-overlay-title="Launcher"    { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
     Super+Space repeat=false       hotkey-overlay-title="Overview"    { toggle-overview; }
-    Super+Alt+L repeat=false       hotkey-overlay-title="Lock"        { spawn "dms" "ipc" "call" "lock" "lock"; }
+    Super+Alt+L repeat=false       hotkey-overlay-title="Lock"        { spawn "noctalia" "msg" "session" "lock"; }
 
     Mod+Escape allow-inhibiting=false hotkey-overlay-title="Force Enable Shortcuts" { toggle-keyboard-shortcuts-inhibit; }
 
-    XF86AudioRaiseVolume allow-when-locked=true hotkey-overlay-title="Volume Up"   { spawn "dms" "ipc" "call" "audio" "increment" "5"; }
-    XF86AudioLowerVolume allow-when-locked=true hotkey-overlay-title="Volume Down" { spawn "dms" "ipc" "call" "audio" "decrement" "5"; }
-    XF86AudioMute        allow-when-locked=true hotkey-overlay-title="Volume Mute" { spawn "dms" "ipc" "call" "audio" "mute"; }
-    XF86AudioMicMute     allow-when-locked=true hotkey-overlay-title="Mic Mute"    { spawn "dms" "ipc" "call" "audio" "micmute"; }
+    XF86AudioRaiseVolume allow-when-locked=true hotkey-overlay-title="Volume Up"   { spawn "noctalia" "msg" "volume-up" "5"; }
+    XF86AudioLowerVolume allow-when-locked=true hotkey-overlay-title="Volume Down" { spawn "noctalia" "msg" "volume-down" "5"; }
+    XF86AudioMute        allow-when-locked=true hotkey-overlay-title="Volume Mute" { spawn "noctalia" "msg" "volume-mute"; }
+    XF86AudioMicMute     allow-when-locked=true hotkey-overlay-title="Mic Mute"    { spawn "noctalia" "msg" "mic-mute"; }
 
-    XF86AudioPlay        allow-when-locked=true hotkey-overlay-title="Media Play" { spawn "dms" "ipc" "call" "mpris" "playPause"; }
-    XF86AudioStop        allow-when-locked=true hotkey-overlay-title="Media Stop" { spawn "dms" "ipc" "call" "mpris" "stop"; }
-    XF86AudioPrev        allow-when-locked=true hotkey-overlay-title="Media Prev" { spawn "dms" "ipc" "call" "mpris" "previous"; }
-    XF86AudioNext        allow-when-locked=true hotkey-overlay-title="Media Next" { spawn "dms" "ipc" "call" "mpris" "next"; }
+    XF86AudioPlay        allow-when-locked=true hotkey-overlay-title="Media Play" { spawn "noctalia" "msg" "media" "play"; }
+    XF86AudioStop        allow-when-locked=true hotkey-overlay-title="Media Stop" { spawn "noctalia" "msg" "media" "stop"; }
+    XF86AudioPrev        allow-when-locked=true hotkey-overlay-title="Media Prev" { spawn "noctalia" "msg" "media" "previous"; }
+    XF86AudioNext        allow-when-locked=true hotkey-overlay-title="Media Next" { spawn "noctalia" "msg" "media" "next"; }
 
-    XF86MonBrightnessUp   allow-when-locked=true hotkey-overlay-title="Brightness Up"   { spawn "dms" "ipc" "call" "brightness" "increment" "5" ""; }
-    XF86MonBrightnessDown allow-when-locked=true hotkey-overlay-title="Brightness Down" { spawn "dms" "ipc" "call" "brightness" "decrement" "5" ""; }
+    XF86MonBrightnessUp   allow-when-locked=true hotkey-overlay-title="Brightness Up"   { spawn "noctalia" "msg" "brightness-up" "current" "5"; }
+    XF86MonBrightnessDown allow-when-locked=true hotkey-overlay-title="Brightness Down" { spawn "noctalia" "msg" "brightness-down" "current" "5"; }
 
     // You can bind mouse wheel scroll ticks using the following syntax.
     // These binds will change direction based on the natural-scroll setting.
@@ -234,7 +294,4 @@ binds {
     Mod+Ctrl+Shift+WheelScrollUp   hotkey-overlay-title="Move Left" { move-column-left; }
 }
 
-include "dms/cursor.kdl"
-include "dms/binds.kdl"
-include "dms/windowrules.kdl"
 include "aviaryUserOverrides.kdl"
