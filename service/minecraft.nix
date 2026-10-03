@@ -87,9 +87,11 @@
                 view-distance = 24;
                 level-seed = "7565202949052331104";
               };
+              # This does not automatically regenerate /var/lib/nixos-containers/minecraft/papermc/whitelist.json
               whitelist = {
                 user00 = "7653dfe3-f373-431a-941d-9cc4a0f192dc";
                 user01 = "00000000-0000-0000-0009-01f5239d7633"; # Use https://cxkes.me/xbox/xuid hex for bedrock names
+                user02 = "6871bcd9-9901-44fb-81e3-2f14ecdefe5f";
               };
               operators = {
                 user00 = {

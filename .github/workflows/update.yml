@@ -39,20 +39,17 @@ jobs:
       - name: update flake lock 
         run: |
           nix flake update \
-            danksearch \
             disko \
-            dms \
-            dms-plugin-registry \
-            dgop \
             firefox-gnome-theme \
             flake-parts \
             hardware \
-            home-manager \
+            hjem \
             impermanence \
             lanzaboote \
             nixpkgs \
-            nixvim \
             nix-minecraft \
+            noctalia \
+            nvf \
             secrets \
             sops-nix
       - name: commit changes

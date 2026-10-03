@@ -346,6 +346,7 @@ in {
             };
           };
           "Moonlight Game Streaming Project/Moonlight.conf" = {
+            clobber = false;
             generator = lib.generators.toINI {};
             value = {
               General = {

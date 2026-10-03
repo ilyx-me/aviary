@@ -51,4 +51,4 @@ while read file; do
 
         status_last="$status_current"
     fi
-done < <($"inotify_tools_path"/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status)
+done < <("$inotify_tools_path"/bin/inotifywait -m -e modify --format '%w%f' /run/nixos-upgrade/status)
