@@ -64,7 +64,6 @@ in {
     services = {
       greetd.enable = true;
       gvfs.enable = true;
-      iio-niri.enable = true;
       inputplumber.enable = true;
       upower.enable = true;
     };
