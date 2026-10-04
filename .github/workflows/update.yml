@@ -43,6 +43,7 @@ jobs:
             firefox-gnome-theme \
             flake-parts \
             hardware \
+            hermes-agent \
             hjem \
             impermanence \
             lanzaboote \

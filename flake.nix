@@ -21,6 +21,10 @@
       url = "github:nixos/nixos-hardware";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+    };
+
     hjem = {
       url = "github:ilyx-me/hjem/support-external-user-management";
     };
@@ -326,6 +330,7 @@
             specialArgs = { inherit inputs; };
             modules = [
               self.nixosModules.bootstrap
+              inputs.hermes-agent.nixosModules.default
               ./environment/module/graphical.nix
               ./environment/module/niri.nix
               ./system/module/part/default.nix
@@ -333,6 +338,7 @@
               ./system/cardinal.nix
               ./user/00.nix
               ./service/update.nix
+              ./service/hermes.nix
             ];
           };
 
@@ -415,7 +421,13 @@
     };
 
   nixConfig = {
-    extra-substituters = [ "https://noctalia.cachix.org" ];
-    extra-trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+    extra-substituters = [
+      "https://cache.nixos-cuda.org"
+      "https://noctalia.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+    ];
   };
 }
