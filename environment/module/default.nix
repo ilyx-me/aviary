@@ -387,6 +387,7 @@ in
         efitools
         jq
         linux-firmware
+        nix-your-shell
         nixos-anywhere
         rsync
         sbctl
@@ -402,7 +403,7 @@ in
         enable = true;
         interactiveShellInit = ''
           set -g fish_greeting
-          cd ~
+          nix-your-shell fish | source
         '';
       };
       git = {
@@ -479,19 +480,11 @@ in
           settings = {
             default_shell = "${pkgs.fish}/bin/fish";
             kanidm = {
-              pam_allowed_login_groups = [ "users" ];
+              pam_allowed_login_groups = [ "users" "admins" ];
               map_group = [
                 {
                   local = "wheel";
                   "with" = "admins";
-                }
-                {
-                  local = "networkmanager";
-                  "with" = "users";
-                }
-                {
-                  local = "uinput";
-                  "with" = "users";
                 }
               ];
             };

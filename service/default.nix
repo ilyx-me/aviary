@@ -231,6 +231,8 @@ in
         ];
       };
 
+      resolved.enable = true; #Prevent https://github.com/tailscale/tailscale/issues/4254
+
       tailscale = {
         enable = true;
         authKeyFile = secrets.${secretsName.ts}.path;

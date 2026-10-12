@@ -71,6 +71,7 @@ in {
       plymouth = {
         enable = true;
         theme = "bgrt";
+        logo = "/dev/null";
       };
 
       initrd.systemd.services.plymouth-start.serviceConfig = {
@@ -165,6 +166,20 @@ in {
     };
 
     services = {
+      kanidm.unix.settings.kanidm.map_group = [
+        {
+          local = "networkmanager";
+          "with" = "users";
+        }
+        {
+          local = "uinput";
+          "with" = "users";
+        }
+        {
+          local = "audio";
+          "with" = "users";
+        }
+      ];
       logind.settings.Login.WallMessages = "off";
       flatpak.enable = true;
       power-profiles-daemon.enable = true;
@@ -326,9 +341,7 @@ in {
           "librewolf/librewolf/default/chrome/userChrome.css".text = ''@import "firefox-gnome-theme/userChrome.css'';
           "librewolf/librewolf/default/chrome/userContent.css".text = ''@import "firefox-gnome-theme/userContent.css'';
           "librewolf/librewolf/librewolf.overrides.cfg" = {
-            clobber = false;
             source = ../../config/firefox/librewolf.overrides.cfg;
-            type = "copy";
           };
           "librewolf/librewolf/profiles.ini" = {
             generator = lib.generators.toINI {};
@@ -348,6 +361,7 @@ in {
           "Moonlight Game Streaming Project/Moonlight.conf" = {
             clobber = false;
             generator = lib.generators.toINI {};
+            type = "copy";
             value = {
               General = {
                 audiocfg = 0;

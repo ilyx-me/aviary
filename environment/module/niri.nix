@@ -65,6 +65,7 @@ in {
       greetd.enable = true;
       gvfs.enable = true;
       inputplumber.enable = true;
+      power-profiles-daemon.enable = true;
       upower.enable = true;
     };
 
@@ -256,7 +257,7 @@ in {
                       enabled = true;
                       fill = "surface_variant";
                       id = "g3";
-                      members = [ "OSK" "brightness" "bluetooth" ];
+                      members = [ "OSK" "bluetooth" "brightness" "niri-displays" ];
                       opacity = 0.0;
                       padding = 10.0;
                     }
@@ -307,7 +308,7 @@ in {
                 show_instance_count = false;
               };
               hooks = {
-                started = "${lockScreen} ${config.programs.noctalia.package} ${pkgs.gnome-keyring}";
+                started = "${lockScreen} ${pkgs.procps} ${config.programs.noctalia.package} ${pkgs.gnome-keyring}";
                 theme_mode_changed = "${config.programs.noctalia.package}/share/noctalia/assets/templates/gtk/apply.sh --appearance-only $NOCTALIA_THEME_MODE; sleep 0.2; noctalia msg wallpaper-random";
               };
               hot_corners.enabled = true;
@@ -335,25 +336,35 @@ in {
               lockscreen_widgets.enabled = false;
               lockscreen.transition = [ "zoom" ];
               notification = {
-                background_opacity = 0.59999998658895493;
+                background_opacity = 1.0;
                 border = false;
                 history_retention_hours = 168;
                 max_visible = 5;
                 position = "top_center";
               };
               osd = {
-                background_opacity = 0.59999998658895493;
+                background_opacity = 1.0;
                 offset_x = 48;
                 offset_y = 48;
                 position = "bottom_center";
                 position_vertical = "bottom_center";
               };
+              plugin_settings = {
+                "raycursive/niri-displays" = {
+                  panel_placement = "floating";
+                  panel_position = "center_right";
+                };
+              };
+              plugins.enabled = [
+                "raycursive/niri-displays"
+              ];
               shell = {
                 avatar_path = "~/Pictures/Wallpapers/Light/default.png";
                 clipboard_enabled = false;
                 blipboard_history_max_entries = 10;
                 corner_radius_scale = 2.0;
                 polkit_agent = true;
+                launch_apps_as_systemd_services = true;
                 launcher.app_grid = true;
                 panel = {
                   control_center_placement = "floating";
@@ -425,6 +436,10 @@ in {
                 control-center.glyph = "power";
                 launcher.glyph = "menu-2";
                 network.show_label = false;
+                niri-displays = {
+                  show_resolution = false;
+                  type = "raycursive/niri-displays:bar";
+                };
                 OSK = {
                   actions = {
                     left = "exec systemctl --user kill osk --signal=SIGRTMIN";
@@ -449,7 +464,7 @@ in {
           };
 
           "starship.toml" = {
-            clobber = true;
+            clobber = false;
             generator = (pkgs.formats.toml {}).generate "starship.toml";
             permissions = "0644";
             type = "copy";
@@ -532,9 +547,10 @@ in {
 
               nix_shell = {
                 style = "bold fg:surface1 bg:green";
-                impure_msg = "[● ](fg:red bg:green)";
+                symbol = "[󰹍 ](fg:surface1 bg:green)";
+                impure_msg = "[󰻖 ](fg:surface1 bg:green)";
                 pure_msg = "[](fg:green bg:green)";
-                format = "$state[$name]($style)";
+                format = "$state$symbol";
               };
 
               git_commit = {

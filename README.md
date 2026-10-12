@@ -89,10 +89,25 @@ For more see the [complete list of commands](https://nixos.org/manual/nixos/stab
 
 # TODO
 
- - separate private from secrets in environment/default
- - Add separate PW for 999
  - remaining tests
    - automatic updates
    - recovery deployment
    - singleQuota
- - flatpak auto updates
+   - noctalia sign in
+   - sunshine
+
+ - fix: flatpak auto updates
+ - fix: osk on text field (need wvkbd 0.20)
+ - fix: keyboardless authentication with noctalia (gaze?)
+
+ - fix: plymouth-start non-monospace font
+ - fix: vm.max_map_count reseting after systemd-sysctl on cardinal (https://github.com/NixOS/nixpkgs/issues/290569)
+   - nvidia-uvm kernel modules not loading either (systemd-modules-load.service)
+
+ - migrate: rename admin(999) -> recovery(1000)
+ - migrate: tailscale -> netbird
+
+ - cleanup: secrets
+ - cleanup: separate private from secrets in environment/default
+
+ - feature: noctalia sunshine widget/panel with moonlight-embedded

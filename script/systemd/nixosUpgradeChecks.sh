@@ -3,7 +3,7 @@
 git_path=$1
 coreutils_path=$2
 
-revision_system=$(nixos-version --configuration-revision) || {
+revision_system=$(/run/current-system/sw/bin/nixos-version --configuration-revision) || {
     echo "Invalid system repository revision, updating anyway..."
 }
 
