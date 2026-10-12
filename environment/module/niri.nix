@@ -92,6 +92,7 @@ in {
       user = {
         services = {
           noctalia = {
+            restartIfChanged = false;
             wantedBy = lib.mkForce [ "graphical-session-pre-lock.target" ];
             after = lib.mkForce [ "graphical-session-pre-lock.target" ];
             partOf = lib.mkForce [ "graphical-session-pre-lock.target" ];
@@ -139,6 +140,7 @@ in {
           };
 
           niri = {
+            restartIfChanged = false;
             after = [ "graphical-session-pre.target" ];
             before = [ "graphical-session-pre-lock.target" ];
             bindsTo = [ "graphical-session-pre-lock.target" ];
