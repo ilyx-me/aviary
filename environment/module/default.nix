@@ -410,8 +410,8 @@ in
         enable = true;
         config.safe.directory = [
           "/home/${adminUid}/aviary"
-          "/home/${config.aviary.primaryUuid}/aviary"
-        ];
+        ] ++ optional (config.aviary.primaryGid != null)
+          "/home/${config.aviary.primaryUuid}/aviary";
       };
       nano.enable = false;
       neovim = {
@@ -428,8 +428,8 @@ in
         "d /home/${adminUid} 0700 ${config.users.users.${adminUid}.name} admins - -"
         "d /home/${adminUid}/.ssh 0700 ${config.users.users.${adminUid}.name} admins - -"
         "L /home/${config.users.users.${adminUid}.name} 0777 root root - /home/${adminUid}"
-        "d /home/${config.aviary.primaryUuid} 0750 ${config.aviary.primaryGid} ${config.aviary.primaryGid} - -"
-      ];
+      ] ++ optional (config.aviary.primaryGid != null)
+        "d /home/${config.aviary.primaryUuid} 0750 ${config.aviary.primaryGid} ${config.aviary.primaryGid} - -";
 
       services = {
 
@@ -454,6 +454,8 @@ in
           before = [ "getty.target" "greetd.service" ];
           wants = [ "kanidm-unixd.service" "getty.target" "greetd.service" ];
         };
+
+        syncthing.after = [ "kanidm-unixd.service" ];
       };
     };
 
@@ -496,6 +498,29 @@ in
         enable = true;
         settings.observability.log-level = "warn";
       };
+
+      syncthing = mkIf (config.aviary.primaryGid != null) {
+        enable = true;
+        # Syncthing supports Unix Sockets for GUI+API but the Noctalia plugin does not
+        # guiAddress = "${config.hjem.users.${config.aviary.primaryGid}.directory}/.config/syncthing/st.socket";
+        user = config.aviary.primaryGid;
+        group = config.aviary.primaryGid;
+        dataDir = config.hjem.users.${config.aviary.primaryGid}.directory;
+        overrideDevices = true;
+        overrideFolders = true;
+        settings.folders = {
+          "Documents".path = "~/Documents";
+          "Pictures" = {
+            path = "~/Pictures";
+            ignorePatters = [
+              "Wallpapers/Dark/default.png"
+              "Wallpapers/Light/default.png"
+            ];
+          };
+          "Templates".path = "~/Templates";
+          "Videos".path = "~/Videos";
+        };
+      };
     };
 
     users = {
@@ -531,10 +556,9 @@ in
       };
     };
 
-    hjem = {
+    hjem = mkIf (config.aviary.primaryGid != null) {
       clobberByDefault = true;
       users = {
-        ${adminUid}.directory = "${config.users.defaultUserHome}/${adminUid}";
         ${config.aviary.primaryGid} = {
           externalIdp = true;
           directory = "${config.users.defaultUserHome}/${config.aviary.primaryUuid}";
