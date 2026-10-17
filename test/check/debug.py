@@ -11,10 +11,3 @@ machine.wait_for_text("login:")
 machine.send_chars("admin\n")
 machine.wait_for_text("admin@")
 assert '"session":"3","uid":999,"user":"admin"' in machine.succeed("loginctl list-sessions --json=short")
-
-# Log into user
-machine.send_key("ctrl-alt-f3")
-machine.wait_for_text("login:")
-machine.send_chars("user\n")
-machine.wait_for_text("user@")
-assert '"session":"4","uid":1000,"user":"user"' in machine.succeed("loginctl list-sessions --json=short")

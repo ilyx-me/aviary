@@ -29,6 +29,16 @@ in
     aviary.primaryGid = "1904693245";
     aviary.uID = "00";
 
+    services.syncthing.settings = {
+      devices = { };
+      folders = {
+        "Documents".devices = [ ];
+        "Pictures".devices = [ ];
+        "Templates".devices = [ ];
+        "Videos".devices = [ ];
+      };
+    };
+
     programs.firefox.policies.ExtensionSettings = {
 
       # Unhook
@@ -55,48 +65,5 @@ in
         installation_mode = "normal_installed";
       };
     };
-
-    /*
-    home-manager.users."1000" = {
-
-      imports = [
-        inputs.nixvim.homeModules.nixvim
-        ./module/nvim.nix
-        ./module/starship.nix
-      ];
-
-      programs = {
-        ghostty.settings.gtk-tabs-location = "hidden";
-        git = {
-          enable = true;
-          settings.user = {
-            name = readFile "${secrets}/${config.aviary.uID}/username-git";
-            email = readFile "${secrets}/${config.aviary.uID}/email-git";
-          };
-        };
-
-        librewolf = {
-          profiles."default".userChrome = lib.mkForce ''
-            @import "firefox-gnome-theme/userChrome.css";
-
-            #TabsToolbar {
-                visibility: collapse !important;
-            }
-          '';
-
-          settings = {
-            "browser.link.open_newwindow" = 1;                   # Open links for 'new windows' in same tab
-            "browser.link.open_newwindow.override.external" = 2; # Open links from external apps in a new window
-          };
-        };
-      };
-
-      home.packages =
-        with pkgs;
-        mkIf config.aviary.graphical [
-          #davinci-resolve-studio
-        ];
-    };
-    */
   };
 }
