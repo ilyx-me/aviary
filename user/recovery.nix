@@ -8,8 +8,8 @@
 let
   secrets = builtins.toString inputs.secrets;
 
-  admin-ibis = builtins.readFile "${secrets}/00/ibis-ssh-admin-pub";
-  admin-chicken = builtins.readFile "${secrets}/00/chicken-ssh-admin-pub";
+  admin-ibis = builtins.readFile "${secrets}/1904693245/ibis-ssh-admin-pub";
+  admin-chicken = builtins.readFile "${secrets}/1904693245/chicken-ssh-admin-pub";
 
 in
 {
@@ -19,8 +19,6 @@ in
     sops = {
       defaultSopsFile = "${secrets}/recovery.yaml";
     };
-
-    aviary.uID = "recovery";
 
     boot.initrd.network.ssh.authorizedKeys =
       lib.mkForce

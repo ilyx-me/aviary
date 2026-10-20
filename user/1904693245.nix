@@ -23,11 +23,10 @@ in
 
   config = {
 
-    sops.defaultSopsFile = "${secrets}/00.yaml";
+    sops.defaultSopsFile = "${secrets}/${config.aviary.primaryGid}.yaml";
 
     aviary.primaryUuid = "ae8a2a01-92a6-42a2-a0db-03ab51874ffd";
     aviary.primaryGid = "1904693245";
-    aviary.uID = "00";
 
     services.syncthing.settings = {
       devices = { };

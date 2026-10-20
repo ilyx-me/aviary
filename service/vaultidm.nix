@@ -52,8 +52,8 @@ in
 
         "kanidm" = {
           group = "kanidm";
-          domain = readFile "${inputs.secrets}/${config.aviary.uID}/kanidm-cert-domain";
-          email = readFile "${inputs.secrets}/${config.aviary.uID}/kanidm-cert-email";
+          domain = readFile "${inputs.secrets}/${config.networking.hostName}/kanidm-cert-domain";
+          email = readFile "${inputs.secrets}/${config.networking.hostName}/kanidm-cert-email";
           dnsProvider = "cloudflare";
           dnsResolver = "1.1.1.1:53";
           environmentFile = secrets."kanidm-cert-env".path;
@@ -61,8 +61,8 @@ in
 
         "vaultwarden" = {
           group = "vaultwarden";
-          domain = readFile "${inputs.secrets}/${config.aviary.uID}/vaultwarden-cert-domain";
-          email = readFile "${inputs.secrets}/${config.aviary.uID}/vaultwarden-cert-email";
+          domain = readFile "${inputs.secrets}/${config.networking.hostName}/vaultwarden-cert-domain";
+          email = readFile "${inputs.secrets}/${config.networking.hostName}/vaultwarden-cert-email";
           dnsProvider = "cloudflare";
           dnsResolver = "1.1.1.1:53";
           environmentFile = secrets."vaultwarden-cert-env".path;

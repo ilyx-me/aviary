@@ -304,7 +304,6 @@
                   system.nixos.variant_id = "test";
                   boot.initrd.network.ssh.authorizedKeys = [ "none" ];
                   sops.defaultSopsFile = "${inputs.secrets-test}/test-a.yaml";
-                  aviary.uID = "test-a";
                   nixpkgs.config.allowUnfree = true;
                   aviary.drive.primary = "/dev/vdb";
                 })
@@ -336,7 +335,7 @@
               ./system/module/part/default.nix
               ./system/module/part/double.nix
               ./system/cardinal.nix
-              ./user/00.nix
+              ./user/1904693245.nix
               ./service/update.nix
               ./service/hermes.nix
             ];
@@ -351,7 +350,7 @@
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/chicken.nix
-              ./user/00.nix
+              ./user/1904693245.nix
               ./user/module/nvim.nix
               ./service/update.nix
             ];
@@ -368,7 +367,7 @@
               ./system/module/part/single.nix
               ./system/module/part/quota.nix
               ./system/ibis.nix
-              ./user/00.nix
+              ./user/1904693245.nix
               ./service/update.nix
             ];
           };
@@ -382,7 +381,6 @@
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/lark.nix
-              #./user/00.nix
               ./service/update.nix
               ./service/minecraft.nix
             ];
@@ -397,7 +395,6 @@
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/swallow.nix
-              #./user/00.nix
               ./service/update.nix
               ./service/vaultidm.nix
             ];
@@ -412,7 +409,7 @@
               ./system/module/part/default.nix
               ./system/module/part/single.nix
               ./system/quail.nix
-              ./user/03.nix
+              ./user/1990511257.nix
               ./service/update.nix
             ];
           };

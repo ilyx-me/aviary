@@ -88,8 +88,6 @@ in
 
     sops.defaultSopsFile = "${toString inputs.secrets-test}/test-a.yaml";
 
-    aviary.uID = "test-a";
-
     systemd.services."wpa_supplicant-recovery".enable = false;
   };
 

@@ -139,32 +139,25 @@ in
 
     secrets = {
 
-      luksRecovery = mkOption {
+      hash = mkOption {
         type = str;
-        default = host + "-luks";
-        example = "hostname-luks";
-        description = "SOPS-Nix secret storing the recovery password for LUKS";
+        default = host + "-hash";
+        example = "hostname-hash";
+        description = "SOPS-Nix secret storing the password hash for the recovery user";
       };
 
-      passwordHash = mkOption {
+      ssh = mkOption {
         type = str;
-        default = "password-hash";
-        example = "user-password-hash";
-        description = "SOPS-Nix secret storing the user password hash";
+        default = host + "-ssh";
+        example = "hostname-ssh";
+        description = "SOPS-Nix secret storing the recovery SSH private key";
       };
 
-      sshAdmin = mkOption {
+      sshPub = mkOption {
         type = str;
-        default = host + "-ssh-admin";
-        example = "hostname-ssh-admin";
-        description = "SOPS-Nix secret storing the admin SSH private key";
-      };
-
-      sshAdminPub = mkOption {
-        type = str;
-        default = host + "-ssh-admin-pub";
-        example = "hostname-ssh-admin-pub";
-        description = "Private file storing the admin SSH public key";
+        default = host + "-ssh-pub";
+        example = "hostname-ssh-pub";
+        description = "Private file storing the recovery SSH public key";
       };
     };
   };
@@ -195,21 +188,14 @@ in
 
       secrets = {
 
-        ${secretsName.sshAdmin} = mkForce {
+        ${secretsName.ssh} = mkForce {
           mode = "0400";
           owner = config.users.users.${adminUid}.name;
           group = "admins";
           path = "/home/${adminUid}/.ssh/id_ed25519";
         };
 
-        ${secretsName.luksRecovery} = {
-          mode = "0440";
-          owner = "root";
-          group = "admins";
-          restartUnits = [ "syncluksrecovery.service" ];
-        };
-
-        ${secretsName.passwordHash} = {
+        ${secretsName.hash} = {
           neededForUsers = true;
           mode = "0440";
           owner = "root";
@@ -474,7 +460,7 @@ in
             if config.system.nixos.variant_id == "test" then
               "https://idm.example.invalid"
             else
-              "https://${readFile "${inputs.secrets}/00/kanidm-cert-domain"}";
+              "https://${readFile "${inputs.secrets}/swallow/kanidm-cert-domain"}";
         };
 
         unix = {
@@ -542,7 +528,7 @@ in
           extraGroups = [ "wheel" ];
           group = "admins";
           useDefaultShell = true;
-          hashedPasswordFile = secrets.${secretsName.passwordHash}.path;
+          hashedPasswordFile = secrets.${secretsName.hash}.path;
           openssh.authorizedKeys.keys =
             if config.system.nixos.variant_id == "test" then
               [ "none" ]

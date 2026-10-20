@@ -50,7 +50,7 @@ in
       };
 
       environment.etc."ssh/ssh_host_ed25519_key" = {
-        text = readFile "${inputs.secrets-test}/${config.aviary.uID}/test-a-ssh-host";
+        text = readFile "${inputs.secrets-test}/${config.aviary.primaryGid}/test-a-ssh-host";
         mode = "0400";
       };
 
@@ -67,8 +67,6 @@ in
       boot.initrd.network.ssh.authorizedKeys = [ "none" ];
 
       sops.defaultSopsFile = "${toString inputs.secrets-test}/test-a.yaml";
-
-      aviary.uID = "test-a";
 
       systemd.services."wpa_supplicant-recovery".enable = false;
     };
