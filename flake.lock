@@ -630,11 +630,11 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1790865660,
-        "narHash": "sha256-w39Nu+g+Q37qXyV7A0iWSsXP7QCIjB4A2BYu1EAEKYc=",
+        "lastModified": 1792513224,
+        "narHash": "sha256-Puiw2ha428dWm4x7YXoT2WZxrL5UWtfEloHLMSMITKY=",
         "ref": "refs/heads/main",
-        "rev": "b192e7c0f4ffe1e2b2bec73f0d0d3e59cced4ad2",
-        "revCount": 29,
+        "rev": "b5b9052572df253161bafd10db8a03edbeef074b",
+        "revCount": 30,
         "type": "git",
         "url": "ssh://git@github.com/ilyx-me/aviarySecrets.git"
       },
@@ -646,11 +646,11 @@
     "secrets-test": {
       "flake": false,
       "locked": {
-        "lastModified": 1790865674,
-        "narHash": "sha256-IkbJntcpidN6SDlBAAoEfJOf11CfXfOUd1r+p3sURuo=",
+        "lastModified": 1792445712,
+        "narHash": "sha256-6wdEZxqGSax6w8x09lNR7na7Z/LgPrweyuVneML+0D0=",
         "ref": "refs/heads/main",
-        "rev": "6bb7a356b1c63a207a96b2c339ad47c3be7ce577",
-        "revCount": 14,
+        "rev": "63fd19e1a5f7932f2774f4e69a84bda6372b77e6",
+        "revCount": 15,
         "type": "git",
         "url": "ssh://git@github.com/ilyx-me/aviarySecretsTest.git"
       },

@@ -41,13 +41,6 @@ in {
 
   config = {
 
-    sops.secrets."sunshine-creds" = {
-      mode = "0400";
-      #owner = 1984693245; #${config.aviary.primaryGid};
-      #group = 1984693245; #${config.aviary.primaryGid};
-      #path = "/home/${config.aviary.primaryUuid}/.config/sunshine/login.json";
-    };
-
     boot = {
       consoleLogLevel = 3;
       kernelParams = [

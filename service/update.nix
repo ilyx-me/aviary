@@ -58,7 +58,7 @@ in
     systemd.services = {
       nixos-upgrade = {
         environment = {
-          GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i '/run/secrets/${config.aviary.secrets.sshAdmin}' -o IdentitiesOnly=yes";
+          GIT_SSH_COMMAND = "${pkgs.openssh}/bin/ssh -i '/run/secrets/${config.aviary.secrets.ssh}' -o IdentitiesOnly=yes";
         };
         serviceConfig.ExecStartPre = "${nixosUpgradeChecks} ${pkgs.git} ${pkgs.coreutils}";
         unitConfig = {

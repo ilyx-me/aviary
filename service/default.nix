@@ -104,10 +104,12 @@ in
             mode = "0400";
             user = "root";
             argument =
-              if config.system.nixos.variant_id == "test" then
-                readFile "${inputs.secrets-test}/${config.aviary.uID}/${host}-ts-initrd"
+              if (config.system.nixos.variant_id == "test") then
+                readFile "${inputs.secrets-test}/${host}/${host}-ts-initrd"
+              else if (config.aviary.primaryGid != null) then
+                readFile "${inputs.secrets}/${config.aviary.primaryGid}/${host}-ts-initrd"
               else
-                readFile "${inputs.secrets}/${config.aviary.uID}/${host}-ts-initrd";
+                readFile "${inputs.secrets}/${host}/${host}-ts-initrd";
           };
         };
 
