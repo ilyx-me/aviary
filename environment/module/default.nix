@@ -466,6 +466,7 @@ in
 
         unix = {
           enable = true;
+          sshIntegration = true;
           settings = {
             default_shell = "${pkgs.fish}/bin/fish";
             kanidm = {

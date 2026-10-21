@@ -220,9 +220,14 @@ in
         ports = [ 22 ];
         settings = {
           PasswordAuthentication = false;
+          PubkeyAuthentication = true;
           KbdInteractiveAuthentication = false;
           UseDns = true;
-          PermitRootLogin = "prohibit-password";
+          UsePAM = true;
+          PermitEmptyPasswords = false;
+          PermitRootLogin = "no";
+          GSSAPIAuthentication = false;
+          KerberosAuthentication = false;
         };
 
         hostKeys = [
