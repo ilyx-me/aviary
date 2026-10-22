@@ -630,11 +630,11 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1792513224,
-        "narHash": "sha256-Puiw2ha428dWm4x7YXoT2WZxrL5UWtfEloHLMSMITKY=",
+        "lastModified": 1792684612,
+        "narHash": "sha256-ejY98PEiOiojx3HJIu8QXwpLSVicU32tCxXYvXgpkQs=",
         "ref": "refs/heads/main",
-        "rev": "b5b9052572df253161bafd10db8a03edbeef074b",
-        "revCount": 30,
+        "rev": "ec2b45a5abfe4045547fdbca3781111c8d04190a",
+        "revCount": 31,
         "type": "git",
         "url": "ssh://git@github.com/ilyx-me/aviarySecrets.git"
       },

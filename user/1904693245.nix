@@ -29,12 +29,32 @@ in
     aviary.primaryGid = "1904693245";
 
     services.syncthing.settings = {
-      devices = { };
+      devices = {
+        "cardinal".id = readFile "${inputs.secrets}/${config.aviary.primaryGid}/cardinal-st-id";
+        "chicken".id = readFile "${inputs.secrets}/${config.aviary.primaryGid}/chicken-st-id";
+        "ibis".id = readFile "${inputs.secrets}/${config.aviary.primaryGid}/ibis-st-id";
+      };
       folders = {
-        "Documents".devices = [ ];
-        "Pictures".devices = [ ];
-        "Templates".devices = [ ];
-        "Videos".devices = [ ];
+        "Documents".devices = [
+          "cardinal"
+          "chicken"
+          "ibis"
+        ];
+        "Pictures".devices = [
+          "cardinal"
+          "chicken"
+          "ibis"
+        ];
+        "Templates".devices = [
+          "cardinal"
+          "chicken"
+          "ibis"
+        ];
+        "Videos".devices = [
+          "cardinal"
+          "chicken"
+          "ibis"
+        ];
       };
     };
 

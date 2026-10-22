@@ -153,6 +153,12 @@ in
         description = "SOPS-Nix secret storing the recovery SSH private key";
       };
 
+      st = mkOption {
+        type = str;
+        default = host + "-st-key";
+        description = "SOPS-Nix secret storing the syncthing key.pem";
+      };
+
       sshPub = mkOption {
         type = str;
         default = host + "-ssh-pub";
@@ -194,6 +200,12 @@ in
           owner = config.users.users.${adminUid}.name;
           group = "admins";
           path = "/home/${adminUid}/.ssh/id_ed25519";
+        };
+
+        ${secretsName.st} = mkIf (config.aviary.primaryGid != null) {
+          mode = "0400";
+          owner = "root";
+          group = "syncthing";
         };
 
         ${secretsName.hash} = {
@@ -476,6 +488,10 @@ in
                   local = "wheel";
                   "with" = "admins";
                 }
+                {
+                  local = "syncthing";
+                  "with" = "users";
+                }
               ];
             };
           };
@@ -489,6 +505,8 @@ in
 
       syncthing = mkIf (config.aviary.primaryGid != null) {
         enable = true;
+        key = "${secrets.${secretsName.st}.path}";
+        cert = "${inputs.secrets}/${config.aviary.primaryGid}/${host}-st-cert";
         # Syncthing supports Unix Sockets for GUI+API but the Noctalia plugin does not
         # guiAddress = "${config.hjem.users.${config.aviary.primaryGid}.directory}/.config/syncthing/st.socket";
         user = config.aviary.primaryGid;
@@ -514,6 +532,7 @@ in
     users = {
 
       groups."admins" = { };
+      groups."syncthing" = { };
       mutableUsers = false;
       defaultUserShell = pkgs.fish;
 
