@@ -123,6 +123,7 @@ in {
           };
 
           "noctalia-initial-lock" = {
+            restartIfChanged = false;
             after = [ "noctalia.service" ];
             before = [
               "graphical-session.target"
@@ -135,7 +136,7 @@ in {
               Type = "oneshot";
               TimeoutSec = "infinity";
               RemainAfterExit = "yes";
-              ExecStart = "${lockScreenWait} ${pkgs.glib}";
+              ExecStart = "${lockScreenWait} ${pkgs.glib} ${pkgs.xdg-user-dirs-gtk}";
             };
           };
 
@@ -185,6 +186,7 @@ in {
       files = {
         "Documents".type = "directory";
         "Downloads".type = "directory";
+        "Music".type = "directory";
         "Pictures/Wallpapers/Dark/default.png".source = "${inputs.plasma-workspace-wallpapers}/Sub-Arctic/contents/images_dark/5120x2880.png";
         "Pictures/Wallpapers/Light/default.png".source = "${inputs.plasma-workspace-wallpapers}/Sub-Arctic/contents/images/5120x2880.png";
         "Templates".type = "directory";
@@ -197,6 +199,19 @@ in {
               starship init fish | source
             end
           '';
+          "gtk-3.0/bookmarks" = {
+            clobber = false;
+            permissions = "0644";
+            type = "copy";
+            text = ''
+              file:///home/ilyx-idm@av.aery.fyi/Documents Documents
+              file:///home/ilyx-idm@av.aery.fyi/Downloads Downloads
+              file:///home/ilyx-idm@av.aery.fyi/Music Music
+              file:///home/ilyx-idm@av.aery.fyi/Pictures Pictures
+              file:///home/ilyx-idm@av.aery.fyi/Templates Templates
+              file:///home/ilyx-idm@av.aery.fyi/Videos Videos
+            '';
+          };
           "niri/aviaryUserOverrides.kdl" = {
             clobber = false;
             permissions = "0644";
@@ -544,7 +559,7 @@ in {
               hostname = {
                 ssh_only = true;
                 style = "bold fg:surface1 bg:green";
-                format = "[$ssh_symbol$hostname]($style)";
+                format = "[$hostname]($style)";
               };
 
               nix_shell = {
@@ -665,6 +680,15 @@ in {
               };
             };
           };
+
+          "user-dirs.dirs".text = ''
+            XDG_DOCUMENTS_DIR="$HOME/Documents"
+            XDG_DOWNLOAD_DIR="$HOME/Downloads"
+            XDG_MUSIC_DIR="$HOME/Music"
+            XDG_PICTURES_DIR="$HOME/Pictures"
+            XDG_TEMPLATES_DIR="$HOME/Templates"
+            XDG_VIDEOS_DIR="$HOME/Videos"
+          '';
         };
         data.files = {
           "applications/dev.noctalia.Noctalia.desktop" = {

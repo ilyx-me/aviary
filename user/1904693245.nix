@@ -40,6 +40,11 @@ in
           "chicken"
           "ibis"
         ];
+        "Music".devices = [
+          "cardinal"
+          "chicken"
+          "ibis"
+        ];
         "Pictures".devices = [
           "cardinal"
           "chicken"

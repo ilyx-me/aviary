@@ -516,6 +516,7 @@ in
         overrideFolders = true;
         settings.folders = {
           "Documents".path = "~/Documents";
+          "Music".path = "~/Music";
           "Pictures" = {
             path = "~/Pictures";
             ignorePatters = [
