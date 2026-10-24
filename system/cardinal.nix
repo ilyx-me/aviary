@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }:
 
@@ -51,6 +52,23 @@
         open = true;
         package = config.boot.kernelPackages.nvidiaPackages.stable;
         powerManagement.enable = true;
+      };
+    };
+
+    # a bad workaround
+    # systemd-sysctl & systemd-modules-load sometimes race after initrd switches root causing
+    # nvidia-uvm module to not load and leaving kernel params unset. Seems
+    # nvidia specific, I can't reproduce this on other systems.
+    # https://github.com/NixOS/nixpkgs/issues/290569
+    systemd.services = {
+      "systemd-sysctl-modules-load-restart" = {
+        before = [ "multi-user.target" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = "yes";
+          ExecStart = "${pkgs.systemd}/bin/systemctl restart systemd-modules-load systemd-sysctl";
+        };
       };
     };
   };
