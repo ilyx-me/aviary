@@ -430,7 +430,10 @@ in {
                 mode = "light";
                 source = "wallpaper";
                 wallpaper_scheme = "soft";
-                templates.builtin_ids = [ "niri" "starship" ];
+                templates = {
+                  builtin_ids = [ "niri" ];
+                  community_ids = [ "starship" ];
+                };
               };
               wallpaper = {
                 directory_dark = "~/Pictures/Wallpapers/Dark";
