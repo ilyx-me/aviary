@@ -375,7 +375,7 @@ in
       };
     };
 
-    networking.useNetworkd = true;
+    networking.useDHCP = false;
 
     environment = {
       enableAllTerminfo = true;
@@ -429,6 +429,31 @@ in
         "L /home/${config.users.users.${adminUid}.name} 0777 root root - /home/${adminUid}"
       ] ++ optional (config.aviary.primaryGid != null)
         "d /home/${config.aviary.primaryUuid} 0750 ${config.aviary.primaryGid} ${config.aviary.primaryGid} - -";
+
+      network = {
+        enable = true;
+        networks = {
+          "99-ethernet-default-dhcp" = {
+            matchConfig = {
+              Kind = "!*";
+              Type = "ether";
+            };
+            networkConfig = {
+              DHCP = "yes";
+              IPv6PrivacyExtensions = "kernel";
+            };
+          };
+          "99-wireless-client-dhcp" = {
+            matchConfig.WLANInterfaceType = "station";
+            networkConfig = {
+              DHCP = "yes";
+              IPv6PrivacyExtensions = "kernel";
+            };
+            dhcpV4Config.RouteMetric = 1025;
+            ipv6AcceptRAConfig.RouteMetric = 1025;
+          };
+        };
+      };
 
       services = {
 

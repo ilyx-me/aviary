@@ -9,39 +9,46 @@
 
   config = {
 
-    networking.nat = {
-      enable = true;
-      internalInterfaces = [ "ve-+" ];
-      externalInterface = "enp1s0";
-      enableIPv6 = true;
-      forwardPorts = [
-        {
-          sourcePort = 25565;
-          proto = "tcp";
-          destination = "192.168.100.11:25565";
-        }
-        {
-          sourcePort = 19132;
-          proto = "udp";
-          destination = "192.168.100.11:19132";
-        }
-      ];
-    };
-
     environment.persistence."/persist".directories = [
       "/var/lib/nixos-containers/minecraft"
     ];
 
-    networking.firewall = {
-      allowedTCPPorts = [ 25565 ];
-      allowedUDPPorts = [ 19132 ];
+    systemd.network.networks."40-ve-minecraft" = {
+      matchConfig.Name = "ve-minecraft";
+      address = [ "172.16.2.1/24" ];
+    };
+
+    networking = {
+      firewall = {
+        allowedTCPPorts = [ 25565 ];
+        allowedUDPPorts = [ 19132 ];
+      };
+      nat = {
+        enable = true;
+        internalInterfaces = [ "ve-+" ];
+        externalInterface = "enp1s0";
+        enableIPv6 = true;
+        forwardPorts = [
+          {
+            sourcePort = 25565;
+            proto = "tcp";
+            destination = "172.16.2.2:25565";
+          }
+          {
+            sourcePort = 19132;
+            proto = "udp";
+            destination = "172.16.2.2:19132";
+          }
+        ];
+      };
     };
 
     containers.minecraft = {
       autoStart = true;
+      privateUsers = "pick";
       privateNetwork = true;
-      hostAddress = "192.168.100.10";
-      localAddress = "192.168.100.11";
+      hostAddress = "172.16.2.1";
+      localAddress = "172.16.2.2";
       hostAddress6 = "fc00::1";
       localAddress6 = "fc00::2";
 
@@ -53,8 +60,6 @@
         ];
 
         system.stateVersion = "26.05";
-
-        environment.enableAllTerminfo = true;
 
         networking = {
           firewall.allowedTCPPorts = [ 25565 ];

@@ -100,7 +100,6 @@ in {
     };
 
     networking = {
-      useNetworkd = mkForce false;
       wireless.enable = true;
       networkmanager = {
         enable = true;
@@ -236,6 +235,8 @@ in {
 
     # Prevent last second debug console messages after plymouth
     systemd.shutdownRamfs.enable = false;
+
+    systemd.network.enable = mkForce false;
 
     systemd.user.services = {
       "add-flathub-remote" = {

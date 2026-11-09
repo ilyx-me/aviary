@@ -12,8 +12,11 @@
       "L /var/lib/nixos-containers - - - - /home/nixos-containers"
     ];
 
+    networking.firewall.allowedTCPPorts = [ 11434 ];
+
     containers.hermes = {
       autoStart = true;
+      privateUsers = "pick";
 
       allowedDevices = [
         { node = "/dev/dri";              modifier = "rw"; }
@@ -63,27 +66,20 @@
           mcp-nixos
         ];
 
-        users.users."user" = {
-          isNormalUser = true;
-          password = "password";
-        };
-
         services = {
-
-          openssh = {
-            enable = true;
-            ports = [ 2224 ];
-          };
 
           ollama = {
             enable = true;
             package = pkgs.ollama-cuda;
             user = "ollama";
+            group = "ollama";
             environmentVariables = {
               OLLAMA_CONTEXT_LENGTH = "97280";
               OLLAMA_KV_CACHE_TYPE = "q4_0";
               OLLAMA_FLASH_ATTENTION = "1";
             };
+            loadModels = [ "qwen3.8:27b" ];
+            syncModels = true;
           };
 
           hermes-agent = {
@@ -94,7 +90,7 @@
             #};
             settings = {
               model ={
-                default = "qwen3.6:27b";
+                default = "qwen3.8:27b";
                 provider = "custom";
                 base_url = "http://localhost:11434/v1";
                 context_length = "97280";
