@@ -10,7 +10,7 @@
   config = {
 
     environment.persistence."/persist".directories = [
-      "/var/lib/nixos-containers/minecraft"
+      "/var/lib/nixos-containers"
     ];
 
     systemd.network.networks."40-ve-minecraft" = {
@@ -25,7 +25,7 @@
       };
       nat = {
         enable = true;
-        internalInterfaces = [ "ve-+" ];
+        internalInterfaces = [ "ve-*" ];
         externalInterface = "enp1s0";
         enableIPv6 = true;
         forwardPorts = [

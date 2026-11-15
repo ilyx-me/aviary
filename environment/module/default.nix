@@ -231,6 +231,7 @@ in
 
       directories = [
         "/etc/nixos"
+        "/srv"
         "/var/cache/kanidm-unixd"
         "/var/log"
         "/var/lib/kanidm-unixd"
@@ -248,6 +249,31 @@ in
     boot.initrd.systemd = {
 
       enable = true;
+
+      network = {
+        enable = true;
+        networks = {
+          "99-ethernet-default-dhcp" = {
+            matchConfig = {
+              Kind = "!*";
+              Type = "ether";
+            };
+            networkConfig = {
+              DHCP = "yes";
+              IPv6PrivacyExtensions = "kernel";
+            };
+          };
+          "99-wireless-client-dhcp" = {
+            matchConfig.WLANInterfaceType = "station";
+            networkConfig = {
+              DHCP = "yes";
+              IPv6PrivacyExtensions = "kernel";
+            };
+            dhcpV4Config.RouteMetric = 1025;
+            ipv6AcceptRAConfig.RouteMetric = 1025;
+          };
+        };
+      };
 
       services = {
 
@@ -375,7 +401,10 @@ in
       };
     };
 
-    networking.useDHCP = false;
+    networking = {
+      useDHCP = false;
+      nftables.enable = true;
+    };
 
     environment = {
       enableAllTerminfo = true;
