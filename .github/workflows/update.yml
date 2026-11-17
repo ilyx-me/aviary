@@ -49,7 +49,6 @@ jobs:
             lanzaboote \
             nixpkgs \
             nix-minecraft \
-            noctalia \
             nvf \
             secrets \
             sops-nix
