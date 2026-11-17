@@ -97,8 +97,6 @@ in {
             after = lib.mkForce [ "graphical-session-pre-lock.target" ];
             partOf = lib.mkForce [ "graphical-session-pre-lock.target" ];
             serviceConfig = {
-              Type = "dbus";
-              BusName = "org.freedesktop.Notifications";
               Environment = [
                 "TZ=America/Los_Angeles"
                 "_JAVA_AWT_WM_NONREPARENTING=1"
