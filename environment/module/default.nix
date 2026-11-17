@@ -408,6 +408,7 @@ in
 
     environment = {
       enableAllTerminfo = true;
+      defaultPackages = [ ]; # Defaults to [ pkgs.perl, pkgs.rsync, pkgs.strace ]
       systemPackages = with pkgs; [
         age
         btop
