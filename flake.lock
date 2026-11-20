@@ -166,11 +166,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1795077663,
-        "narHash": "sha256-Py4HCePuAYMHCEx4m682OhIU6cISMLfKfSUK/V7o8GA=",
+        "lastModified": 1795161407,
+        "narHash": "sha256-Esarc+zNClsEFUdUidfLnm8Kwv6Y9590BtmOOGSvSmo=",
         "owner": "NousResearch",
         "repo": "hermes-agent",
-        "rev": "3235b4d6ab56c39089f70f95d76f801300be4733",
+        "rev": "65c9b93e0c9f679c951d0358508c74ba00c0efad",
         "type": "github"
       },
       "original": {
@@ -304,11 +304,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1795071594,
-        "narHash": "sha256-OHK+GfYWJQlWGzHwooV5ss6w6V0n1lnrs/68LGa8sw8=",
+        "lastModified": 1795157502,
+        "narHash": "sha256-6Nr01aA2VLztxHLpRRSPbDk+rGH2/NRuw7hbTqLMHjw=",
         "owner": "Infinidoge",
         "repo": "nix-minecraft",
-        "rev": "bbda2aa2cfb4313d6a6991566b7a0a797c2d20dc",
+        "rev": "c01e4bdbf3e8c76429fa178e179ece6cde3e2100",
         "type": "github"
       },
       "original": {
@@ -408,11 +408,11 @@
     },
     "nixpkgs_6": {
       "locked": {
-        "lastModified": 1794872590,
-        "narHash": "sha256-E+XLAfnC7+bdr4qlEgRv6cdGmiqTU5oeFNKCha7epqQ=",
+        "lastModified": 1795031880,
+        "narHash": "sha256-Obi0Kr71SBfU9aaDxSncVRT4wYTjLzjMyCmmuC2XGd0=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "f68407657ad294471eb4b2e65d193df26edf729f",
+        "rev": "3457b69ac4aba6d9ea9a743370af160fb502db29",
         "type": "github"
       },
       "original": {
@@ -608,11 +608,11 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1794119935,
-        "narHash": "sha256-xCm928TXgE8tdV2ddniKdLxjZtG4RY44Dp7r2W5G6fk=",
+        "lastModified": 1795109799,
+        "narHash": "sha256-k1nS82DMpTKI4pspEDBbF0uOZEftwoRSSqWHLKUXz0g=",
         "ref": "refs/heads/main",
-        "rev": "8cc500d71d4f1e2a4c5f3c551cfdd9a88bcedcb4",
-        "revCount": 34,
+        "rev": "78b23ba984cf2e8be1e1d468048cb241d87f8970",
+        "revCount": 35,
         "type": "git",
         "url": "ssh://git@github.com/ilyx-me/aviarySecrets.git"
       },
