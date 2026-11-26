@@ -166,11 +166,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1795599672,
-        "narHash": "sha256-jVlmPcSZxZk1wOGK5OJ7hqZinQlEE4ziNzIJDrH2Gl4=",
+        "lastModified": 1795682243,
+        "narHash": "sha256-0IcP3pYL+e3BA49vPg2sgsbMbRAK888es8K4fAkjnV8=",
         "owner": "NousResearch",
         "repo": "hermes-agent",
-        "rev": "52e6c52af68ff3fb071856e3303b6d16ac78bf73",
+        "rev": "76b55a46791914921da552c91a2264569dca2055",
         "type": "github"
       },
       "original": {
@@ -304,11 +304,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1795593812,
-        "narHash": "sha256-F2Zvg78BXRi0/QHooTBwpPr2Ga5pMYeT1tfqDCwmZpo=",
+        "lastModified": 1795679667,
+        "narHash": "sha256-klgx8Hxb33Ew/5m0BDGMFfSsZYSAxCCMoCJA+ps97DM=",
         "owner": "Infinidoge",
         "repo": "nix-minecraft",
-        "rev": "9e619fc7f32fa62708331610f6e981c5ee655057",
+        "rev": "ad1ef671c1c835e3d3ab921aa8fd5a14bb69972f",
         "type": "github"
       },
       "original": {
@@ -608,11 +608,11 @@
     "secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1795109799,
-        "narHash": "sha256-k1nS82DMpTKI4pspEDBbF0uOZEftwoRSSqWHLKUXz0g=",
+        "lastModified": 1795624836,
+        "narHash": "sha256-xeD+fjUjeov+vQjKXpU4vWnQfw7RcdVDQp6xGVUtzBg=",
         "ref": "refs/heads/main",
-        "rev": "78b23ba984cf2e8be1e1d468048cb241d87f8970",
-        "revCount": 35,
+        "rev": "f987cd0f9f26eb1ed5afc005a129b24d039d1f8c",
+        "revCount": 36,
         "type": "git",
         "url": "ssh://git@github.com/ilyx-me/aviarySecrets.git"
       },
